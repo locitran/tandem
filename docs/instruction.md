@@ -112,3 +112,12 @@ test_loss	0.19±0.06, test_accuracy	100.00±0.00%,
 
 You may see some of untypical loss curves when doing this transfer learning. Be calm, we'll deal with it. 
 
+# 4. Model inferencing
+
+Stay tuned! I will document it later. The code for model inferencing is in [../src/predict/inference.py](../src/predict/inference.py).
+
+Using it is something like this 
+```python
+mi = ModelInference(folder=models, r20000=r20000, featSet=list(self.featSet))
+mi.calcPredictions(fm)
+```
