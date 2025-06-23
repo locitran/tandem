@@ -4,7 +4,7 @@ Github repository: https://github.com/locitran/tandem-dimple.git.
 
 TANDEM-DIMPLE is a DNN model designed to predict the pathogenicity of missense variants. The model is trained on R20000 set obtained from the [Rhapsody](https://academic.oup.com/bioinformatics/article/36/10/3084/5758260?login=true) study, using a wide range of features, including sequence&chemical, structural, and dynamics features.
 
-![Summary of Results](docs/images/result_summary.jpg)
+![Summary of Results](docs/images/result_summary.png)
 Figure 3.8. Comparison of model accuracy for TANDEMgeneral (TANDEM), TANDEMspecific_disease (TANDEMGJB2, TANDEMRYR1), Rhapsody and AlphaMissense.
 Among the 20,361 SAVs from Rhapsody(Ponzoni et al., 2020), the R20000 test set here comprises 62 Uniprot protein sequences corresponding 2,043 SAVs (about 10% of the total data).
 
