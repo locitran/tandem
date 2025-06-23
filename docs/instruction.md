@@ -48,7 +48,8 @@ Early stop: `patient` = 50, `start_from_epoch` = 50
 
 # 2. Transfer learning
 
-In my work, there were 4 steps in transfer learning protocol
+In my work, there were 4 steps in transfer learning protocol.
+To simply explain our method, we just took the whole network of foundation model and re-trained it, so the number of parameters remains the same. 
 
 ## 2.1. Set up data, model, and hyper-parameters
 
