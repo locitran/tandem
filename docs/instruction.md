@@ -22,7 +22,7 @@ SAV_coords  labels  feature_1   feature_2   ...
 Example: [../models/different_number_of_layers/20250423-1234-tandem/n_hidden-5/model_fold_1.h5](../models/different_number_of_layers/20250423-1234-tandem/n_hidden-5/model_fold_1.h5) or TANDEM_1.
 
 
-We have 5 such foundation models, and I simply take the first one as a demo. This model was trained on R20000 set. 
+We have such 5 foundation models, and I simply take the first one as a demo. This model was trained on R20000 set. 
 
 **Model Configuration**
 |   Layer   | Activation | Batch Norm | Dropout Rate |  Initializer   | L1 |   L2   | N Neurons |
@@ -40,11 +40,11 @@ We have 5 such foundation models, and I simply take the first one as a demo. Thi
 |-----------|------------|----------|--------------------------|---------------------|
 |  Training |    300     |   300    | categorical_crossentropy | ['accuracy', 'AUC'] |
 
-|  Training | ln         | algorithm|
+|  Training | lr         | algorithm|
 |-----------|------------|----------|
 | Optimizer |   5e-05    |  Nadam   |
 
-Early stop: patien = 50, start_from_epoch = 50
+Early stop: `patient` = 50, `start_from_epoch` = 50
 
 # 2. Transfer learning
 
@@ -70,6 +70,7 @@ For this preprocessing job, I wrote a class name `Preprocessing` (`src.modules.P
 
 ## 2.2. Train, val, and test splitting
 I used cross-validation (CV) object `StratifiedKFold` from `sklearn` with 3-fold CV with 6:3:1 = train:val:test
+In the input file, I have 47 GJB2 SAVs which is then divided into 28 train : 14 val : 5 test
 
 ## 2.3. Load foundation model and train :D
 
@@ -84,11 +85,12 @@ Since I ran 3-fold CV (ei. 3 times), I obtained 3 models.
 
 ## 2.4. Model evaluation
 
-This step is simple, using model.evaluate(). I compiled 5 metrics (accuracy, auc, precision, recall, f1_score), it outputs 6 values including loss
+This step is simple, using model.evaluate(). I compiled 5 metrics (accuracy, auc, precision, recall, f1_score), it outputs 6 values including the loss.
 
 # 3. Output files
 
 Here is the output list. We can change it later, I designed it to benefit my research.
+
 ![Alt text](./images/transfer_learning.png)
 
 - `after_training.csv` and `before_training.csv` are to save the average result of 3 transfer learning model `after` and `before`, evaluating on some sets (first row is mean, second row is sem). They are using to create the below as an example.

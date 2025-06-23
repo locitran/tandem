@@ -208,10 +208,6 @@ def reproduce_transfer_learning_model(
     n_epochs=300,
     start_from_epoch = 10
 ):
-    """
-    
-    
-    """
     # Defalut model input : TANDEM_1
     if model_input is None:
         model_input = os.path.join(
@@ -246,7 +242,6 @@ def reproduce_transfer_learning_model(
     cfg.training.n_epochs = n_epochs
     logging.error("Start from epoch: %d", cfg.training.callbacks.EarlyStopping.start_from_epoch)
     logging.error("Patience: %d", cfg.training.callbacks.EarlyStopping.patience)
-
 
     ##################### 4. Split test data #####################
     # 1. Split 3 folds (60% – 30% – 10%)
