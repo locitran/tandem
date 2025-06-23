@@ -187,9 +187,17 @@ data/pickles/
 data/pfamdb/
 data/consurf/db/
 data/consurf/uniref90.fasta
+data/consurf/uniref50.fasta
+data/R20000/stats/.nfs000000000f4c067100000cec
 
 # models
 models/tf.ipynb
 models/feature_importance.ipynb
 models/comparison.ipynb
 models/tandem.ipynb
+models/DNN_visualization.ipynb
+models/different_number_of_layers/20250423-1234-tandem/n_hidden-5/shap_values_GJB2.npy
+models/different_number_of_layers/20250423-1234-tandem/n_hidden-5/shap_values_GJB2_by_TANDEM_GJB2.npy
+models/different_number_of_layers/20250423-1234-tandem/n_hidden-5/shap_values_fold_1_Jun19.npy
+
+rhapsody/

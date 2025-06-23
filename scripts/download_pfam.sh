@@ -27,7 +27,7 @@ BASENAME2=$(basename "${SOURCE_URL2}")
 # Start timer
 SECONDS=0
 
-mkdir --parents "${DOWNLOAD_DIR}"
+mkdir -p "${DOWNLOAD_DIR}"
 aria2c "${SOURCE_URL}" --dir="${DOWNLOAD_DIR}"
 aria2c "${SOURCE_URL2}" --dir="${DOWNLOAD_DIR}"
 pushd "${DOWNLOAD_DIR}"

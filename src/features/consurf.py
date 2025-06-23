@@ -24,7 +24,8 @@ dataDir = consurfDir + '/db/2024-10-08'
 consurfLookup = consurfDir + '/2024-10-08.json'
 customDir = consurfDir + '/db/custom'
 # uniref90_2022_05 = consurfDir + '/uniref90_2022_05.fa'
-uniref90_2022_05 = consurfDir + '/uniref90.fasta'
+# uniref90_2022_05 = consurfDir + '/uniref90.fasta'
+uniref90_2022_05 = consurfDir + '/uniref50.fasta'
 os.makedirs(customDir, exist_ok=True)
 
 timer = getTimer('tandem', verbose=True)

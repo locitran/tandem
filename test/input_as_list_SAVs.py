@@ -5,7 +5,7 @@ sys.path.insert(0, addpath)
 
 from tandem.src.main import tandem_dimple
 
-query = ['P29033 156 V I']#, 'O14522 1096 A P']
+query = ['P04626 772 Y V', 'P04626 772 Y A']
 
 td = tandem_dimple(
     query=query, # List of SAVs to be analyzed

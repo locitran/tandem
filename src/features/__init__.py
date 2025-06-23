@@ -40,13 +40,14 @@ TANDEM_FEATS = {
     'SEQ': set(SEQ.SEQ_FEATS),
 }
 TANDEM_FEATS['all'] = set().union(*TANDEM_FEATS.values())
+# Feature set used in my thesis August 2024
 TANDEM_FEATS['v1.0'] = [
     "consurf", "wtPSIC", "deltaPSIC", "entropy", "ACNR", "SASA", "BLOSUM", "ANM_stiffness_chain",
     "loop_percent", "AG1", "GNM_V2_full", "GNM_co_rank_full", "AG3", "AG5", "Dcom", "GNM_V1_full",
     "GNM_rankV2_full", "GNM_Eigval1_full", "ranked_MI", "DELTA_Hbond", "phobic_percent", "GNM_Eigval2_full",
     "sheet_percent", "Rg", "deltaPolarity", "Lside", "helix_percent", "deltaLside", "ANM_effectiveness_chain",
     "GNM_rankV1_full", "GNM_rmsf_overall_full", "deltaCharge", "delta_phobic_percent"]
-
+# Feature set used from May 2025 
 TANDEM_FEATS['v1.1'] = [
     # DYN 9 features
     'GNM_co_rank_full', 'ANM_stiffness_chain', 'GNM_V2_full', 'GNM_V1_full', 'GNM_Eigval1_full', 

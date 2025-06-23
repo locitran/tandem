@@ -14,7 +14,7 @@ if ! command -v wget &> /dev/null ; then
 fi
 
 DOWNLOAD_DIR="$1"
-SOURCE_URL="https://ftp.ebi.ac.uk/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz"
+SOURCE_URL="https://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref50/uniref50.fasta.gz"
 BASENAME=$(basename "${SOURCE_URL}")
 
 # Start timer

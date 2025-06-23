@@ -88,10 +88,12 @@ class ModelInference:
         test_fm = self.p.normalize(test_fm)
         
         # Get the predictions from the models
+        preds = np.zeros((len(test_fm), len(self.models)))
         probs = np.zeros((len(test_fm), len(self.models)))
         for i, model in enumerate(self.models):
             prob = model.predict(test_fm)
             probs[:, i] = prob[:, 1]
+            preds[:, i] = np.where(prob[:, 1] > 0.5, 1, 0)
 
         # Ratios are defined as the dominant prediction of the models
         # Get the ratio of the predictions
@@ -109,6 +111,7 @@ class ModelInference:
                 final_probs[i] = np.mean(probs[i, :][probs[i, :] <= 0.5])
 
         self.probs = probs
+        self.preds = preds
         self.votes = votes
         self.decisions = decisions
         self.final_probs = final_probs

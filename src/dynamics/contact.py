@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import traceback
 
 from prody import Atomic, parsePDB, LOGGER
 from prody.utilities import checkCoords
@@ -10,16 +11,11 @@ from prody import LOGGER, findNeighbors, parsePDB, writePDB, AtomGroup
 from ..utils.settings import one2three
 
 file_dir = os.path.dirname(os.path.abspath(__file__))
-eAB0_6dot4 = os.path.join(file_dir, 'eABo_6dot4.npy')
-eAB0_4 = os.path.join(file_dir, 'eABo_4.npy')
-
-eAB0_6dot4 = np.load(eAB0_6dot4, allow_pickle=True)
-eAB0_4 = np.load(eAB0_4, allow_pickle=True)
-
-Lside_dict = {'G': 0, 'A': 1, 'V': 3, 'L': 4, 'I': 4, 'M': 4, 'F': 7, 'W': 10, 'P': 3, 'S': 2, 
-              'T': 3, 'C': 2, 'Y': 8, 'N': 4, 'Q': 5, 'D': 4, 'E': 5, 'K': 5, 'R': 7, 'H': 6}
 
 def calcLside(wt_aas, mut_aas):
+    Lside_dict = {'G': 0, 'A': 1, 'V': 3, 'L': 4, 'I': 4, 'M': 4, 'F': 7, 'W': 10, 'P': 3, 'S': 2, 
+              'T': 3, 'C': 2, 'Y': 8, 'N': 4, 'Q': 5, 'D': 4, 'E': 5, 'K': 5, 'R': 7, 'H': 6}
+    
     assert len(wt_aas) == len(mut_aas), 'Length of wt_aas and mut_aas must be the same.'
     Lside = np.array([Lside_dict[mut] for mut in mut_aas])
     deltaLside = Lside - np.array([Lside_dict[wt] for wt in wt_aas])
@@ -40,12 +36,68 @@ def getBJCE(res1, res2, solvent=True, cutoff=6.4):
     Reference: Inter-residue potentials in globular proteins and the dominance of 
     highly specific hydrophilic interactions at close separation. Bahar & Jernigan, J. Mol. Biol. (1997)
     """
+    eAB0_6dot4 = os.path.join(file_dir, 'eABo_6dot4.npy')
+    eAB0_4 = os.path.join(file_dir, 'eABo_4.npy')
+
+    eAB0_6dot4 = np.load(eAB0_6dot4, allow_pickle=True)
+    eAB0_4 = np.load(eAB0_4, allow_pickle=True)
+
     # Define the residue names in order
     residue_names = [
         "GLY", "ALA", "VAL", "ILE", "LEU", "SER", "THR", "ASP", "ASN", "GLU",
         "GLN", "LYS", "ARG", "CYS", "MET", "PHE", "TYR", "TRP", "HIS", "PRO"
     ]
+
+    aa_correction = {
+        # Histidine (His)
+        'HSD': 'HIS',   # NAMD, protonated at ND1 (HID in AMBER)
+        'HSE': 'HIS',   # NAMD, protonated at NE2 (HIE in AMBER)
+        'HSP': 'HIS',   # NAMD, doubly protonated (HIP in AMBER)
+        'HID': 'HIS',   # AMBER name, protonated at ND1
+        'HIE': 'HIS',   # AMBER name, protonated at NE2
+        'HIP': 'HIS',   # AMBER name, doubly protonated
+        'HISD': 'HIS',  # GROMACS: protonated at ND1
+        'HISE': 'HIS',  # GROMACS: protonated at NE2
+        'HISP': 'HIS',  # GROMACS: doubly protonated
+
+        # Cysteine (Cys)
+        'CYX': 'CYS',   # Cystine (disulfide bridge)
+        'CYM': 'CYS',   # Deprotonated cysteine, anion
+
+        # Aspartic acid (Asp)
+        'ASH': 'ASP',   # Protonated Asp
+        'ASPP': 'ASP',
+
+        # Glutamic acid (Glu)
+        'GLH': 'GLU',   # Protonated Glu
+        'GLUP': 'GLU',  # Protonated Glu
+
+        # Lysine (Lys)
+        'LYN': 'LYS',   # Deprotonated lysine (neutral)
+
+        # Arginine (Arg)
+        'ARN': 'ARG',   # Deprotonated arginine (rare, GROMACS)
+
+        # Tyrosine (Tyr)
+        'TYM': 'TYR',   # Deprotonated tyrosine (GROMACS)
+
+        # Serine (Ser)
+        'SEP': 'SER',   # Phosphorylated serine (GROMACS/AMBER)
+
+        # Threonine (Thr)
+        'TPO': 'THR',   # Phosphorylated threonine (GROMACS/AMBER)
+
+        # Tyrosine (Tyr)
+        'PTR': 'TYR',   # Phosphorylated tyrosine (GROMACS/AMBER)
+
+        # Non-standard names for aspartic and glutamic acids in low pH environments
+        'ASH': 'ASP',   # Protonated Asp
+        'GLH': 'GLU',   # Protonated Glu
+    }
+
     # Ensure residues are valid
+    res1 = aa_correction.get(res1, res1)
+    res2 = aa_correction.get(res2, res2)
     if res1 not in residue_names or res2 not in residue_names:
         raise ValueError("Invalid residue name. Use standard residue codes.")
     # Get indices of the residues
@@ -53,18 +105,21 @@ def getBJCE(res1, res2, solvent=True, cutoff=6.4):
     idx2 = residue_names.index(res2)
     
     min_idx, max_idx = min(idx1, idx2), max(idx1, idx2)
-    if solvent:
+    if solvent: # Upper triangle and diagonal
         if cutoff == 6.4:
             return eAB0_6dot4[min_idx, max_idx]
         else:
             return eAB0_4[min_idx, max_idx]
-    else:
+    else: # Lower triangle only
+        if min_idx == max_idx:  # Same residue, no interaction
+            return 0.0
+        
         if cutoff == 6.4:
             return eAB0_6dot4[max_idx, min_idx] 
         else:
             return eAB0_4[max_idx, min_idx]
         
-def calcBJCEnergy(pdb, chains, resids, wt_aas, mut_aas, icodes=None):
+def calcBJCEnergy(pdb, chains, resids, wt_aas, mut_aas, icodes=None, solvent=True):
     """Calculate BJC energy for a PDB structure."""
     assert isinstance(pdb, (str, Atomic)), \
         'PDB must be a PDBID or an Atomic instance (e.g. AtomGroup).'
@@ -106,16 +161,103 @@ def calcBJCEnergy(pdb, chains, resids, wt_aas, mut_aas, icodes=None):
             wtBJCE = 0
             mutBJCE = 0
             for contact_res in contact_4:
-                wtBJCE += getBJCE(resname, contact_res, cutoff=4)
-                mutBJCE += getBJCE(mut_resname, contact_res, cutoff=4)
+                wtBJCE += getBJCE(resname, contact_res, cutoff=4, solvent=solvent)
+                mutBJCE += getBJCE(mut_resname, contact_res, cutoff=4, solvent=solvent)
             for contact_res in contact_6dot4:
-                wtBJCE += getBJCE(resname, contact_res, cutoff=6.4)
-                mutBJCE += getBJCE(mut_resname, contact_res, cutoff=6.4)
+                wtBJCE += getBJCE(resname, contact_res, cutoff=6.4, solvent=solvent)
+                mutBJCE += getBJCE(mut_resname, contact_res, cutoff=6.4, solvent=solvent)
             deltaBJCE = mutBJCE - wtBJCE
             features[i] = wtBJCE, mutBJCE, deltaBJCE
         except Exception as e:
             raise ValueError(f"Error in calcBJCEnergy: {str(e)}")
     return features
+
+def calcBJCEnergyFromFile(pdb, solvent=True, dump=False):
+    """Calculate BJC energy from a PDB file."""
+    assert isinstance(pdb, (str, Atomic)), \
+        'PDB must be a PDBID or an Atomic instance (e.g. AtomGroup).'
+    if isinstance(pdb, str):
+        pdb = parsePDB(pdb)
+    pdb = pdb.ca  # Use only CA atoms for contact calculation
+    
+    residues = list(pdb.protein.getHierView().iterResidues())
+    dtype = np.dtype([
+        ('residue', 'U50'), # Residue identifier (e.g., 'A_123A_GLY')
+        ('c4', 'U50'),  # Contact residues within 4A
+        ('c4_BJCE', 'U50'), # Contact residues within 4A with BJC energy
+        ('c6dot4', 'U50'),  # Contact residues within 6.4A
+        ('c6dot4_BJCE', 'U50'),  # Contact residues within 6.4A with BJC energy
+        ('BJCE_per_residue', 'f4') # BJC energy per residue
+    ])
+    report = np.zeros(len(residues), dtype=dtype)
+
+    for i, res in enumerate(residues):
+        resname = res.getResname()
+        chid = res.getChid()
+        resnum = res.getResnum()
+        icode = res.getIcode()
+        key = f'{chid}_{resnum}{icode}_{resname}'
+        try:
+            contact_4 = findNeighbors(res, 4, pdb)
+            # Filter out the contact residues
+            contact_4 = [c[1] for c in contact_4 if c[2] > 0]
+            # Find the contact residue names
+            c4_resname = [c.getResname() for c in contact_4]
+            c4_chid = [c.getChid() for c in contact_4]
+            c4_resnum = [c.getResnum() for c in contact_4]
+            c4_icode = [c.getIcode() for c in contact_4]
+            contact_4_value = [f'{c4_chid[i]}_{c4_resnum[i]}{c4_icode[i]}_{c4_resname[i]}' for i in range(len(c4_resname))]
+            
+            contact_6dot4 = findNeighbors(res, 6.4, pdb)
+            contact_6dot4 = [c[1] for c in contact_6dot4 if c[2] > 0]
+            contact_6dot4 = [c for c in contact_6dot4 if c not in contact_4]
+            c6dot4_resname = [c.getResname() for c in contact_6dot4]
+            c6dot4_chid = [c.getChid() for c in contact_6dot4]
+            c6dot4_resnum = [c.getResnum() for c in contact_6dot4]
+            c6dot4_icode = [c.getIcode() for c in contact_6dot4]
+            contact_6dot4_value = [f'{c6dot4_chid[i]}_{c6dot4_resnum[i]}{c6dot4_icode[i]}_{c6dot4_resname[i]}' for i in range(len(c6dot4_resname))]
+            # Calculate the BJC energy
+            c4_BJCE = []
+            c6dot4_BJCE = []
+            for contact_res in c4_resname:
+                c4_BJCE.append(getBJCE(resname, contact_res, cutoff=4, solvent=solvent))
+            for contact_res in c6dot4_resname:
+                c6dot4_BJCE.append(getBJCE(resname, contact_res, cutoff=6.4, solvent=solvent))
+
+            # LOGGER.info(f"Residue {key} has {len(contact_4_value)} contacts within 4A and {len(contact_6dot4_value)} contacts within 6.4A.")
+            report[i]['residue'] = key
+            report[i]['c4'] = ', '.join(contact_4_value)
+            report[i]['c4_BJCE'] = ', '.join(map(str, c4_BJCE))
+            report[i]['c6dot4'] = ', '.join(contact_6dot4_value)
+            report[i]['c6dot4_BJCE'] = ', '.join(map(str, c6dot4_BJCE))
+            report[i]['BJCE_per_residue'] = np.nansum(c4_BJCE) + np.nansum(c6dot4_BJCE)  # Total BJC energy per residue
+        except Exception as e:
+            # LOGGER.info(f"Error in calcBJCEnergyFromFile for residue {key}: {str(e)}")
+            report[i]['residue'] = key
+            report[i]['c4'] = ''
+            report[i]['c4_BJCE'] = ''
+            report[i]['c6dot4'] = ''
+            report[i]['c6dot4_BJCE'] = ''
+            report[i]['BJCE_per_residue'] = np.nan  # Set to NaN if error occurs
+    if dump:
+        # Dump the report to a file
+        title = pdb.getTitle() 
+        if solvent:
+            title = f"{title}_solvent" 
+        else: 
+            title = f"{title}_non-solvent"
+        output_file = f"{title}_BJC_energy_report.txt" if title else "BJC_energy_report.txt"
+        with open(output_file, 'w') as f:
+            # Write header
+            f.write('Residue\tC4_Contacts\tC4_BJCE\tC6.4_Contacts\tC6.4_BJCE\tBJCE_per_residue\n')
+            for row in report:
+                f.write('\t'.join(map(str, row)) + '\n')
+        LOGGER.info(f"BJC energy report saved to {output_file}")
+    
+    # Calculate BJCE of the whole structure
+    total_BJCE = np.nansum(report['BJCE_per_residue'])
+    LOGGER.info(f'Total BJC energy of the structure: {total_BJCE:.2f}')
+    return total_BJCE
 
 def calcAG(pdb, chain="all", cutoff=4.5, group_neighbor=[0, 1, 2], skip_neighbor=[1, 2, 3]):
     assert isinstance(pdb, (str, Atomic)), \

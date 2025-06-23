@@ -36,19 +36,19 @@ def split_data(feat_path, clstr_path,
     df_feat['UniProtID'] = df_feat['SAV_coords'].str.split().str[0]
     df_feat = df_feat.drop_duplicates(subset=['SAV_coords'])
 
-    _LOGGER.error('*'*50)
-    _LOGGER.error('Missing values in the dataframe:')
-    for i, feat_name in enumerate(df_feat.columns):
-        if df_feat[feat_name].isnull().sum() > 0:
-            _LOGGER.error('%s: \t\t %d' % (feat_name, df_feat[feat_name].isnull().sum()))
+    # _LOGGER.error('*'*50)
+    # _LOGGER.error('Missing values in the dataframe:')
+    # for i, feat_name in enumerate(df_feat.columns):
+    #     if df_feat[feat_name].isnull().sum() > 0:
+    #         _LOGGER.error('%s: \t\t %d' % (feat_name, df_feat[feat_name].isnull().sum()))
 
-    _LOGGER.error('Assigning the mean value of feature to the missing values')
+    # _LOGGER.error('Assigning the mean value of feature to the missing values')
     for feat_name in df_feat.columns:
         if df_feat[feat_name].isnull().sum() > 0:
             mean_val = df_feat[feat_name].mean()
             df_feat[feat_name] = df_feat[feat_name].fillna(mean_val)
-            _LOGGER.error('Assigning mean value to %s: %.2f' % (feat_name, mean_val))
-    _LOGGER.error('*'*50)
+    #         _LOGGER.error('Assigning mean value to %s: %.2f' % (feat_name, mean_val))
+    # _LOGGER.error('*'*50)
 
     n_UniProtID = len(df_feat['UniProtID'].unique())
     n_pathogenic, n_benign = df_feat.labels.value_counts()
@@ -72,11 +72,11 @@ def split_data(feat_path, clstr_path,
         df_clstr.loc[df_clstr['rep_member'] == _rep_member, 'member_ID'] += ',' + add_member
         df_clstr.loc[df_clstr['rep_member'] == _rep_member, 'n_members'] += add_n_member
 
-    for n_members, count in df_clstr.n_members.value_counts().items():
-        _LOGGER.error('%d members: %d clusters' % (n_members, count))
-    _LOGGER.error('No. UniProtID: %d, No. SAVs: %d, and No. clusters: %d' % (n_UniProtID, n_SAVs, n_clstr))
-    _LOGGER.error('No. pathogenic SAVs: %d and benign SAVs: %d' % (n_pathogenic, n_benign))
-    _LOGGER.error('*'*50)
+    # for n_members, count in df_clstr.n_members.value_counts().items():
+    #     _LOGGER.error('%d members: %d clusters' % (n_members, count))
+    # _LOGGER.error('No. UniProtID: %d, No. SAVs: %d, and No. clusters: %d' % (n_UniProtID, n_SAVs, n_clstr))
+    # _LOGGER.error('No. pathogenic SAVs: %d and benign SAVs: %d' % (n_pathogenic, n_benign))
+    # _LOGGER.error('*'*50)
 
     data = {}
     for i, row in df_clstr.iterrows():
@@ -106,12 +106,12 @@ def split_data(feat_path, clstr_path,
     for i in range(len(data_sorted)):
         if 'P29033' in data_sorted[i]['member_ID']:
             P29033 = data_sorted[i]
-            _LOGGER.error('> Deleting cluster P29033 from data_sorted')
+            # _LOGGER.error('> Deleting cluster P29033 from data_sorted')
             del data_sorted[i]
             n_clusters = len(data_sorted)
-            _LOGGER.error('No. clusters: %d', n_clusters)
-            _LOGGER.error('No. SAVs after deleting P29033: %d', n_SAVs - P29033['n_SAVs'])
-            _LOGGER.error('*'*50)
+            # _LOGGER.error('No. clusters: %d', n_clusters)
+            # _LOGGER.error('No. SAVs after deleting P29033: %d', n_SAVs - P29033['n_SAVs'])
+            # _LOGGER.error('*'*50)
             break
     test_cluster_IDs.append(P29033['cluster_IDs'])
     test_member_IDs.extend(P29033['member_ID'])
@@ -130,7 +130,7 @@ def split_data(feat_path, clstr_path,
             folds[fold][entity]['ratio'] = 0
             folds[fold][entity]['n_pathogenic'], folds[fold][entity]['n_benign'] = 0, 0
 
-    _LOGGER.error('> Adding cluster P29033 to the test set')
+    # _LOGGER.error('> Adding cluster P29033 to the test set')
     for fold in range(n_folds):
         folds[fold]['test']['n_SAVs'] += P29033['n_SAVs']
         folds[fold]['test']['n_members'] += P29033['n_members']
@@ -159,20 +159,21 @@ def split_data(feat_path, clstr_path,
                     folds[fold]['test']['n_clusters'] += 1
                     folds[fold]['test']['y'].extend(data_sorted[i]['y'])
             else:
-                _LOGGER.error('Test set percent = %.2f%% is larger than 10%%: Breaking the loop' % (test_percentage*100))
+                # _LOGGER.error('Test set percent = %.2f%% is larger than 10%%: Breaking the loop' % (test_percentage*100))
+                pass
                 break
         i += 1
 
-    _LOGGER.error('No. adding to test set: %d' % (len(test_indices)+1))
-    _LOGGER.error('Cluster IDs added to the test set: %s' % test_cluster_IDs)
-    _LOGGER.error('Member IDs added to the test set: %s' % test_member_IDs)
+    # _LOGGER.error('No. adding to test set: %d' % (len(test_indices)+1))
+    # _LOGGER.error('Cluster IDs added to the test set: %s' % test_cluster_IDs)
+    # _LOGGER.error('Member IDs added to the test set: %s' % test_member_IDs)
 
-    _LOGGER.error('> Delete test indices from data_sorted')
+    # _LOGGER.error('> Delete test indices from data_sorted')
     for i in sorted(test_indices, reverse=True):
         del data_sorted[i]
-    _LOGGER.error('No. clusters after deleting test indices: %d' % len(data_sorted))
-    _LOGGER.error('No. SAVs after deleting test indices: %d' % (n_SAVs - sum([data_sorted[i]['n_SAVs'] for i in test_indices])))
-    _LOGGER.error('*'*50)
+    # _LOGGER.error('No. clusters after deleting test indices: %d' % len(data_sorted))
+    # _LOGGER.error('No. SAVs after deleting test indices: %d' % (n_SAVs - sum([data_sorted[i]['n_SAVs'] for i in test_indices])))
+    # _LOGGER.error('*'*50)
 
     ####################
     # Adding clusters to the training set 
@@ -188,12 +189,12 @@ def split_data(feat_path, clstr_path,
     # We add it along with P04745 
     add_to_train = []
     _Q16874_SAVs = df_feat[df_feat['UniProtID'].isin(['Q16874', 'P55735', 'P57740', 'Q12769', 'Q9BW27'])]
-    if len(_Q16874_SAVs) > 0:
-        _LOGGER.error('> Adding cluster Q16874 P55735 P57740 Q12769 Q9BW27 to the training set')
-        _LOGGER.error('Q16874 SAVs: %d' % len(_Q16874_SAVs))
-        _LOGGER.error('Q16874 SAV coords: %s' % _Q16874_SAVs['SAV_coords'].values[0])
-        _LOGGER.error('Q16874 SAV labels: %d' % _Q16874_SAVs['labels'].values[0])
-        _LOGGER.error('*'*50)
+    # if len(_Q16874_SAVs) > 0:
+    #     _LOGGER.error('> Adding cluster Q16874 P55735 P57740 Q12769 Q9BW27 to the training set')
+    #     _LOGGER.error('Q16874 SAVs: %d' % len(_Q16874_SAVs))
+    #     _LOGGER.error('Q16874 SAV coords: %s' % _Q16874_SAVs['SAV_coords'].values[0])
+    #     _LOGGER.error('Q16874 SAV labels: %d' % _Q16874_SAVs['labels'].values[0])
+    #     _LOGGER.error('*'*50)
     ####################
     i = 0
     while i < len(data_sorted):
@@ -205,7 +206,7 @@ def split_data(feat_path, clstr_path,
         if current_percentage < val_percentage or fold == 4:
             # # _6 = ['Q16874', 'P04745']
             if 'P04745' in data_sorted[i]['member_ID'] :
-                _LOGGER.error('> Adding cluster P04745 to the validation set')
+                # _LOGGER.error('> Adding cluster P04745 to the validation set')
                 folds[fold]['val']['n_SAVs'] += len(_Q16874_SAVs)
                 folds[fold]['val']['n_members'] += 1
                 folds[fold]['val']['SAV_coords'].extend(_Q16874_SAVs['SAV_coords'].values)
@@ -269,7 +270,7 @@ def split_data(feat_path, clstr_path,
             folds[fold]['train']['n_SAVs'], folds[fold]['train']['percent'], folds[fold]['train']['n_pathogenic'], folds[fold]['train']['n_benign'], folds[fold]['train']['ratio'], folds[fold]['train']['n_clusters'], folds[fold]['train']['n_members'],
             folds[fold]['val']['n_SAVs'],   folds[fold]['val']['percent'],   folds[fold]['val']['n_pathogenic'],   folds[fold]['val']['n_benign'], folds[fold]['val']['ratio'], folds[fold]['val']['n_clusters'],   folds[fold]['val']['n_members'],
             folds[fold]['test']['n_SAVs'],  folds[fold]['test']['percent'],  folds[fold]['test']['n_pathogenic'],  folds[fold]['test']['n_benign'], folds[fold]['test']['ratio'], folds[fold]['test']['n_clusters'],  folds[fold]['test']['n_members'])
-        _LOGGER.error(msg)
+        # _LOGGER.error(msg)
 
     # ************************************************
     # remove_indices = []

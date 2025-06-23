@@ -48,7 +48,8 @@ def train_model(base_models,
     logging.error("Start Time = %s", current_time)
     use_all_gpus()
 
-    R20000_folds, R20000, test_knw, test_unk, input_shape = import_data(TANDEM_testSet)
+    R20000_folds, R20000, preprocess_feat, test_knw, test_unk, input_shape = import_data(TANDEM_testSet)
+
     SAV_coords, labels, features = test_knw
     VUS_coords, VUS_labels, VUS_features = test_unk
     labels = np.argmax(labels, axis=1)
@@ -247,7 +248,7 @@ def train_model(base_models,
 
         # Plot training history
         folds_history = [pd.read_csv(f'{model_dir}/history_fold_{j}.csv') for j in range(3)]
-        fig = plot_acc_loss_3fold_CV(folds_history, 'Training History', gene="")
+        fig = plot_acc_loss_3fold_CV(folds_history, 'Training History', name="")
         fig.savefig(f'{model_dir}/training_history.png')
 
         ###################### Save before and after training results ######################

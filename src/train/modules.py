@@ -7,6 +7,8 @@ import numpy as np
 # from tensorflow.data import Dataset
 import matplotlib.pyplot as plt
 
+from .model import DNN
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 # Assign using 10 CPUs
 # tf.config.threading.set_intra_op_parallelism_threads(10)
@@ -83,14 +85,32 @@ class Preprocessing:
 
         """
         labels = np.asarray(labels, dtype=int)
-        if n_classes != len(np.unique(labels)):
-            raise ValueError(f"n_classes is not equal to the number of unique labels: {len(np.unique(labels))}")
+        # if n_classes != len(np.unique(labels)):
+            # raise ValueError(f"n_classes is not equal to the number of unique labels: {len(np.unique(labels))}")
         
         one_hot = np.zeros((len(labels), n_classes))
         for i, label in enumerate(labels):
             one_hot[i, label] = 1
         return one_hot
 
+def get_architecture(cfg):
+    input_shape = cfg['model']['input']['n_neurons']
+    n_hidden = len(cfg['model']['hidden'])
+    output_shape = cfg['model']['output']['n_neurons']
+    n_hidden_neurons = [cfg['model']['hidden'][f'hidden_{i:02d}']['n_neurons'] for i in range(n_hidden)]
+    dropout = cfg['model']['hidden']['hidden_00']['dropout_rate']  # Assuming all hidden layers have the same dropout rate
+    if 'dropout_rate' in cfg['model']['hidden']['hidden_00']:
+        dropout = cfg['model']['hidden']['hidden_00']['dropout_rate']
+    else:
+        dropout = 0.2
+    return input_shape, n_hidden, output_shape, n_hidden_neurons, dropout
+
+def build_model_from_config(cfg, output_bias=None):
+    input_shape, n_hidden, output_shape, n_hidden_neurons, dropout = get_architecture(cfg)
+    model = DNN(input_shape, n_hidden, output_shape, output_bias, n_hidden_neurons, dropout)
+    model.build(input_shape=(None, input_shape))  # Explicitly build model
+    return model
+    
 def build_model(cfg, output_bias=None):
     """Build a neural network model based on the configuration file
     Args:
@@ -113,10 +133,10 @@ def build_model(cfg, output_bias=None):
         if hid_config['batch_norm']:
             Y = tf.keras.layers.BatchNormalization()(Y)
         Y = tf.keras.layers.Dropout(hid_config['dropout_rate'])(Y)
-
+    # bias_initializer = tf.keras.initializers.Constant(-0.45)
     # Add bias to the output layer
     if output_bias is not None:
-        output_bias = tf.keras.initializers.Constant(value=output_bias)
+        output_bias = tf.keras.initializers.Constant(value=output_bias.item())
         Y = tf.keras.layers.Dense(units=cfg['model']['output']['n_neurons'], activation=cfg['model']['output']['activation'], bias_initializer=output_bias, name='Output')(Y)
     else:
         Y = tf.keras.layers.Dense(units=cfg['model']['output']['n_neurons'], activation=cfg['model']['output']['activation'], name='Output')(Y)
@@ -197,9 +217,26 @@ class DelayedEarlyStopping(tf.keras.callbacks.EarlyStopping):
                     # _LOGGER.error(f"Epoch {self.best_epoch + 1}: best epoch")
                     self.model.set_weights(self.best_weights)
 
-    # def on_train_end(self, logs=None):
-    #     if self.stopped_epoch > 0:
-    #         _LOGGER.error(f"Epoch {self.stopped_epoch + 1}: early stopping")
+
+class BinaryF1Score(tf.keras.metrics.Metric):
+    def __init__(self, name='f1_score', **kwargs):
+        super(BinaryF1Score, self).__init__(name=name, **kwargs)
+        self.precision = tf.keras.metrics.Precision()
+        self.recall = tf.keras.metrics.Recall()
+
+    def update_state(self, y_true, y_pred, sample_weight=None):
+        y_pred = tf.round(y_pred)  # assumes sigmoid output
+        self.precision.update_state(y_true, y_pred, sample_weight)
+        self.recall.update_state(y_true, y_pred, sample_weight)
+
+    def result(self):
+        p = self.precision.result()
+        r = self.recall.result()
+        return 2 * ((p * r) / (p + r + tf.keras.backend.epsilon()))
+
+    def reset_states(self):
+        self.precision.reset_states()
+        self.recall.reset_states()
             
 # Create customized callbacks to record test accuracy and loss
 class Callback_CSVLogger(tf.keras.callbacks.Callback):
@@ -224,6 +261,7 @@ class Callback_CSVLogger(tf.keras.callbacks.Callback):
         self.name = name
         self.log_file = log_file
 
+    # tensorflow 1.17
     def on_train_begin(self, logs=None):
         self.metric_names = [] # [<Mean name=loss>, <CompileMetrics name=compile_metrics>]
         self.metric_names.append(self.model.metrics[0].name)
@@ -233,6 +271,20 @@ class Callback_CSVLogger(tf.keras.callbacks.Callback):
                 self.metric_names.append(metric)
             else:
                 self.metric_names.append(metric.name)
+
+    # tensorflow 1.15
+    # def on_train_begin(self, logs=None):
+    #     self.metric_names = []
+
+    #     # ✅ Check if metrics list is not empty
+    #     if self.model.metrics:
+    #         self.metric_names.append(self.model.metrics[0].name)
+    #         if hasattr(self.model.metrics[1], '_user_metrics'):
+    #             for metric in self.model.metrics[1]._user_metrics:
+    #                 if isinstance(metric, str):
+    #                     self.metric_names.append(metric)
+    #                 else:
+    #                     self.metric_names.append(metric.name)
 
     def on_epoch_end(self, epoch, logs=None):
         metrics_names = self.metric_names
@@ -287,24 +339,15 @@ def plot_acc_loss(folds, title, labels=[r'R20000$_{train}$', r'R20000$_{val}$'])
     # 5 folds for each
     fig, axes = plt.subplots(2, 5, figsize=(25, 10))
     fig.suptitle(title, fontsize=35)
-    # fig.supxlabel('Epoch', fontsize=25)
-    # fig
 
     for i, ax in enumerate(axes[0]):
         ax.plot(folds[i]['train_loss'], color='blue', linestyle='dashed', linewidth=2, label=labels[0])
         ax.plot(folds[i]['val_loss'], color='red', linestyle='solid', linewidth=2, label=labels[1])
-        # ax.plot(folds[i]['test_loss'], color='green', linestyle='solid', linewidth=2, label=r'R20000$_{test}$')
-        # ax.plot(folds[i]['GJB2_loss'], color='purple', linestyle='solid', linewidth=2, label=r'GJB2$_{test}$')
-        # ax.plot(folds[i]['RYR1_loss'], color='orange', linestyle='solid', linewidth=2, label=r'RYR1$_{test}$')
-
         ax.set_title('Split ' + str(i + 1), fontsize=20)
 
     for i, ax in enumerate(axes[1]):
         ax.plot(folds[i]['train_accuracy'], color='blue', linestyle='dashed', linewidth=2, label=labels[0])
         ax.plot(folds[i]['val_accuracy'], color='red', linestyle='solid', linewidth=2, label=labels[1])
-        # ax.plot(folds[i]['test_accuracy'], color='green', linestyle='solid', linewidth=2, label=r'R20000$_{test}$')
-        # ax.plot(folds[i]['GJB2_accuracy'], color='purple', linestyle='solid', linewidth=2, label=r'GJB2$_{test}$')
-        # ax.plot(folds[i]['RYR1_accuracy'], color='orange', linestyle='solid', linewidth=2, label=r'RYR1$_{test}$')
 
     # Set y labels
     axes[0, 0].set_ylabel('Loss', fontsize=25)
@@ -318,7 +361,6 @@ def plot_acc_loss(folds, title, labels=[r'R20000$_{train}$', r'R20000$_{val}$'])
         ax.tick_params(labelsize=15)
     for ax in axes.flatten(): # Grid y
         ax.grid(axis='y')
-    plt.show()
     return fig
 
 def plot_acc_loss_3fold_CV(folds, title, name='GJB2'):

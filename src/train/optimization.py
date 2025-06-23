@@ -14,6 +14,55 @@ from ..utils.settings import TANDEM_PKD1, CLUSTER, ROOT_DIR, RHAPSODY_FEATS
 from .config import model_config
 
 import logging
+
+def simple_training(seed=17):
+    NAME_OF_EXPERIMENT = 'Simple_training'
+    current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M")
+    log_dir = os.path.join(ROOT_DIR, 'logs', NAME_OF_EXPERIMENT, current_time)
+    os.makedirs(log_dir, exist_ok=True)
+    logging.basicConfig(filename=f'{log_dir}/log.txt', level=logging.ERROR, format='%(message)s')
+    logging.error("Start Time = %s", current_time)
+    ##################### 2. Set up feature set #####################
+    df_stats = pd.read_csv(FEAT_STATS)
+    t_sel_feats = df_stats.sort_values('ttest_rank').head(33)['feature'].values
+    sel_DYNfeats = [feat for feat in t_sel_feats if feat in dynamics_feat.keys()]
+    sel_STRfeats = [feat for feat in t_sel_feats if feat in structure_feat.keys()]
+    sel_SEQfeats = [feat for feat in t_sel_feats if feat in seq_feat.keys()]
+    t_sel_feats = sel_DYNfeats + sel_STRfeats + sel_SEQfeats
+    logging.error("*"*50)
+    logging.error("Feature selection based on ttest rank")
+    logging.error(FEAT_STATS)
+    logging.error(f"Feature set: {t_sel_feats}")
+
+    ##################### 2. Set up feature files #####################
+    logging.error("*"*50)
+    logging.error("Feature files")
+    logging.error(f"R20000: {TANDEM_R20000}")
+    logging.error(f"GJB2: {TANDEM_GJB2}")
+    logging.error(f"RYR1: {TANDEM_RYR1}")
+    logging.error(f"Cluster path: {CLUSTER}")
+
+    logging.error("Description: TANDEM feature set for R20000, GJB2, and RYR1")
+    logging.error("Training DNN with 33 features ranked by ttest")
+    logging.error("*"*50)
+
+    ##################### 3. Set up data #####################
+    use_all_gpus()
+    folds, R20000, preprocess_feat = getR20000(TANDEM_R20000, CLUSTER, feat_names=t_sel_feats)
+    GJB2_knw, GJB2_unk = getTestset(TANDEM_GJB2, t_sel_feats, preprocess_feat)
+    RYR1_knw, RYR1_unk = getTestset(TANDEM_RYR1, t_sel_feats, preprocess_feat)
+    input_shape = R20000[2].shape[1]
+
+    patience = 50
+    n_hidden = 5
+    cfg = get_config(input_shape, n_hidden=n_hidden, patience=patience, dropout_rate=0.0)
+
+    logging.error("seed = %d" % seed)
+    train_model(folds, cfg, log_dir, GJB2_knw, GJB2_unk, RYR1_knw, RYR1_unk, seed=seed)
+    logging.error("End Time = %s", datetime.datetime.now().strftime("%Y%m%d-%H%M")) # Write to log
+    logging.error("#"*50) # Write to log
+
+
 def test_numberOflayers_TANDEM(seed=17):
     """We use the ttest ranking method to select 33 features from the feature set."""
     ##################### 1. Set up logging and experiment name #####################

@@ -4,7 +4,8 @@ import logging
 import pandas as pd
 import numpy as np
 import random
-from .modules import build_model, np_to_dataset, build_optimizer, Preprocessing, plot_acc_loss, DelayedEarlyStopping, Callback_CSVLogger
+from .modules import Preprocessing, DelayedEarlyStopping, Callback_CSVLogger, BinaryF1Score
+from .modules import build_model, np_to_dataset, build_optimizer, plot_acc_loss, build_model_from_config
 from .split_data import split_data
 from .config import model_config
 from tensorflow.keras.callbacks import ModelCheckpoint
@@ -36,11 +37,12 @@ def getR20000(feat_path, clstr_path, feat_names, folder=None):
     df = pd.read_csv(feat_path)
     # Split data into 5 folds
     folds = split_data(feat_path, clstr_path)
-
+    
     if folder:
         os.makedirs(folder, exist_ok=True)
         plot_label_ratio(folds, folder)
-
+    _LOGGER.error("Load R20000 dataset")
+    
     SAV_coords = df['SAV_coords'].values
     features = df[feat_names].values
     preprocess_feat = Preprocessing(features)
@@ -129,7 +131,7 @@ def plot_label_ratio(folds, folder):
     plt.close()
     _LOGGER.error("Label ratio plot saved to %s", out) # Write to log
 
-def get_config(input_shape, n_hidden=5, patience=50, dropout_rate=0., 
+def get_config(input_shape=33, n_hidden=5, patience=50, dropout_rate=0., 
                n_neuron_per_hidden=None, n_neuron_last_hidden=None):
     cfg = model_config()
     cfg.model.input.n_neurons = input_shape
@@ -204,7 +206,13 @@ def train_model(folds, cfg, log_dir,
 
         # Build model
         model = build_model(cfg, initial_biase)
-        _LOGGER.error(f"Number of parameters: {model.count_params()}") if i == 0 else None
+        # model = build_model_from_config(cfg, initial_biase)
+        # if i == 0:
+        #     _LOGGER.error("Model Summary for Fold %d:", i+1)
+        #     input = tf.random.normal((1, cfg['model']['input']['n_neurons']))
+        #     output = model(input)
+        #     model.summary(print_fn=lambda x: _LOGGER.error(x))
+        # _LOGGER.error(f"Number of parameters: {model.count_params()}") if i == 0 else None
 
         ### Setting
         # Callbacks
@@ -235,7 +243,8 @@ def train_model(folds, cfg, log_dir,
                       metrics=['accuracy', 
                                tf.keras.metrics.AUC(name='auc'), 
                                tf.keras.metrics.Precision(name='precision'), 
-                               tf.keras.metrics.Recall(name='recall')
+                               tf.keras.metrics.Recall(name='recall'),
+                               BinaryF1Score(name='f1_score')
                             ]
                 )
 
@@ -267,20 +276,21 @@ def train_model(folds, cfg, log_dir,
         RYR1_notnan_rs = model.evaluate(RYR1_notnan_ds)
 
         evaluations[i] = {
-            'val_loss': val_rs[0], 'val_accuracy': val_rs[1], 'val_auc': val_rs[2], 'val_precision': val_rs[3], 'val_recall': val_rs[4],
-            'test_loss': test_rs[0], 'test_accuracy': test_rs[1], 'test_auc': test_rs[2], 'test_precision': test_rs[3], 'test_recall': test_rs[4],
-            'GJB2_notnan_loss': GJB2_notnan_rs[0], 'GJB2_notnan_accuracy': GJB2_notnan_rs[1], 'GJB2_notnan_auc': GJB2_notnan_rs[2], 'GJB2_notnan_precision': GJB2_notnan_rs[3], 'GJB2_notnan_recall': GJB2_notnan_rs[4],
-            'RYR1_notnan_loss': RYR1_notnan_rs[0], 'RYR1_notnan_accuracy': RYR1_notnan_rs[1], 'RYR1_notnan_auc': RYR1_notnan_rs[2], 'RYR1_notnan_precision': RYR1_notnan_rs[3], 'RYR1_notnan_recall': RYR1_notnan_rs[4],
+            'val_loss': val_rs[0], 'val_accuracy': val_rs[1], 'val_auc': val_rs[2], 'val_precision': val_rs[3], 'val_recall': val_rs[4], 'val_f1': val_rs[5],
+            'test_loss': test_rs[0], 'test_accuracy': test_rs[1], 'test_auc': test_rs[2], 'test_precision': test_rs[3], 'test_recall': test_rs[4], 'test_f1': test_rs[5],
+            'GJB2_notnan_loss': GJB2_notnan_rs[0], 'GJB2_notnan_accuracy': GJB2_notnan_rs[1], 'GJB2_notnan_auc': GJB2_notnan_rs[2], 'GJB2_notnan_precision': GJB2_notnan_rs[3], 'GJB2_notnan_recall': GJB2_notnan_rs[4], 'GJB2_notnan_f1': GJB2_notnan_rs[5],
+            'RYR1_notnan_loss': RYR1_notnan_rs[0], 'RYR1_notnan_accuracy': RYR1_notnan_rs[1], 'RYR1_notnan_auc': RYR1_notnan_rs[2], 'RYR1_notnan_precision': RYR1_notnan_rs[3], 'RYR1_notnan_recall': RYR1_notnan_rs[4], 'RYR1_notnan_f1': RYR1_notnan_rs[5],
         }
-        msg = "Fold %d - val_loss: %.2f, val_accuracy: %.1f%%, val_auc: %.2f, val_precision: %.2f, val_recall: %.2f, " + \
-                "test_loss: %.2f, test_accuracy: %.1f%%, test_auc: %.2f, test_precision: %.2f, test_recall: %.2f, " + \
-                "RYR1_loss: %.2f, RYR1_accuracy: %.1f%%, RYR1_auc: %.2f, RYR1_precision: %.2f, RYR1_recall: %.2f, " + \
-                "GJB2_loss: %.2f, GJB2_accuracy: %.1f%%, GJB2_auc: %.2f, GJB2_precision: %.2f, GJB2_recall: %.2f"
-        _LOGGER.error(msg, i+1, val_rs[0], val_rs[1] * 100, val_rs[2], val_rs[3], val_rs[4],
-                                test_rs[0], test_rs[1] * 100, test_rs[2], test_rs[3], test_rs[4],
-                                RYR1_notnan_rs[0], RYR1_notnan_rs[1] * 100, RYR1_notnan_rs[2], RYR1_notnan_rs[3], RYR1_notnan_rs[4],
-                                GJB2_notnan_rs[0], GJB2_notnan_rs[1] * 100, GJB2_notnan_rs[2], GJB2_notnan_rs[3], GJB2_notnan_rs[4])
-        model.save(f'{log_dir}/model_fold_{i+1}.h5')
+        msg = "Fold %d - val_loss: %.2f, val_accuracy: %.1f%%, val_auc: %.2f, val_precision: %.2f, val_recall: %.2f, val_f1: %.2f, " + \
+                "test_loss: %.2f, test_accuracy: %.1f%%, test_auc: %.2f, test_precision: %.2f, test_recall: %.2f, test_f1: %.2f, " + \
+                "RYR1_loss: %.2f, RYR1_accuracy: %.1f%%, RYR1_auc: %.2f, RYR1_precision: %.2f, RYR1_recall: %.2f, GJB2_notnan_f1: %.2f, " + \
+                "GJB2_loss: %.2f, GJB2_accuracy: %.1f%%, GJB2_auc: %.2f, GJB2_precision: %.2f, GJB2_recall: %.2f, RYR1_notnan_f1: %.2f"
+        _LOGGER.error(msg, i+1, val_rs[0], val_rs[1] * 100, val_rs[2], val_rs[3], val_rs[4], val_rs[5],
+                                test_rs[0], test_rs[1] * 100, test_rs[2], test_rs[3], test_rs[4], test_rs[5], 
+                                RYR1_notnan_rs[0], RYR1_notnan_rs[1] * 100, RYR1_notnan_rs[2], RYR1_notnan_rs[3], RYR1_notnan_rs[4], GJB2_notnan_rs[5],
+                                GJB2_notnan_rs[0], GJB2_notnan_rs[1] * 100, GJB2_notnan_rs[2], GJB2_notnan_rs[3], GJB2_notnan_rs[4], RYR1_notnan_rs[5])
+        # model.save(f'{log_dir}/model_fold_{i+1}.h5')
+        model.save(f'{log_dir}/model_fold_{i+1}')
         models.append(model)
 
     df_evaluations = pd.DataFrame(evaluations).T

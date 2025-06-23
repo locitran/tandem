@@ -23,6 +23,8 @@ bash scripts/download_consurf_db.sh data/consurf/db # 2.5G, ~2m
 # Please skip this database for now
 # We will download this database later
 bash scripts/download_uniref90.sh data/consurf # 90G, ~127m
+# Consider downloading uniref50 instead of uniref90 due to the size
+bash scripts/download_uniref50.sh data/consurf # 90G, ~127m
 ```
 After this step, we will have `path/to/tandem//data/pfamdb` folder and `path/to/tandem/data/consurf/db/2024-10-08` folder. Make sure you have the correct path to these databases.
 
