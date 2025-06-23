@@ -1,6 +1,6 @@
-This document is to explain transfer learning process. The demo code is in `test/train.py`.
+This document is to explain transfer learning process. The demo code is in `test/transfer_learning.py`.
 
-Assume you are in the root directory `./tandem`, run the code by `python test/train.py`.
+Assume you are in the root directory `./tandem`, run the code by `python test/transfer_learning.py`.
 
 # 1. Input file 
 
