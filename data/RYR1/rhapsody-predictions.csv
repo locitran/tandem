@@ -1,4 +1,4 @@
-SAV_coords,score,prob,class,pred,labels,correct
+SAV_coords,score,prob,class,preds,labels,correct
 P21817 35 C R,0.935,0.868,deleterious,1.0,1.0,1.0
 P21817 44 R C,0.8,0.657,deleterious,1.0,1.0,1.0
 P21817 163 R C,0.839,0.716,deleterious,1.0,1.0,1.0

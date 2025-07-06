@@ -289,8 +289,8 @@ def train_model(folds, cfg, log_dir,
                                 test_rs[0], test_rs[1] * 100, test_rs[2], test_rs[3], test_rs[4], test_rs[5], 
                                 RYR1_notnan_rs[0], RYR1_notnan_rs[1] * 100, RYR1_notnan_rs[2], RYR1_notnan_rs[3], RYR1_notnan_rs[4], GJB2_notnan_rs[5],
                                 GJB2_notnan_rs[0], GJB2_notnan_rs[1] * 100, GJB2_notnan_rs[2], GJB2_notnan_rs[3], GJB2_notnan_rs[4], RYR1_notnan_rs[5])
-        # model.save(f'{log_dir}/model_fold_{i+1}.h5')
-        model.save(f'{log_dir}/model_fold_{i+1}')
+        model.save(f'{log_dir}/model_fold_{i+1}.h5')
+        # model.save(f'{log_dir}/model_fold_{i+1}')
         models.append(model)
 
     df_evaluations = pd.DataFrame(evaluations).T

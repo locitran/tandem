@@ -2,8 +2,7 @@ import os
 import logging
 import requests
 import urllib.request
-import traceback
-from prody import LOGGER
+from .utils.logger import LOGGER
 
 __all__ = ['pdb_summary', 'fetchPDB', 'fetchPDB_BiologicalAssembly']
 
@@ -82,7 +81,46 @@ def uniprot_sequence(uniprotACC, outdir: str = None):
         fasta_lines = [line.strip() for line in fasta_lines if line.strip() != '']
         seq = ''.join(fasta_lines[1:])
         return seq
-   
+
+def fetch_fasta(accs, **kwargs):
+    """
+    Fetch one or multiple UniProt sequences and save into a single FASTA file.
+    
+    Parameters:
+    - accs: str or list of str, UniProt accession(s)
+    - folder: str, output folder (default: '.')
+    - outname: str, output filename (default: 'output.fasta')
+    - refresh: bool, whether to force re-download even if file exists (default: False)
+    
+    Returns:
+    - Output FASTA file path
+    """
+    
+    if isinstance(accs, str):
+        accs = [accs]
+    
+    folder = kwargs.get('folder', '.')
+    filename = kwargs.get('filename', 'output')
+    refresh = kwargs.get('refresh', False)
+    os.makedirs(folder, exist_ok=True)
+    
+    output_path = os.path.join(folder, f'{filename}.fasta')
+    if os.path.exists(output_path) and not refresh:
+        LOGGER.info(f"{output_path} already exists (use refresh=True to overwrite).")
+        return output_path
+    
+    with open(output_path, 'w') as f_out:
+        for acc in accs:
+            url = f"https://rest.uniprot.org/uniprotkb/{acc}.fasta"
+            response = requests.get(url)
+            if response.status_code == 200:
+                f_out.write(response.text)
+                LOGGER.info(f"Fetched: {acc}")
+            else:
+                LOGGER.info(f"Failed: {acc} (HTTP {response.status_code})")
+    LOGGER.info(f"\n✅ Saved to: {output_path}")
+    return output_path
+
 def fetchAF2(acc, **kwargs):
     """Fetch a PDB file from AlphaFold2 database."""
     

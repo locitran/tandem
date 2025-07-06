@@ -5,8 +5,7 @@ import os, re
 from datetime import datetime
 from datetime import date
 import time
-from prody import LOGGER
-
+from ..utils.logger import LOGGER
 basedir = os.path.dirname(os.path.abspath(__file__))
 
 def run(

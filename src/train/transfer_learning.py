@@ -13,7 +13,7 @@ from .run import getR20000, getTestset
 from ..utils.settings import FEAT_STATS, dynamics_feat, structure_feat, seq_feat
 from ..utils.settings import TANDEM_R20000, TANDEM_GJB2, TANDEM_RYR1, TANDEM_PKD1
 from ..utils.settings import ROOT_DIR, CLUSTER
-from .modules import np_to_dataset, Preprocessing, plot_acc_loss_3fold_CV, Callback_CSVLogger, DelayedEarlyStopping, build_optimizer
+from .modules import np_to_dataset, Preprocessing, plot_acc_loss_3fold_CV, Callback_CSVLogger, DelayedEarlyStopping, build_optimizer, BinaryF1Score
 from .config import model_config
 
 LOGGER = logging.getLogger(__name__)
@@ -88,11 +88,11 @@ def train_model(base_models,
     df_VUS_prob_list = []
     df_VUS_pred_list = []
 
-    df_cols = ['R20000_val_loss', 'R20000_val_accuracy',  'R20000_val_auc', 'R20000_val_precision', 'R20000_val_recall',
-               'R20000_test_loss', 'R20000_test_accuracy', 'R20000_test_auc', 'R20000_test_precision', 'R20000_test_recall',
-               'val_loss', 'val_accuracy', 'val_auc', 'val_precision', 'val_recall',
-               'test_loss', 'test_accuracy', 'test_auc', 'test_precision', 'test_recall',
-               'knw_loss', 'knw_accuracy', 'knw_auc', 'knw_precision', 'knw_recall',
+    df_cols = ['R20000_val_loss', 'R20000_val_accuracy',  'R20000_val_auc', 'R20000_val_precision', 'R20000_val_recall', 'R20000_val_f1',
+               'R20000_test_loss', 'R20000_test_accuracy', 'R20000_test_auc', 'R20000_test_precision', 'R20000_test_recall', 'R20000_test_f1',
+               'val_loss', 'val_accuracy', 'val_auc', 'val_precision', 'val_recall', 'val_f1',
+               'test_loss', 'test_accuracy', 'test_auc', 'test_precision', 'test_recall', 'test_f1',
+               'knw_loss', 'knw_accuracy', 'knw_auc', 'knw_precision', 'knw_recall', 'knw_f1',
                ]
     
     baseline = pd.DataFrame(columns=df_cols)
@@ -143,6 +143,18 @@ def train_model(base_models,
             early_stopping = DelayedEarlyStopping(**cfg.training.callbacks.EarlyStopping)
             models = [os.path.join(base_models, f'model_fold_{i}.h5') for i in range(1, 6)]
             model = tf.keras.models.load_model(models[model_idx])
+            
+            # Optimizer
+            optimizer = build_optimizer(cfg)
+            model.compile(optimizer=optimizer, loss=cfg.training.loss, 
+                metrics=['accuracy', 
+                        tf.keras.metrics.AUC(name='auc'), 
+                        tf.keras.metrics.Precision(name='precision'), 
+                        tf.keras.metrics.Recall(name='recall'),
+                        BinaryF1Score(name='f1_score')
+                    ]
+            )
+            
             ### Evaluation before training
             before_R20000_val_performance = model.evaluate(R20000_val_ds)
             before_R20000_test_performance = model.evaluate(R20000_test_ds)
@@ -151,14 +163,6 @@ def train_model(base_models,
             # Add evaluation of testset before split
             before_knw_performance = model.evaluate(knw_ds)
 
-            # Optimizer
-            optimizer = build_optimizer(cfg)
-            # compile more metrics: accuracy, auc, f1-score, precision, recall
-            model.compile(optimizer=optimizer, loss=cfg.training.loss, 
-                            metrics=['accuracy', 
-                                    tf.keras.metrics.AUC(name='auc'), 
-                                    tf.keras.metrics.Precision(name='precision'), 
-                                    tf.keras.metrics.Recall(name='recall')])
             model.fit(
                 train_ds,
                 validation_data=val_ds,
@@ -177,33 +181,48 @@ def train_model(base_models,
             after_knw_performance = model.evaluate(knw_ds)
 
             before_train[split_idx] = {
-                'R20000_val_loss': before_R20000_val_performance[0], 'R20000_val_accuracy': before_R20000_val_performance[1], 'R20000_val_auc': before_R20000_val_performance[2], 'R20000_val_precision': before_R20000_val_performance[3], 'R20000_val_recall': before_R20000_val_performance[4],
-                'R20000_test_loss': before_R20000_test_performance[0], 'R20000_test_accuracy': before_R20000_test_performance[1], 'R20000_test_auc': before_R20000_test_performance[2], 'R20000_test_precision': before_R20000_test_performance[3], 'R20000_test_recall': before_R20000_test_performance[4],
-                'val_loss': before_val_performance[0], 'val_accuracy': before_val_performance[1], 'val_auc': before_val_performance[2], 'val_precision': before_val_performance[3], 'val_recall': before_val_performance[4],
-                'test_loss': before_test_performance[0], 'test_accuracy': before_test_performance[1], 'test_auc': before_test_performance[2], 'test_precision': before_test_performance[3], 'test_recall': before_test_performance[4],
-                'knw_loss': before_knw_performance[0], 'knw_accuracy': before_knw_performance[1], 'knw_auc': before_knw_performance[2], 'knw_precision': before_knw_performance[3], 'knw_recall': before_knw_performance[4],
+                'R20000_val_loss': before_R20000_val_performance[0], 'R20000_val_accuracy': before_R20000_val_performance[1], 'R20000_val_auc': before_R20000_val_performance[2], 'R20000_val_precision': before_R20000_val_performance[3], 'R20000_val_recall': before_R20000_val_performance[4],  'R20000_val_f1': before_R20000_val_performance[5], 
+                'R20000_test_loss': before_R20000_test_performance[0], 'R20000_test_accuracy': before_R20000_test_performance[1], 'R20000_test_auc': before_R20000_test_performance[2], 'R20000_test_precision': before_R20000_test_performance[3], 'R20000_test_recall': before_R20000_test_performance[4], 'R20000_test_f1': before_R20000_test_performance[5],
+                'val_loss': before_val_performance[0], 'val_accuracy': before_val_performance[1], 'val_auc': before_val_performance[2], 'val_precision': before_val_performance[3], 'val_recall': before_val_performance[4], 'val_f1': before_val_performance[5],
+                'test_loss': before_test_performance[0], 'test_accuracy': before_test_performance[1], 'test_auc': before_test_performance[2], 'test_precision': before_test_performance[3], 'test_recall': before_test_performance[4], 'test_f1': before_test_performance[5],
+                'knw_loss': before_knw_performance[0], 'knw_accuracy': before_knw_performance[1], 'knw_auc': before_knw_performance[2], 'knw_precision': before_knw_performance[3], 'knw_recall': before_knw_performance[4], 'knw_f1': before_knw_performance[5],
             }
             after_train[split_idx] = {
-                'R20000_val_loss': after_R20000_val_performance[0], 'R20000_val_accuracy': after_R20000_val_performance[1], 'R20000_val_auc': after_R20000_val_performance[2], 'R20000_val_precision': after_R20000_val_performance[3], 'R20000_val_recall': after_R20000_val_performance[4],
-                'R20000_test_loss': after_R20000_test_performance[0], 'R20000_test_accuracy': after_R20000_test_performance[1], 'R20000_test_auc': after_R20000_test_performance[2], 'R20000_test_precision': after_R20000_test_performance[3], 'R20000_test_recall': after_R20000_test_performance[4],
-                'val_loss': after_val_performance[0], 'val_accuracy': after_val_performance[1], 'val_auc': after_val_performance[2], 'val_precision': after_val_performance[3], 'val_recall': after_val_performance[4],
-                'test_loss': after_test_performance[0], 'test_accuracy': after_test_performance[1], 'test_auc': after_test_performance[2], 'test_precision': after_test_performance[3], 'test_recall': after_test_performance[4],
-                'knw_loss': after_knw_performance[0], 'knw_accuracy': after_knw_performance[1], 'knw_auc': after_knw_performance[2], 'knw_precision': after_knw_performance[3], 'knw_recall': after_knw_performance[4],
+                'R20000_val_loss': after_R20000_val_performance[0], 'R20000_val_accuracy': after_R20000_val_performance[1], 'R20000_val_auc': after_R20000_val_performance[2], 'R20000_val_precision': after_R20000_val_performance[3], 'R20000_val_recall': after_R20000_val_performance[4], 'R20000_val_f1': after_R20000_val_performance[5],
+                'R20000_test_loss': after_R20000_test_performance[0], 'R20000_test_accuracy': after_R20000_test_performance[1], 'R20000_test_auc': after_R20000_test_performance[2], 'R20000_test_precision': after_R20000_test_performance[3], 'R20000_test_recall': after_R20000_test_performance[4], 'R20000_test_f1': after_R20000_test_performance[5],
+                'val_loss': after_val_performance[0], 'val_accuracy': after_val_performance[1], 'val_auc': after_val_performance[2], 'val_precision': after_val_performance[3], 'val_recall': after_val_performance[4], 'val_f1': after_val_performance[5],
+                'test_loss': after_test_performance[0], 'test_accuracy': after_test_performance[1], 'test_auc': after_test_performance[2], 'test_precision': after_test_performance[3], 'test_recall': after_test_performance[4], 'test_f1': after_test_performance[5],
+                'knw_loss': after_knw_performance[0], 'knw_accuracy': after_knw_performance[1], 'knw_auc': after_knw_performance[2], 'knw_precision': after_knw_performance[3], 'knw_recall': after_knw_performance[4], 'knw_f1': after_knw_performance[5],
             }
-            logging.error("Fold %d before - R20000_val_loss: %.2f, R20000_val_accuracy: %.2f%%, R20000_val_auc: %.2f, R20000_val_precision: %.2f, R20000_val_recall: %.2f, R20000_test_loss: %.2f, R20000_test_accuracy: %.2f%%, R20000_test_auc: %.2f, R20000_test_precision: %.2f, R20000_test_recall: %.2f, val_loss: %.2f, val_accuracy: %.2f%%, val_auc: %.2f, val_precision: %.2f, val_recall: %.2f, test_loss: %.2f, test_accuracy: %.2f%%, test_auc: %.2f, test_precision: %.2f, test_recall: %.2f, knw_loss: %.2f, knw_accuracy: %.2f%%, knw_auc: %.2f, knw_precision: %.2f, knw_recall: %.2f",
-                          split_idx+1, 
-                          before_R20000_val_performance[0], before_R20000_val_performance[1]*100, before_R20000_val_performance[2], before_R20000_val_performance[3], before_R20000_val_performance[4],
-                          before_R20000_test_performance[0], before_R20000_test_performance[1]*100, before_R20000_test_performance[2], before_R20000_test_performance[3], before_R20000_test_performance[4],
-                          before_val_performance[0], before_val_performance[1]*100, before_val_performance[2], before_val_performance[3], before_val_performance[4],
-                          before_test_performance[0], before_test_performance[1]*100, before_test_performance[2], before_test_performance[3], before_test_performance[4],
-                          before_knw_performance[0], before_knw_performance[1]*100, before_knw_performance[2], before_knw_performance[3], before_knw_performance[4])
-            logging.error("Fold %d after - R20000_val_loss: %.2f, R20000_val_accuracy: %.2f%%, R20000_val_auc: %.2f, R20000_val_precision: %.2f, R20000_val_recall: %.2f, R20000_test_loss: %.2f, R20000_test_accuracy: %.2f%%, R20000_test_auc: %.2f, R20000_test_precision: %.2f, R20000_test_recall: %.2f, val_loss: %.2f, val_accuracy: %.2f%%, val_auc: %.2f, val_precision: %.2f, val_recall: %.2f, test_loss: %.2f, test_accuracy: %.2f%%, test_auc: %.2f, test_precision: %.2f, test_recall: %.2f, knw_loss: %.2f, knw_accuracy: %.2f%%, knw_auc: %.2f, knw_precision: %.2f, knw_recall: %.2f",
-                          split_idx+1,
-                          after_R20000_val_performance[0], after_R20000_val_performance[1]*100, after_R20000_val_performance[2], after_R20000_val_performance[3], after_R20000_val_performance[4],
-                          after_R20000_test_performance[0], after_R20000_test_performance[1]*100, after_R20000_test_performance[2], after_R20000_test_performance[3], after_R20000_test_performance[4],
-                          after_val_performance[0], after_val_performance[1]*100, after_val_performance[2], after_val_performance[3], after_val_performance[4],
-                          after_test_performance[0], after_test_performance[1]*100, after_test_performance[2], after_test_performance[3], after_test_performance[4],
-                          after_knw_performance[0], after_knw_performance[1]*100, after_knw_performance[2], after_knw_performance[3], after_knw_performance[4])
+            # logging.error("Fold %d before - R20000_val_loss: %.2f, R20000_val_accuracy: %.2f%%, R20000_val_auc: %.2f, R20000_val_precision: %.2f, R20000_val_recall: %.2f, R20000_test_loss: %.2f, R20000_test_accuracy: %.2f%%, R20000_test_auc: %.2f, R20000_test_precision: %.2f, R20000_test_recall: %.2f, val_loss: %.2f, val_accuracy: %.2f%%, val_auc: %.2f, val_precision: %.2f, val_recall: %.2f, test_loss: %.2f, test_accuracy: %.2f%%, test_auc: %.2f, test_precision: %.2f, test_recall: %.2f, knw_loss: %.2f, knw_accuracy: %.2f%%, knw_auc: %.2f, knw_precision: %.2f, knw_recall: %.2f",
+            #               split_idx+1, 
+            #               before_R20000_val_performance[0], before_R20000_val_performance[1]*100, before_R20000_val_performance[2], before_R20000_val_performance[3], before_R20000_val_performance[4],
+            #               before_R20000_test_performance[0], before_R20000_test_performance[1]*100, before_R20000_test_performance[2], before_R20000_test_performance[3], before_R20000_test_performance[4],
+            #               before_val_performance[0], before_val_performance[1]*100, before_val_performance[2], before_val_performance[3], before_val_performance[4],
+            #               before_test_performance[0], before_test_performance[1]*100, before_test_performance[2], before_test_performance[3], before_test_performance[4],
+            #               before_knw_performance[0], before_knw_performance[1]*100, before_knw_performance[2], before_knw_performance[3], before_knw_performance[4])
+            # logging.error("Fold %d after - R20000_val_loss: %.2f, R20000_val_accuracy: %.2f%%, R20000_val_auc: %.2f, R20000_val_precision: %.2f, R20000_val_recall: %.2f, R20000_test_loss: %.2f, R20000_test_accuracy: %.2f%%, R20000_test_auc: %.2f, R20000_test_precision: %.2f, R20000_test_recall: %.2f, val_loss: %.2f, val_accuracy: %.2f%%, val_auc: %.2f, val_precision: %.2f, val_recall: %.2f, test_loss: %.2f, test_accuracy: %.2f%%, test_auc: %.2f, test_precision: %.2f, test_recall: %.2f, knw_loss: %.2f, knw_accuracy: %.2f%%, knw_auc: %.2f, knw_precision: %.2f, knw_recall: %.2f",
+            #               split_idx+1,
+            #               after_R20000_val_performance[0], after_R20000_val_performance[1]*100, after_R20000_val_performance[2], after_R20000_val_performance[3], after_R20000_val_performance[4],
+            #               after_R20000_test_performance[0], after_R20000_test_performance[1]*100, after_R20000_test_performance[2], after_R20000_test_performance[3], after_R20000_test_performance[4],
+            #               after_val_performance[0], after_val_performance[1]*100, after_val_performance[2], after_val_performance[3], after_val_performance[4],
+            #               after_test_performance[0], after_test_performance[1]*100, after_test_performance[2], after_test_performance[3], after_test_performance[4],
+            #               after_knw_performance[0], after_knw_performance[1]*100, after_knw_performance[2], after_knw_performance[3], after_knw_performance[4])
+            
+            logging.error("Fold %d before - R20000_val_loss: %.2f, R20000_val_accuracy: %.2f%%, R20000_val_auc: %.2f, R20000_val_precision: %.2f, R20000_val_recall: %.2f, R20000_val_f1: %.2f, R20000_test_loss: %.2f, R20000_test_accuracy: %.2f%%, R20000_test_auc: %.2f, R20000_test_precision: %.2f, R20000_test_recall: %.2f, R20000_test_f1: %.2f, val_loss: %.2f, val_accuracy: %.2f%%, val_auc: %.2f, val_precision: %.2f, val_recall: %.2f, val_f1: %.2f, test_loss: %.2f, test_accuracy: %.2f%%, test_auc: %.2f, test_precision: %.2f, test_recall: %.2f, test_f1: %.2f, knw_loss: %.2f, knw_accuracy: %.2f%%, knw_auc: %.2f, knw_precision: %.2f, knw_recall: %.2f, knw_f1: %.2f",
+              split_idx+1, 
+              before_R20000_val_performance[0], before_R20000_val_performance[1]*100, before_R20000_val_performance[2], before_R20000_val_performance[3], before_R20000_val_performance[4], before_R20000_val_performance[5],
+              before_R20000_test_performance[0], before_R20000_test_performance[1]*100, before_R20000_test_performance[2], before_R20000_test_performance[3], before_R20000_test_performance[4], before_R20000_test_performance[5],
+              before_val_performance[0], before_val_performance[1]*100, before_val_performance[2], before_val_performance[3], before_val_performance[4], before_val_performance[5],
+              before_test_performance[0], before_test_performance[1]*100, before_test_performance[2], before_test_performance[3], before_test_performance[4], before_test_performance[5],
+              before_knw_performance[0], before_knw_performance[1]*100, before_knw_performance[2], before_knw_performance[3], before_knw_performance[4], before_knw_performance[5])
+            logging.error("Fold %d after - R20000_val_loss: %.2f, R20000_val_accuracy: %.2f%%, R20000_val_auc: %.2f, R20000_val_precision: %.2f, R20000_val_recall: %.2f, R20000_val_f1: %.2f, R20000_test_loss: %.2f, R20000_test_accuracy: %.2f%%, R20000_test_auc: %.2f, R20000_test_precision: %.2f, R20000_test_recall: %.2f, R20000_test_f1: %.2f, val_loss: %.2f, val_accuracy: %.2f%%, val_auc: %.2f, val_precision: %.2f, val_recall: %.2f, val_f1: %.2f, test_loss: %.2f, test_accuracy: %.2f%%, test_auc: %.2f, test_precision: %.2f, test_recall: %.2f, test_f1: %.2f, knw_loss: %.2f, knw_accuracy: %.2f%%, knw_auc: %.2f, knw_precision: %.2f, knw_recall: %.2f, knw_f1: %.2f",
+                split_idx+1,
+                after_R20000_val_performance[0], after_R20000_val_performance[1]*100, after_R20000_val_performance[2], after_R20000_val_performance[3], after_R20000_val_performance[4], after_R20000_val_performance[5],
+                after_R20000_test_performance[0], after_R20000_test_performance[1]*100, after_R20000_test_performance[2], after_R20000_test_performance[3], after_R20000_test_performance[4], after_R20000_test_performance[5],
+                after_val_performance[0], after_val_performance[1]*100, after_val_performance[2], after_val_performance[3], after_val_performance[4], after_val_performance[5],
+                after_test_performance[0], after_test_performance[1]*100, after_test_performance[2], after_test_performance[3], after_test_performance[4], after_test_performance[5],
+                after_knw_performance[0], after_knw_performance[1]*100, after_knw_performance[2], after_knw_performance[3], after_knw_performance[4], after_knw_performance[5])
             # Prediction test_ds
             preds = model.predict(test_ds)
             pathogenic_probs = preds[:, 1]

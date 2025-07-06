@@ -4,10 +4,12 @@ import numpy as np
 from prody.atomic import ATOMIC_FIELDS
 from prody.atomic import AtomGroup
 from prody.utilities import which
-from prody import parsePDB, LOGGER, writePDB
+from prody import parsePDB, writePDB
 
 from ..download import fetchPDB
 from ..utils.settings import ROOT_DIR
+from ..utils.logger import LOGGER
+
 
 __all__ = ['execDSSP', 'parseDSSP', 'calcDSSP', 'calcSecondary']
 

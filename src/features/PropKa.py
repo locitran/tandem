@@ -1,9 +1,10 @@
 from propka import run
 import pandas as pd
 import numpy as np
-from prody import LOGGER, parsePDB, writePDB
+from prody import parsePDB, writePDB
 import os
 
+from ..utils.logger import LOGGER
 __all__ = ['parsePropKa', 'calcChargepH7']
 
 def parsePropKa(mol, ag, pHCondition=7.0):

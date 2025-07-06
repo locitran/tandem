@@ -1,4 +1,4 @@
-SAV_coords,score,prob,class,pred,labels,correct
+SAV_coords,score,prob,class,preds,labels,correct
 P29033 217 Y D,0.588,0.401,neutral,0.0,0.0,1.0
 P29033 215 I M,0.216,0.085,neutral,0.0,0.0,1.0
 P29033 214 L V,0.07,0.031,neutral,0.0,0.0,1.0

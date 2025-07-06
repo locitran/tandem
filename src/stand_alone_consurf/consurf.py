@@ -13,7 +13,8 @@ from Bio import AlignIO
 from Bio import SearchIO
 from Bio import Align
 from Bio.Align import substitution_matrices
-from prody import LOGGER
+from ..utils.logger import LOGGER
+
 
 basedir = os.path.dirname(os.path.abspath(__file__))
 

@@ -5,12 +5,13 @@ import numpy as np
 
 from openmm.app.element import hydrogen
 import openmm.app as app
-from prody import LOGGER, parsePDB
-
+from prody import parsePDB
 from sklearn.cluster import KMeans
+
+from .utils.logger import LOGGER
 from .pdbfixer.pdbfixer import PDBFixer
 from .pdbfixer.pdbfile import PDBFile
-from .utils.settings import three2one, one2three, FIX_PDB_DIR, RAW_PDB_DIR, ROOT_DIR
+from .utils.settings import three2one, one2three, RAW_PDB_DIR, ROOT_DIR
 from .download import fetchPDB, fetchPDB_BiologicalAssembly, fetchAF2
 
 __all__ = ['LociFixer', 'fixPDB', 'createMutationfile', 'buildNE1']

@@ -1,9 +1,10 @@
 import numpy as np
 import subprocess, os
 
-from prody import parsePDB, LOGGER, AtomGroup, writePDB
+from prody import parsePDB, AtomGroup, writePDB
 from prody.utilities import which
 
+from ..utils.logger import LOGGER
 from ..utils.settings import ROOT_DIR
 from ..download import fetchPDB
 

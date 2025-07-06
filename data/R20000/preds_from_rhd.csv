@@ -1,4 +1,4 @@
-SAV coords,training info,score,path. prob.,path. class,PolyPhen-2 score,PolyPhen-2 path. class,EVmutation score,EVmutation path. class,true_label,rhd_pred_label
+SAV_coords,training info,score,path. prob.,path. class,PolyPhen-2 score,PolyPhen-2 path. class,EVmutation score,EVmutation path. class,labels,preds
 A0FGR8 210 C S,known_neu,0.062,0.027530817,neutral,0.789,deleterious,,?,0,0.0
 A0FGR8 638 S G,new,0.13266666,0.06491821,neutral,0.801,deleterious,,?,0,0.0
 A1Z1Q3 58 T I,new,0.18266666,0.08747593,neutral,0.03,neutral,,?,0,0.0

@@ -2,10 +2,11 @@
 import numpy as np
 import os
 import traceback
-from prody import LOGGER, MSA, parseMSA, refineMSA
+from prody import MSA, parseMSA, refineMSA
 from prody import calcShannonEntropy, buildMutinfoMatrix
 from Bio.Align import substitution_matrices
 
+from ..utils.logger import LOGGER
 from .Pfam import run_hmmscan, parse_hmmscan, read_pfam_data, fetchPfamMSA
 from .PolyPhen2 import calcPolyPhen2
 from .Uniprot import UniprotMapping

@@ -2,8 +2,7 @@ import numpy as np
 import os
 import traceback
 
-from prody import LOGGER
-
+from .utils.logger import LOGGER
 from .features import Uniprot, PDB, SEQ, TANDEM_FEATS
 from .utils.settings import ROOT_DIR
 from .features.PolyPhen2 import printSAVlist
@@ -25,6 +24,7 @@ class Tandem:
             # "official" Uniprot SAV identifiers and corresponding
             # PDB coords (if found, otherwise message errors)
             ('Unique_SAV_coords', 'U50'),
+            ('Uniprot_sequence_length', 'i4'),
             ('Asymmetric_PDB_coords', 'U100'),
             ('BioUnit_PDB_coords', 'U100'),
             ('OPM_PDB_coords', 'U100'),
@@ -44,6 +44,7 @@ class Tandem:
         # options
         self.options = kwargs
         self.refresh = refresh
+        self.saturation_mutagenesis = None
         self.setSAVs(query)
         # map SAVs to PDB structures
         self.Uniprot2PDBmap = None
@@ -68,7 +69,7 @@ class Tandem:
             elif len(query.split()) < 3:
                 # single Uniprot acc (+ pos), e.g. 'P17516' or 'P17516 135'
                 SAV_list = Uniprot.seqScanning(query)
-                # self.saturation_mutagenesis = True
+                self.saturation_mutagenesis = True
             else:
                 # single SAV
                 SAV = np.array(query.upper().split(), dtype=SAV_dtype)
@@ -82,7 +83,6 @@ class Tandem:
         nSAVs = len(SAV_list)
         data = np.ma.masked_all(nSAVs, dtype=self.data_dtype)
         # Assign nan to all columns
-        # data = np.full(nSAVs, np.nan, dtype=self.data_dtype)
         data['SAV_coords'] = SAV_list
         self.data = data
         self.nSAVs = nSAVs
@@ -123,7 +123,7 @@ class Tandem:
         """Maps each SAV to the corresponding resid in a PDB chain.
         """
         assert self.data is not None, "SAVs not set."
-        cols = ['SAV_coords', 'Unique_SAV_coords', 'Asymmetric_PDB_coords', 
+        cols = ['SAV_coords', 'Unique_SAV_coords', 'Asymmetric_PDB_coords', 'Uniprot_sequence_length',
                 'BioUnit_PDB_coords', 'OPM_PDB_coords', 'Asymmetric_PDB_resolved_length']
         if not self._isColSet('Asymmetric_PDB_coords'):
             Uniprot2PDBmap = Uniprot.mapSAVs2PDB(
@@ -143,7 +143,7 @@ class Tandem:
         filename = kwargs.get('filename', None)
         os.makedirs(folder, exist_ok=True)
         cols = ['SAV_coords', 'Unique_SAV_coords', 'Asymmetric_PDB_coords', 
-                'BioUnit_PDB_coords', 'OPM_PDB_coords', 'Asymmetric_PDB_resolved_length']
+                'BioUnit_PDB_coords', 'OPM_PDB_coords', 'Asymmetric_PDB_resolved_length', 'Uniprot_sequence_length']
         # print to file, if requested
         if filename is not None:
             filename = filename + '-Uniprot2PDB.txt'
@@ -151,11 +151,11 @@ class Tandem:
             with open(filepath, 'w') as f:
                 f.write(' '.join([
                     f'{cols[0]:<18}', f'{cols[1]:<18}', f'{cols[2]:<35}', 
-                    f'{cols[3]:<35}', f'{cols[4]:<35}', f'{cols[5]:<35}']) + '\n')
+                    f'{cols[3]:<35}', f'{cols[4]:<35}', f'{cols[5]:<35}', f'{cols[6]:<35}']) + '\n')
                 for s in self.data: # type: ignore
                     f.write(' '.join([
                         f'{s[cols[0]]:<18}', f'{s[cols[1]]:<18}', f'{s[cols[2]]:<35}',
-                        f'{s[cols[3]]:<35}', f'{s[cols[4]]:<35}', f'{s[cols[5]]:<35}']) + '\n')
+                        f'{s[cols[3]]:<35}', f'{s[cols[4]]:<35}', f'{s[cols[5]]:<35}', f'{s[cols[6]]:<35}']) + '\n')
             LOGGER.info(f'Uniprot2PDB map saved to {filepath}')
         return self.Uniprot2PDBmap
     
@@ -245,9 +245,12 @@ class Tandem:
         # Convert the feature matrix to a NumPy array
         fm = self.featMatrix.view(np.float32).reshape(self.nSAVs, -1)
         try:
+            LOGGER.timeit("_predict")
             from .predict.inference import ModelInference
             mi = ModelInference(folder=models, r20000=r20000, featSet=list(self.featSet))
             mi.calcPredictions(fm)
+            LOGGER.report("Predictions computed in %.2fs.", "_predict")
+            
         except:
             msg = traceback.format_exc()
             LOGGER.error(f'Error in prediction: {msg}')

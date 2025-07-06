@@ -7,10 +7,11 @@ import pandas as pd
 import ronn
 from collections import defaultdict
 
-from prody import parsePDB, writePDB, LOGGER
+from prody import parsePDB, writePDB
 from prody import calcPerturbResponse, calcMechStiff, sliceModel
 from prody.atomic import sliceAtoms
 
+from ..utils.logger import LOGGER
 from ..dynamics.ENM import GNM, envGNM, ANM, envANM
 from ..dynamics.entropy import calcSpectralEntropy
 from ..dynamics.paa import calcShapeFactors
@@ -91,8 +92,8 @@ class PDBfeatures:
         if recover_pickle:
             try:
                 self.recoverPickle(**kwargs)
-            except Exception as e:
-                LOGGER.warning(f'Unable to recover pickle: {e}')
+            except Exception:
+                LOGGER.warning(f'Unable to recover pickle: PDBfeatures-{self.pdbID}-{self.format}.pkl')
                 self.refresh()
         else:
             self.refresh()
@@ -121,7 +122,7 @@ class PDBfeatures:
         self.timestamp = str(datetime.datetime.utcnow())
         return
 
-    def recoverPickle(self, days=90, **kwargs):
+    def recoverPickle(self, days=30*6, **kwargs):
         """Looks for precomputed pickle for the current PDB structure.
 
         :arg folder: path of folder where pickles are stored. If not specified,
@@ -373,7 +374,7 @@ class PDBfeatures:
         return self._anm[env][chID]
     
     def calcGNMfeatures(self, chain='all', env='chain'):
-
+        LOGGER.timeit("_calcGNMfeatures")
         assert env in ['chain', 'reduced', 'sliced', 'full']
         # list of features to be computed
         features = ['GNM_Ventropy', 'GNM_rmsf_overall',
@@ -477,6 +478,8 @@ class PDBfeatures:
                 LOGGER.warn(msg)
                 for f in features:
                     d[f] = str(e)
+        
+        LOGGER.report('GNM features computed in %.2fs.', "_calcGNMfeatures")
 
     def calcANMfeatures(self, chain='all', env='chain',
                     ANM_PRS=True, stiffness=True):
@@ -493,6 +496,8 @@ class PDBfeatures:
         :arg stiffness: whether or not to compute stiffness with MechStiff
         :type stiffness: bool
         """
+        
+        LOGGER.timeit("_calcANMfeatures")
         features = []
         assert env in ['chain', 'reduced', 'sliced', 'full']
         for k in ANM_PRS, stiffness:
@@ -552,6 +557,8 @@ class PDBfeatures:
                     msg = traceback.format_exc()
                     LOGGER.warn(msg)
                     d[key_stf] = str(e)
+        
+        LOGGER.report('ANM features computed in %.2fs.', "_calcANMfeatures")
         return
     
     #####################################
@@ -572,7 +579,6 @@ class PDBfeatures:
             try:
                 IDRs = ronn.calc_ronn(seq)
                 d['IDRs'] = IDRs
-                # self.feats[chID]['IDRs'] = IDRs
             except Exception as e:
                 msg = traceback.format_exc()
                 LOGGER.warn(msg)
@@ -812,26 +818,37 @@ class PDBfeatures:
                 LOGGER.warn(msg)
                 d['charge_pH7'] = str(e)
 
-    def calcConSurffeatures(self, chids, resids, wt_aas):
+    def calcConSurffeatures(self, chain='all'):
         """
         For ConSurf features, we do not use pdbpath as input, but the parsed asymmetric unit structure.
         Reason is that ConSurf provides calculations for the asymmetric unit, not the biological unit.
         Especially when you do searching the chainID in https://consurfdb.tau.ac.il/
         """
-        _dtype = np.dtype([('consurf', 'f'), ('ACNR', 'f'), ('consurf_color', 'i4')])
-        features = np.full(len(chids), np.nan, dtype=_dtype)
-        try:
-            if self.format == 'custom' or self.format == 'af':
-                # If the format is custom or af, we need to use the pdbPath
-                # And calculate ConSurf based on stand_alone_consurf
-                f = calcConSurf(self.pdbPath, chids, resids, wt_aas, folder=self.job_directory)  
-            else:
-                f = calcConSurf(self.pdbID, chids, resids, wt_aas, folder=self.job_directory)
-            return f
-        except:
-            msg = traceback.format_exc()
-            LOGGER.warn(msg)
-            return features
+        features = ['consurf', 'ACNR', 'consurf_color']
+        if chain == 'all':
+            chain_list = self.chids
+        else:
+            chain_list = [chain, ]
+        for chID in chain_list:
+            d = self.feats[chID]
+            if all([f in d for f in features]):
+                if all([not isinstance(d[f], str) for f in features]):
+                    continue
+            try: 
+                if self.format == 'custom' or self.format == 'af':
+                    # If the format is custom or af, we need to use the pdbPath
+                    # And calculate ConSurf based on stand_alone_consurf
+                    f = calcConSurf(self.pdbPath, chID, folder=self.job_directory)  
+                else:
+                    f = calcConSurf(self.pdbID, chID, folder=self.job_directory)
+                d['consurf'] = f['consurf']
+                d['ACNR'] = f['ACNR']
+                d['consurf_color'] = f['consurf_color']
+            except Exception as e:
+                msg = traceback.format_exc()
+                LOGGER.warn(msg)
+                for f in features:
+                    d[f] = str(e)
 
     def calcDELTA_Rg_SASA_ACR_Hbond_DSS_features(self, chids, resids, wt_aas, mut_aas, 
         sel_feats=['DELTA_Rg', 'DELTA_Dcom', 'DELTA_SASA', 'DELTA_ACR', 
@@ -1015,9 +1032,11 @@ class PDBfeatures:
                 stiffness = True
             for chain in chain_list:
                 if chain in self.chids:
-                    self.calcGNMfeatures(chain, env=env)
-                    self.calcANMfeatures(chain, env=env, ANM_PRS=ANM_PRS,
-                                        stiffness=stiffness)
+                    if any('GNM' in s for s in l):
+                        self.calcGNMfeatures(chain, env=env)
+                    if any('ANM' in s for s in l):
+                        self.calcANMfeatures(chain, env=env, ANM_PRS=ANM_PRS,
+                                            stiffness=stiffness)
                 else:
                     LOGGER.warn(f'Chain {chain} not found.')
         # Calculate chain length
@@ -1073,10 +1092,8 @@ class PDBfeatures:
             f['deltaLside'] = deltaLside
         # Calculate ConSurf features
         if {'consurf', 'ACNR', 'consurf_color'}.intersection(set(sel_feats)):
-            consurf = self.calcConSurffeatures(chids, resids, wt_aas)
-            for name in ['consurf', 'ACNR', 'consurf_color']:
-                if name in sel_feats:
-                    f[name] = consurf[name]
+            for chain in chain_list:
+                self.calcConSurffeatures(chain)
         # Calculate DELTA features
         if {'DELTA_Rg', 'DELTA_Dcom', 'DELTA_SASA', 'DELTA_charge_pH7',
             'DELTA_ACR', 'DELTA_Hbond', 'DELTA_DSS'}.intersection(set(sel_feats)):
@@ -1095,8 +1112,10 @@ class PDBfeatures:
             d = self.feats[chid]
             indices = self._findIndex(chid, resid)
             for name in sel_feats:
-                if name in ['wtBJCE', 'mutBJCE', 'deltaBJCE', 'Lside', 'deltaLside', 'consurf', 'ACNR', 'consurf_color',
-                    'DELTA_Rg', 'DELTA_Dcom', 'DELTA_SASA', 'DELTA_ACR', 'DELTA_Hbond', 'DELTA_DSS', 'DELTA_charge_pH7']:
+                if name in [
+                    'wtBJCE', 'mutBJCE', 'deltaBJCE', 'Lside', 'deltaLside', 
+                    'DELTA_Rg', 'DELTA_Dcom', 'DELTA_SASA', 'DELTA_ACR', 'DELTA_Hbond', 
+                    'DELTA_DSS', 'DELTA_charge_pH7']:
                     continue
                 if not isinstance(d[name], str):
                     # protein features

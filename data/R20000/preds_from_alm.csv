@@ -1,4 +1,4 @@
-SAV_coords,UniprotID,Protein variant ,SNV,Pathogenicity,Class,Refined class,True class
+SAV_coords,UniprotID,Protein variant ,SNV,Pathogenicity,Class,preds,labels
 A4D2B0 114 H N,A4D2B0,p.His114Asn,y,0.898,likely_pathogenic,1,0
 A4D2B0 79 P H,A4D2B0,p.Pro79His,y,0.373,ambiguous,0,0
 A2RUC4 50 S G,A2RUC4,p.Ser50Gly,y,0.073,likely_benign,0,0

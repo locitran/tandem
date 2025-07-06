@@ -3,9 +3,10 @@ import datetime
 
 from .core import Tandem
 from .utils.settings import ROOT_DIR
+from .utils.logger import LOGGER
 from .features.PolyPhen2 import printSAVlist
 
-from prody import LOGGER
+# from prody import LOGGER
 
 __all__ = ['tandem_dimple']
 
@@ -29,6 +30,7 @@ def tandem_dimple(
     LOGGER.start(logfile)
     LOGGER.info(f"Job name: {job_name} started at {datetime.datetime.now()}")
     LOGGER.info(f"Job directory: {job_directory}")
+    LOGGER.timeit("_runtime")
 
     ## Additional arguments
     kwargs['job_directory'] = job_directory
@@ -65,5 +67,10 @@ def tandem_dimple(
         folder=job_directory,
         filename=job_name
     )
+    
+    for label in LOGGER._reports:
+        LOGGER.info(f"  {label}: {LOGGER._reports[label]:.2f}s ({LOGGER._report_times[label]} time(s))")
+        
+    LOGGER.report('Run time elapsed in %.2fs.', "_runtime")
     LOGGER.close(logfile)
     return t

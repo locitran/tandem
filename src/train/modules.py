@@ -6,6 +6,11 @@ import numpy as np
 # from oldfile.func import plot_acc_loss
 # from tensorflow.data import Dataset
 import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+from sklearn.metrics import confusion_matrix, f1_score, precision_score, recall_score, accuracy_score, accuracy_score
+import seaborn as sns
 
 from .model import DNN
 
@@ -391,45 +396,35 @@ def plot_acc_loss_3fold_CV(folds, title, name='GJB2'):
         ax.grid(axis='y')
     return fig
 
+def plot_confusion_matrix(y_true, y_pred, title='Confusion matrix'):
+    fig = plt.figure(figsize=(5, 5))
+    sns.heatmap(confusion_matrix(y_true, y_pred), annot=True, fmt='2d', cmap='Blues')#, normalize='true')
+    plt.xlabel('Predicted')
+    plt.ylabel('True')
+    plt.title(title, fontsize=20)
+    plt.rcParams.update({'font.size': 18})
+    plt.show()
 
-# def plot_acc_loss_3fold_CV(folds, title, gene='GJB2'):
-#     # Row 1: Loss, Row 2: Accuracy
-#     # 5 folds for each
-#     fig, axes = plt.subplots(2, 3, figsize=(25, 10))
-#     fig.suptitle(title, fontsize=35)
+def get_metrics(df,title):
+    df = df.copy().dropna(subset=['labels'])
 
-#     if gene == 'GJB2':
-#         labels = [r'GJB2$_{train}$', r'GJB2$_{val}$']
-#     elif gene == 'RYR1':
-#         labels = [r'RYR1$_{train}$', r'RYR1$_{val}$']
-#     else:
-#         labels = [r'train', r'val']
+    y_true = df['labels']
+    y_pred = df['preds']
 
-#     for i, ax in enumerate(axes[0]):
-#         ax.plot(folds[i][f'{gene}train_loss'], color='blue', linestyle='dashed', linewidth=2, label=labels[0])
-#         ax.plot(folds[i][f'{gene}val_loss'], color='red', linestyle='solid', linewidth=2, label=labels[1])
+    conf_matrix = confusion_matrix(y_true, y_pred)
+    f1 = f1_score(y_true, y_pred)
+    precision = precision_score(y_true, y_pred)
+    recall = recall_score(y_true, y_pred)
+    accuracy = accuracy_score(y_true, y_pred)
+    auc = accuracy_score(y_true, y_pred)
+    print(f'F1 score: {f1}\nPrecision: {precision}\nRecall: {recall}\nAccuracy: {accuracy}\nAUC: {auc}')
 
-#         ax.set_title('Fold ' + str(i + 1), fontsize=20)
-
-#     for i, ax in enumerate(axes[1]):
-#         ax.plot(folds[i][f'{gene}train_accuracy'], color='blue', linestyle='dashed', linewidth=2, label=labels[0])
-#         ax.plot(folds[i][f'{gene}val_accuracy'], color='red', linestyle='solid', linewidth=2, label=labels[1])
-
-#     # Set y labels
-#     axes[0, 0].set_ylabel('Loss', fontsize=25)
-#     axes[1, 0].set_ylabel('Accuracy', fontsize=25)
-#     axes[1, 2].legend(fontsize=25, loc='best') # Set legends
-#     # for ax in axes[0]: # y-loss range
-#         # ax.set_ylim([0.4, 0.65])
-#     # for ax in axes[1]: # y-accuracy range
-#         # ax.set_ylim([0.4, 0.9])
-#     for ax in axes.flatten(): # Size of tick labels
-#         ax.tick_params(labelsize=15)
-#     for ax in axes.flatten(): # Grid y
-#         ax.grid(axis='y')
-#     plt.show()
-#     return fig
-
-# def main():
-#     pass
-
+    plot_confusion_matrix(y_true, y_pred, title=title)
+    return {
+        'confusion': conf_matrix, 
+        'f1_score': f1,
+        'precision': precision,
+        'recall': recall,
+        'accuracy': accuracy,
+        'auc': auc
+    }

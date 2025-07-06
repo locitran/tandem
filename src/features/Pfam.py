@@ -6,9 +6,9 @@ import subprocess
 import multiprocessing
 from uuid import uuid1
 
-from prody import LOGGER
 from prody.utilities import makePath, gunzip, relpath
 
+from ..utils.logger import LOGGER
 from ..utils.settings import TMP_DIR, ROOT_DIR
 
 __all__ = ['searchPfam', 'fetchPfamMSA', 'run_hmmscan', 'parse_hmmscan', 'read_pfam_data']

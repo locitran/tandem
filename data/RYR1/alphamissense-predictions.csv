@@ -1,4 +1,4 @@
-SAV_coords,labels,p_variant,p_class,refined_p_class,pred
+SAV_coords,labels,p_variant,p_class,refined_p_class,preds
 P21817 35 C R,1.0,0.9838,likely_pathogenic,likely_pathogenic,1.0
 P21817 44 R C,1.0,0.7373,likely_pathogenic,likely_pathogenic,1.0
 P21817 163 R C,1.0,0.8861,likely_pathogenic,likely_pathogenic,1.0

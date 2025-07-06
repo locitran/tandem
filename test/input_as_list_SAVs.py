@@ -1,11 +1,11 @@
 import os
 import sys
 addpath = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
-sys.path.insert(0, addpath)
+sys.path.insert(0, addpath) # /home/newloci
 
 from tandem.src.main import tandem_dimple
 
-query = ['P04626 772 Y V', 'P04626 772 Y A']
+query = ['O14508 52 S N', 'P29033 217 Y D']
 
 td = tandem_dimple(
     query=query, # List of SAVs to be analyzed

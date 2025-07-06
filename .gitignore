@@ -173,6 +173,7 @@ slurm_jupyter.sh
 
 ._.DS_Store
 .DS_Store
+hbdebug.dat
 
 # data
 data/SAVs.tsv

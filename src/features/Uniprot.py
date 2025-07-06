@@ -14,11 +14,12 @@ import re
 import traceback
 
 import prody
-from prody import LOGGER, parsePDB, Atomic
+from prody import parsePDB, Atomic
 from prody.utilities import openURL
 from Bio.pairwise2 import align as bioalign
 from Bio.pairwise2 import format_alignment
 
+from ..utils.logger import LOGGER
 from ..download import fetchPDB, fetchPDB_BiologicalAssembly, fetchAF2
 from ..utils.settings import RAW_PDB_DIR, one2three
 
@@ -87,8 +88,8 @@ class UniprotMapping:
         if recover_pickle:
             try:
                 self.recoverPickle(**kwargs)
-            except Exception as e:
-                LOGGER.warn(f'Unable to recover pickle: {e}')
+            except Exception:
+                LOGGER.warn(f'Unable to recover pickle: UniprotMap-{acc}.pkl')
                 self.refresh()
         else:
             self.refresh()
@@ -598,7 +599,7 @@ class UniprotMapping:
         LOGGER.info("Pickle '{}' saved.".format(pickle_path))
         return pickle_path
 
-    def recoverPickle(self, days=30, **kwargs):
+    def recoverPickle(self, days=30*6, **kwargs):
         folder = kwargs.get('folder', '.')
         folder = os.path.join(folder, 'pickles/uniprot')
         filename = kwargs.get('filename', self.acc)
@@ -971,6 +972,7 @@ def mapSAVs2PDB(SAV_coords, custom_PDB=None, refresh=False, **kwargs):
         except Exception as e:
             msg = traceback.format_exc()
             LOGGER.warn(f'Error while mapping {acc}: {msg}')
+            # LOGGER.warn(f'Error while mapping {acc}')
             U2P_map = "Cannot map, unable to run " + acc
 
         if isinstance(U2P_map, str):
@@ -992,9 +994,17 @@ def mapSAVs2PDB(SAV_coords, custom_PDB=None, refresh=False, **kwargs):
         for i, (SAV_idx, ele) in enumerate(zip(indices, r)):
             asu_coord, c_seq_len, c_resolved_len, bas_coord, opm_coord, resolution = ele
             uniq_coords = f'{U2P_map.uniq_acc} {resids[i]} {wt_aas[i]} {mut_aas[i]}'
-            mapped_SAVs[SAV_idx] = (SAV_coords[SAV_idx], uniq_coords, U2P_map.sequence_length, 
-                                    asu_coord, c_seq_len, c_resolved_len, resolution,
-                                    bas_coord, opm_coord)
+            mapped_SAVs[SAV_idx] = (
+                SAV_coords[SAV_idx], 
+                uniq_coords, 
+                U2P_map.sequence_length, 
+                asu_coord, 
+                c_seq_len, 
+                c_resolved_len, 
+                resolution,
+                bas_coord, 
+                opm_coord
+            )
 
         if isinstance(U2P_map, UniprotMapping):
             U2P_map.savePickle(**kwargs)

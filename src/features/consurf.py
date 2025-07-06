@@ -5,11 +5,14 @@ import pandas as pd
 import numpy as np
 import pickle
 from pathlib import Path
+import more_itertools as mit
 
-from prody import LOGGER, parsePDB
+from prody import parsePDB
 from prody.measure.contacts import findNeighbors
 from Bio.Align import PairwiseAligner
 
+from ..dynamics.ENM import GNM
+from ..utils.logger import LOGGER
 from ..download import get_content, fetchPDB
 from ..utils.settings import ROOT_DIR, one2three, RAW_PDB_DIR
 from ..utils.timer import getTimer
@@ -74,15 +77,17 @@ def mapIndices(targetSeq, querySeq):
         split_aln = aln.split('\n')
         target_seq = ''
         query_seq = ''
+        align_dash = ''
         for i, p in enumerate(split_aln):
             p_split = p.split()
             target_seq += p_split[2] if i % 4 == 0 else ''
             query_seq += p_split[2] if i % 4 == 2 else ''
+            align_dash += p_split[2]  if i % 4 == 1 else ''
 
     # Get the indices of the target and query sequences correspondingly
     target_indices = [] ; idx = 0
     for i in range(len(target_seq)):
-        if target_seq[i] != '-':
+        if target_seq[i] not in ['-', '.']: # != '-':
             target_indices.append(idx)
             idx += 1
         else:
@@ -90,12 +95,16 @@ def mapIndices(targetSeq, querySeq):
 
     query_indices = [] ; idx = 0
     for i in range(len(query_seq)):
-        if query_seq[i] != '-':
+        if query_seq[i] not in ['-', '.']: # != '-':
             query_indices.append(idx)
             idx += 1
         else:
             query_indices.append(-1)
-    return np.array(target_indices), np.array(query_indices)
+
+    search = lambda x: x == "|"
+    exact_match_indices = np.array(list(mit.locate(align_dash, search)))
+
+    return np.array(target_indices), np.array(query_indices), exact_match_indices
 
 def _align(target, query):
     """Align two sequences using PairwiseAligner from Bio.Align
@@ -245,16 +254,78 @@ def getConSurffile(pdb, chid, folder='.'):
     df.to_csv(consurffile, sep='\t', index=False)
     return df
 
-def calcConSurf(pdb, chids, resids, wt_aas, folder='.'):
+
+def calcConSurf(pdb, chid, folder='.'):
+    _dtype = np.dtype([
+        ('consurf', 'f4'), 
+        ('ACNR', 'f4'), # Average contact neighbouring residues
+        ('consurf_color', 'i4'),
+    ])
+    # Read the PDB file
+    # custom or alphafold
+    if os.path.isfile(pdb):
+        pdbID = pdb
+        pdb = parsePDB(pdb, model=1)
+    else: # pdbID 
+        pdbID = pdb
+        pdbpath = fetchPDB(pdbID, format='pdb', folder=RAW_PDB_DIR, refresh=True)
+        if pdbpath is not None:
+            pdb = parsePDB(pdbpath, model=1)
+        else:
+            raise ValueError(f'Cannot download {pdbID}')
+        
+    LOGGER.timeit('_calcConSurf')
+    ca = pdb.protein.ca
+    tgt_chain = ca.select(f'chain {chid}').copy()
+    if not tgt_chain:
+        raise ValueError(f'Cannot find chain {chid} in {pdb}')
+    
+    tgt_seq = tgt_chain.getSequence()
+    features = np.full(len(tgt_chain), np.nan, dtype=_dtype)
+    
+    df_consurf = getConSurffile(pdbID, chid, folder=folder)
+    # Replace color* --> color+10
+    if df_consurf['COLOR'].dtype != int:
+        df_consurf['COLOR'] = df_consurf['COLOR'].apply(
+            lambda x: int(x.replace('*', '')) + 10 if '*' in x else int(x)
+        )
+    consurf_seq = df_consurf.SEQ.to_string(index=False).replace('\n', '').replace(' ', '')
+
+    consurf_indices, target_indices, exact_match_indices = mapIndices(consurf_seq, tgt_seq)
+    # Extract exact match indices 
+    consurf_match = consurf_indices[exact_match_indices]
+    target_match  = target_indices[exact_match_indices]
+    
+    # Extract scores
+    consurf_scores = df_consurf.iloc[consurf_match].SCORE.values
+    consurf_colors = df_consurf.iloc[consurf_match].COLOR.values
+
+    features['consurf'][target_match] = consurf_scores
+    features['consurf_color'][target_match] = consurf_colors
+
+    # Build Kirchhoff matrix 
+    gnm = GNM()
+    gnm.buildKirchhoff(tgt_chain, cutoff=7.3)
+    kirchhoff = gnm.getKirchhoff()
+    
+    # Replace contact buy consurf score
+    minus1 = np.argwhere(kirchhoff==-1) # Contact , row: target; column: contact
+    kirchhoff[minus1[:, 0], minus1[:, 1]] = features['consurf'][minus1[:, 1]]
+    diag_kirchhoff = np.diag(kirchhoff)
+
+    kirchhoff = np.ma.array(kirchhoff)
+    kirchhoff.mask = np.eye(kirchhoff.shape[0], dtype=bool)
+    col_sum_excl_diag = kirchhoff.sum(axis=1) / diag_kirchhoff
+    features['ACNR'][target_match] = col_sum_excl_diag
+    return features
+
+def calcConSurf_old(pdb, chids, resids, wt_aas, folder='.'):
     """Retrieve consurf and ACNR scores for the target and contact residues
     folder is used to store the file of consurf relatives in case of running stand_alone_consurf
 
     target (tgt), contact (cnt)
     """
     assert len(chids) == len(resids) == len(wt_aas), 'chids, resids, and wt_aas must have the same length'
-    # _dtype = np.dtype([('consurf', 'f'), 
-    #                    ('ACNR', 'f')]
-    #                    )
     _dtype = np.dtype([
         ('consurf', 'f4'), 
         ('ACNR', 'f4'),
@@ -301,7 +372,7 @@ def calcConSurf(pdb, chids, resids, wt_aas, folder='.'):
         tgt_consurf_seq = df_tgt.SEQ.to_string(index=False).replace('\n', '').replace(' ', '')
         tgt_seq = tgt_chain.getSequence()
         # Map the indices
-        tgt_indices, tgt_consurf_indices = mapIndices(tgt_seq, tgt_consurf_seq)
+        tgt_indices, tgt_consurf_indices, _ = mapIndices(tgt_seq, tgt_consurf_seq)
         tgt_resindex = target.getResindices()[0]
         
         # Retrieve consurf scores for target
@@ -317,7 +388,7 @@ def calcConSurf(pdb, chids, resids, wt_aas, folder='.'):
 
         features['consurf'][i] = tgt_score
         features['consurf_color'][i] = tgt_color
-        # LOGGER.info(f'Target {target}, {tgt_chid}, {tgt_resid}, {tgt_resindex},  {tgt_score}')
+        LOGGER.info(f'Target {target}, {tgt_chid}, {tgt_resid}, {tgt_resindex},  {tgt_score}')
         # Retrieve consurf scores for contacts
         cnt_scores = []
         for contact in contacts:
@@ -332,7 +403,7 @@ def calcConSurf(pdb, chids, resids, wt_aas, folder='.'):
                 LOGGER.warn(f'{pdbID} {cnt_chid} {cnt_resnum} not found')
                 continue
             cnt_resindex = cnt_reindex.getResindices()[0]
-            # LOGGER.info(f'Contact {contact}, {cnt_resnum}, {contact.getResname()} {cnt_resindex}, {cnt_chid}')
+            LOGGER.info(f'Contact {contact}, {cnt_resnum}, {contact.getResname()} {cnt_resindex}, {cnt_chid}')
             if cnt_chid == tgt_chid:
                 cnt_idx = np.where(tgt_indices == cnt_resindex)[0][0]
                 cnt_idx = tgt_consurf_indices[cnt_idx]
@@ -349,14 +420,14 @@ def calcConSurf(pdb, chids, resids, wt_aas, folder='.'):
                     LOGGER.warn(f'Error process Contact {pdbID} {cnt_chid}: {str(e)}')
                     continue
                 cnt_consurf_seq = df_cnt.SEQ.to_string(index=False).replace('\n', '').replace(' ', '')
-                cnt_indices, cnt_consurf_indices = mapIndices(cnt_seq, cnt_consurf_seq)
+                cnt_indices, cnt_consurf_indices, _ = mapIndices(cnt_seq, cnt_consurf_seq)
                 # LOGGER.info(f'Contact {cnt_indices}, {cnt_consurf_indices}')
                 # Retrieve consurf scores for contact
                 cnt_idx = np.where(cnt_indices == cnt_resindex)[0][0]
                 cnt_idx = cnt_consurf_indices[cnt_idx]
                 s = float(df_cnt.loc[cnt_idx]['SCORE'])
                 cnt_scores.append(s)
-                # LOGGER.info(f'Contact {contact}, {cnt_resnum}, {contact.getResname()} {cnt_resindex}, {cnt_chid} {s}')
+                LOGGER.info(f'Contact {contact}, {cnt_resnum}, {contact.getResname()} {cnt_resindex}, {cnt_chid} {s}')
         features['ACNR'][i] = np.nanmean(cnt_scores)
     LOGGER.report('ConSurf features calculated in %.2fs.', label='_calcConSurf')
     return features
