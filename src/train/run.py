@@ -142,6 +142,9 @@ def get_config(input_shape=33, n_hidden=5, patience=50, dropout_rate=0.,
     n_neuron_per_hidden = input_shape if n_neuron_per_hidden is None else n_neuron_per_hidden
     n_neuron_last_hidden = 10 if n_neuron_last_hidden is None else n_neuron_last_hidden
     
+    weight_initialization = ['glorot_uniform', 'glorot_normal', 'he_normal', 'he_uniform']
+    initializer = 'he_uniform'
+    
     for item in cfg.model.hidden:
         del cfg['model']['hidden'][item]
     for i in range(n_hidden):
@@ -151,7 +154,7 @@ def get_config(input_shape=33, n_hidden=5, patience=50, dropout_rate=0.,
             'activation': 'gelu',
             'batch_norm': False,
             'dropout_rate': dropout_rate,
-            'initializer': 'glorot_uniform',
+            'initializer': initializer,
             'l1': 0,
             'l2': 0.0001,
             'n_neurons': n_neuron

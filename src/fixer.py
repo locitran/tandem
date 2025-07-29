@@ -5,7 +5,7 @@ import numpy as np
 
 from openmm.app.element import hydrogen
 import openmm.app as app
-from prody import parsePDB
+from prody import parsePDB, writePDB
 from sklearn.cluster import KMeans
 
 from .utils.logger import LOGGER
@@ -188,7 +188,7 @@ def fixPDB(pdb, format='asu',
         if has_dum_atom:
             f.fix(fix_loop=fix_loop, replaceNonstandard=replaceNonstandard, keepElement=['DUM'])
             f.saveTopology(savePath=out)
-            out = buildNE1(out, folder=folder) # Build NE1 model
+            out = buildCGmembrane(out, folder=folder, filename=filename, refresh=refresh)
         else:
             f.fix(fix_loop=fix_loop, replaceNonstandard=replaceNonstandard)
             f.saveTopology(savePath=out)
@@ -203,7 +203,7 @@ def fixPDB(pdb, format='asu',
         f.fix(fix_loop=fix_loop, replaceNonstandard=replaceNonstandard, keepElement=['DUM'])
         opm_path = os.path.join(folder, f'{pdb}-opm.pdb')
         f.saveTopology(savePath=opm_path)
-        out = buildNE1(opm_path, folder=folder, filename=pdb)
+        out = buildCGmembrane(opm_path, folder=folder, filename=pdb, refresh=refresh)
 
     elif format == 'asu':
         out = os.path.join(folder, f'{pdb}.pdb')
@@ -306,7 +306,8 @@ def createMutationfile(pdbpath, chid, mutation, out=None):
     return out
 
 def execCGmembrane(opm_file, folder='.', filename=None,
-                   radius_node=3.1, lower_thick=-16.6, upper_thick=16.6, radius_membrane=55, rr=15):
+                   radius_node=3.1, lower_thick=-16.6, 
+                   upper_thick=16.6, radius_membrane=55, rr=15):
     """Run cgmembrane command line tool to build NE1 model.
     """
     exANM = os.path.join(ROOT_DIR, 'src/features/bin/cgmembrane')
@@ -326,13 +327,14 @@ def execCGmembrane(opm_file, folder='.', filename=None,
     NE1_atoms = [
         line for line in cgmembrane_output 
             if line.startswith('ATOM') and
-            float(line[30:38])**2 + float(line[38:46])**2 > rr**2]
+            float(line[30:38])**2 + float(line[38:46])**2 > rr**2
+    ]
     # Format the filtered atoms into PDB format
     NE1_atoms = ["{}{:6.2f}{:6.2f}{:>12}\n".format(line, 1, 1, "M") for line in NE1_atoms]
 
     # Write the NE1 atoms to a file
     if filename is not None:
-        out = os.path.join(folder, f'{filename}-ne1.pdb')
+        out = os.path.join(folder, f'{filename}.pdb')
     else:
         out = os.path.join(folder, 'ne1.pdb')
     with open(out, 'w') as f:
@@ -340,60 +342,88 @@ def execCGmembrane(opm_file, folder='.', filename=None,
     LOGGER.info(f"NE1 atoms written to {out}")
     return out
 
-
-def buildCGmembrane(opm_file):
-    """Build CGmembrane model from OPM file using cgmembrane.
-    opm_file: must contain DUM
-
-
-    src/features/bin/cgmembrane data/GJB2/structures/8qa2_opm_25Apr03.pdb -s 3.1 -b -98.3 -64.3 -r 55 > 98.pdb
-    src/features/bin/cgmembrane data/GJB2/structures/8qa2_opm_25Apr03.pdb -s 3.1 -b -16.6 16.6 -r 55 > 16.pdb
-    """
+def buildCGmembrane(opm_file, folder, filename, refresh=True):
+    out = os.path.join(folder, f'{filename}-ne1.pdb')
+    if os.path.isfile(out) and not refresh:
+        LOGGER.info(f"File {out} already exists")
+        return out
+    
     try:
         pdb = parsePDB(opm_file)
     except FileNotFoundError as e:
         raise FileNotFoundError('Error: Cannot parsePDB opm_file')
+
     # check if DUM is present
     dumAtoms = pdb.select('resname DUM')
     if dumAtoms is None:
         raise ValueError('No DUM atoms found in the input file')
-    
-    # extract protein lines
-    with open(opm_file, 'r') as f:
-        lines = f.readlines()
 
-    
-    protein_lines = [line for line in lines
-                    if "   DUM" not in line and 
-                    (line.startswith('ATOM') or line.startswith('HETATM'))]
-    
+    # Assign DUM atoms 1 beta factor
+    dumAtoms.setBetas(np.ones(dumAtoms.numAtoms()))
     # Locate z-coordinates of DUM atoms
     z_coords = dumAtoms.getCoords()[:, 2]
-    # # Cluster z-positions to detect layer centers
-    # kmeans = KMeans(n_clusters=2, random_state=42).fit(z_coords.reshape(-1, 1))
-    # centers = np.sort(kmeans.cluster_centers_.flatten())
-    # distance = abs(centers[1] - centers[0])
-    # # if distance < 45: 
-    # #     LOGGER.info("Detect: ONE membrane bilayer")
-    # #     lower_thick = centers[0]
-    # #     upper_thick = centers[1]
-    # #     NE1_atoms = execCGmembrane(radius_node=radius_node, lower_thick=lower_thick,
-    # #                                upper_thick=upper_thick, radius_membrane=radius_membrane)
-    # #     NE1_atoms = [
-    # #         line for line in NE1_atoms 
-    # #             if line.startswith('ATOM')]
-    # #     # Filter atoms based on x^2 + y^2 > RR^2 condition
-    # #     # NE1_atoms = [
-    # #     #     line for line in NE1_atoms 
-    # #     #         if line.startswith('ATOM') and
-    # #     #         float(line[30:38])**2 + float(line[38:46])**2 > rr**2]
-    # # else:
-    # #     LOGGER.info("Detect: TWO membrane bilayers")
+    # Cluster the z-coordinates using KMeans
+    kmeans = KMeans(n_clusters=2, random_state=0).fit(z_coords.reshape(-1, 1))
+    # Detect ONE/TWO membrane bilayer
+    centers = kmeans.cluster_centers_.flatten()
+    # Distance between the two centers 
+    d = abs(centers[0] - centers[1])
+    
+    if d > 35:
+        LOGGER.info('Detected TWO membrane bilayer')
+        kmeans = KMeans(n_clusters=4, random_state=0).fit(z_coords.reshape(-1, 1))
+        centers = kmeans.cluster_centers_.flatten()
+        # Sort centers to find upper and lower bilayer
+        centers.sort()
+        first_bilayer = centers[:2]
+        first_upper_dum = dumAtoms.select(f'z `{first_bilayer[1]-2} to {first_bilayer[1]+2}`')
+        first_lower_dum = dumAtoms.select(f'z `{first_bilayer[0]-2} to {first_bilayer[0]+2}`')
+        first_radius = np.max(np.linalg.norm(first_upper_dum.getCoords()[:, :2], axis=1))
+        first_CGmem = execCGmembrane(
+            opm_file, folder=folder, filename=f'{filename}-first_bilayer-ne1', radius_node=3.1,  rr=15,
+            lower_thick=first_bilayer[0], upper_thick=first_bilayer[1], radius_membrane=first_radius
+        )
+        first_ne1 = parsePDB(first_CGmem)
+
+        second_bilayer = centers[2:]
+        second_upper_dum = dumAtoms.select(f'z `{second_bilayer[1]-2} to {second_bilayer[1]+2}`')
+        second_lower_dum = dumAtoms.select(f'z `{second_bilayer[0]-2} to {second_bilayer[0]+2}`')
+        second_radius = np.max(np.linalg.norm(second_upper_dum.getCoords()[:, :2], axis=1))
+        second_CGmem = execCGmembrane(
+            opm_file, folder=folder, filename=f'{filename}-second_bilayer-ne1', radius_node=3.1, rr=15,
+            lower_thick=second_bilayer[0], upper_thick=second_bilayer[1], radius_membrane=second_radius
+        )
+        second_ne1 = parsePDB(second_CGmem)
+        protein = pdb.select('not resname DUM').copy()
+        # Combine NE1 and protein
+        combined = protein + first_ne1 + second_ne1
+        writePDB(out, combined)
+
+    else:
+        lower_z = min(centers)
+        upper_z = max(centers)
+    
+        upper_dum = dumAtoms.select(f'z `{upper_z-2} to {upper_z+2}`')
+        lower_dum = dumAtoms.select(f'z `{lower_z-2} to {lower_z+2}`')
+        LOGGER.info('Detected ONE membrane bilayer')
+        LOGGER.info(f'Upper DUM atoms: {upper_dum.numAtoms()}')
+        LOGGER.info(f'Lower DUM atoms: {lower_dum.numAtoms()}')
+
+        # calculate the radius of the membrane
+        radius = np.max(np.linalg.norm(upper_dum.getCoords()[:, :2], axis=1))
+        LOGGER.info(f'Membrane radius: {radius:.2f} A')
         
-
-
-
-
+        # Run cgmembrane to build NE1 model
+        first_CGmem = execCGmembrane(
+            opm_file, folder=folder, filename=f'{filename}-first_bilayer-ne1', radius_node=3.1, 
+            lower_thick=lower_z, upper_thick=upper_z, radius_membrane=radius, rr=15)
+        first_ne1 = parsePDB(first_CGmem)
+        protein = pdb.select('not resname DUM').copy()
+        # Combine NE1 and protein
+        combined = protein + first_ne1
+        writePDB(out, combined)
+    
+    return out
 
 def buildNE1(opm_file, folder='.', filename=None, radius_node=3.1, thick=16.6,
              rr=15, radius_membrane=55, remove=True):

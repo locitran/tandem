@@ -11,5 +11,7 @@ numpy==1.23.5
 matplotlib==3.10.0
 fpdf==1.7.2
 gdown==5.2.0
+scikit-learn==1.6.1
+seaborn==0.13.2
 # Editable Git install with no remote (PyRONN==4.0rc0)
 -e ./pyRONN

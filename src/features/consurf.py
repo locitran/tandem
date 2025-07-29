@@ -311,12 +311,16 @@ def calcConSurf(pdb, chid, folder='.'):
     # Replace contact buy consurf score
     minus1 = np.argwhere(kirchhoff==-1) # Contact , row: target; column: contact
     kirchhoff[minus1[:, 0], minus1[:, 1]] = features['consurf'][minus1[:, 1]]
-    diag_kirchhoff = np.diag(kirchhoff)
+    diag_kirchhoff = np.diag(kirchhoff) # Extract diagonal : number of contacts
+    numnan_kirchhoff = np.sum(np.isnan(kirchhoff), axis=1) # Eliminate nan
+    diag_kirchhoff = diag_kirchhoff - numnan_kirchhoff
 
     kirchhoff = np.ma.array(kirchhoff)
     kirchhoff.mask = np.eye(kirchhoff.shape[0], dtype=bool)
     col_sum_excl_diag = kirchhoff.sum(axis=1) / diag_kirchhoff
     features['ACNR'][target_match] = col_sum_excl_diag
+    
+    LOGGER.report('ConSurf features calculated in %.2fs.', label='_calcConSurf')
     return features
 
 def calcConSurf_old(pdb, chids, resids, wt_aas, folder='.'):

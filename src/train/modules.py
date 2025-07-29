@@ -1,6 +1,6 @@
 import logging, os
 import tensorflow as tf
-# from tensorflow import keras
+from tensorflow import keras
 import numpy as np
 # from config import model_config
 # from oldfile.func import plot_acc_loss
@@ -114,39 +114,6 @@ def build_model_from_config(cfg, output_bias=None):
     input_shape, n_hidden, output_shape, n_hidden_neurons, dropout = get_architecture(cfg)
     model = DNN(input_shape, n_hidden, output_shape, output_bias, n_hidden_neurons, dropout)
     model.build(input_shape=(None, input_shape))  # Explicitly build model
-    return model
-    
-def build_model(cfg, output_bias=None):
-    """Build a neural network model based on the configuration file
-    Args:
-        cfg: dict
-            Configuration file
-        output_bias: np.array
-            Initial bias for the output layer
-
-    Returns:
-        model: tf.keras.Model
-            Neural network model
-    """
-    input_shape = (cfg.model.input.n_neurons,)  # Define input shape as a tuple
-    X = tf.keras.Input(shape=input_shape)
-    Y = X
-    for hid_name, hid_config in cfg['model']['hidden'].items():
-        Y = tf.keras.layers.Dense(units=hid_config['n_neurons'], activation=hid_config['activation'], kernel_initializer=hid_config['initializer'],
-                kernel_regularizer=tf.keras.regularizers.l1_l2(l1=hid_config['l1'], l2=hid_config['l2']),
-                name=hid_name)(Y)
-        if hid_config['batch_norm']:
-            Y = tf.keras.layers.BatchNormalization()(Y)
-        Y = tf.keras.layers.Dropout(hid_config['dropout_rate'])(Y)
-    # bias_initializer = tf.keras.initializers.Constant(-0.45)
-    # Add bias to the output layer
-    if output_bias is not None:
-        output_bias = tf.keras.initializers.Constant(value=output_bias.item())
-        Y = tf.keras.layers.Dense(units=cfg['model']['output']['n_neurons'], activation=cfg['model']['output']['activation'], bias_initializer=output_bias, name='Output')(Y)
-    else:
-        Y = tf.keras.layers.Dense(units=cfg['model']['output']['n_neurons'], activation=cfg['model']['output']['activation'], name='Output')(Y)
-
-    model = tf.keras.Model(inputs=X, outputs=Y, name="TANDEM-DIMPLE")
     return model
 
 def build_optimizer(cfg):
@@ -311,6 +278,147 @@ class Callback_CSVLogger(tf.keras.callbacks.Callback):
         row = row[:-1] + '\n'
         with open(self.log_file, 'a') as f:
             f.write(row)
+    
+class GradientLoggingModel(tf.keras.Model):
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.batch_gradients_W6_01 = []
+        self.batch_gradients_W6_02 = []
+    
+    def train_step(self, data):
+        x, y = data
+        with tf.GradientTape() as tape:
+            y_pred = self(x, training=True)
+            loss = self.compiled_loss(y, y_pred, regularization_losses=self.losses)
+        grads = tape.gradient(loss, self.trainable_variables)
+
+        """
+        The size of grads:
+        len(grads) == len(self.trainable_variables)
+        W1  kernel → shape: (33, 33), grad shape: (33, 33)
+        bias → shape: (33,), grad shape: (33,)
+        W2  kernel → shape: (33, 33), grad shape: (33, 33)
+        bias → shape: (33,), grad shape: (33,)
+        W3  kernel → shape: (33, 33), grad shape: (33, 33)
+        bias → shape: (33,), grad shape: (33,)
+        W4  kernel → shape: (33, 33), grad shape: (33, 33)
+        bias → shape: (33,), grad shape: (33,)
+        W5  kernel → shape: (33, 10), grad shape: (33, 10)
+        bias → shape: (10,), grad shape: (10,)
+        W6  kernel → shape: (10, 2), grad shape: (10, 2)
+        bias → shape: (2,), grad shape: (2,)
+        
+        for epoch in range(epochs):
+
+    for step, (x_batch_train, y_batch_train) in enumerate(train_dataset):
+        with tf.GradientTape() as tape:
+            logits = model(x_batch_train, training=True)  # Logits for this minibatch
+            loss_value = loss_fn(y_batch_train, logits)
+        grads = tape.gradient(loss_value, model.trainable_weights)
+        optimizer.apply_gradients(zip(grads, model.trainable_weights))
+        
+        """
+        # _LOGGER.error("--------------------------------")
+        # for var, grad in zip(self.trainable_variables, grads):
+            # _LOGGER.error(f"{var.name} → shape: {var.shape}, grad shape: {grad.shape if grad is not None else 'None'}")
+        
+        self.optimizer.apply_gradients(zip(grads, self.trainable_variables))
+        # import sys
+        # sys.exit()
+        self.batch_gradients_W6_01.append(grads[-2][0, 0])
+        self.batch_gradients_W6_02.append(grads[-2][0, 1])
+
+        
+        self.compiled_metrics.update_state(y, y_pred)
+        return {m.name: m.result() for m in self.metrics}
+
+class GradientLogger(tf.keras.callbacks.Callback):
+    def __init__(self, log_file, W6_01_log_file, W6_02_log_file):
+        super().__init__()
+        self.log_file = log_file
+        self.W6_01_log_file = W6_01_log_file
+        self.W6_02_log_file = W6_02_log_file
+
+    def on_train_begin(self, logs=None):
+        # ensure file exists with header
+        header = "epoch,batch,grad_norm\n"
+        if not os.path.exists(self.log_file):
+            with open(self.log_file, 'w') as f:
+                f.write(header)
+        if not os.path.exists(self.W6_01_log_file):
+            with open(self.W6_01_log_file, 'w') as f:
+                f.write(header)
+        if not os.path.exists(self.W6_02_log_file):
+            with open(self.W6_02_log_file, 'w') as f:
+                f.write(header)
+
+    def on_epoch_end(self, epoch, logs=None):
+        model = self.model  # GradientLoggingModel
+
+        batch_gradients_W6_01 = [g.numpy() for g in model.batch_gradients_W6_01]
+        if batch_gradients_W6_01:
+            with open(self.W6_01_log_file, 'a') as f:
+                for i, g in enumerate(batch_gradients_W6_01):
+                    f.write(f"{epoch+1},{i},{g:.6f}\n")
+                    
+        batch_gradients_W6_02 = [g.numpy() for g in model.batch_gradients_W6_02]
+        if batch_gradients_W6_02:
+            with open(self.W6_02_log_file, 'a') as f:
+                for i, g in enumerate(batch_gradients_W6_02):
+                    f.write(f"{epoch+1},{i},{g:.6f}\n")
+                    
+        # clear for next epoch
+        model.batch_gradients_W6_01 = []
+        model.batch_gradients_W6_02 = []
+        
+        # import sys
+        # sys.exit()
+
+def build_model(cfg, output_bias=None, logging_model=None):
+    """Build a neural network model based on the configuration file
+    Args:
+        cfg: dict
+            Configuration file
+        output_bias: np.array
+            Initial bias for the output layer
+
+    Returns:
+        model: tf.keras.Model
+            Neural network model
+    """
+    input_shape = (cfg.model.input.n_neurons,)  # Define input shape as a tuple
+    X = tf.keras.Input(shape=input_shape)
+    Y = X
+    for hid_name, hid_config in cfg['model']['hidden'].items():
+        Y = tf.keras.layers.Dense(units=hid_config['n_neurons'], activation=hid_config['activation'], kernel_initializer=hid_config['initializer'],
+                kernel_regularizer=tf.keras.regularizers.l1_l2(l1=hid_config['l1'], l2=hid_config['l2']),
+                name=hid_name)(Y)
+        if hid_config['batch_norm']:
+            Y = tf.keras.layers.BatchNormalization()(Y)
+        Y = tf.keras.layers.Dropout(hid_config['dropout_rate'])(Y)
+    # bias_initializer = tf.keras.initializers.Constant(-0.45)
+    # Add bias to the output layer
+    if output_bias is not None:
+        output_bias = tf.keras.initializers.Constant(value=output_bias.item())
+        Y = tf.keras.layers.Dense(units=cfg['model']['output']['n_neurons'], activation=cfg['model']['output']['activation'], bias_initializer=output_bias, name='Output')(Y)
+    else:
+        Y = tf.keras.layers.Dense(units=cfg['model']['output']['n_neurons'], activation=cfg['model']['output']['activation'], name='Output')(Y)
+
+    model = tf.keras.Model(inputs=X, outputs=Y, name="TANDEM-DIMPLE")
+
+    # Print model summary
+    _LOGGER.error("\nModel Summary:")
+    model.summary()
+
+    # Print total number of trainable parameters
+    total_params = np.sum([np.prod(v.shape) for v in model.trainable_variables])
+    _LOGGER.error(f"Total trainable parameters: {total_params:,}")
+
+    if logging_model:
+        tf.config.run_functions_eagerly(True)
+        model = GradientLoggingModel(inputs=model.input, outputs=model.output, name=model.name)
+    return model
 
 def plot_grid_search(df):
     df = df.sort_values(by='val_accuracy_mean', ascending=False)

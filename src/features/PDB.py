@@ -852,7 +852,7 @@ class PDBfeatures:
 
     def calcDELTA_Rg_SASA_ACR_Hbond_DSS_features(self, chids, resids, wt_aas, mut_aas, 
         sel_feats=['DELTA_Rg', 'DELTA_Dcom', 'DELTA_SASA', 'DELTA_ACR', 
-                       'DELTA_Hbond', 'DELTA_DSS', 'DELTA_charge_pH7']):
+                    'DELTA_Hbond', 'DELTA_DSS', 'DELTA_charge_pH7']):
         # Merge if either DELTA_Rg or DELTA_Dcom is selected
         if {'DELTA_Rg', 'DELTA_Dcom'}.intersection(set(sel_feats)):
             sel_feats = list(set(sel_feats) | {'DELTA_Rg', 'DELTA_Dcom'})
@@ -871,9 +871,11 @@ class PDBfeatures:
             chain = pdb.ca[chid].copy()
             d = self.feats[chid]
             try:
+                LOGGER.timeit('_createMutationfile')
                 # Make the file for the mutation
                 wtpath = writePDB(os.path.join(self.folder, f'{self.pdbID}_{chid}.pdb'), pdb.protein[chid].copy())
                 mutpath = createMutationfile(wtpath, chid, mutation=f'{wt_aa}{resid}{mut_aa}')
+                LOGGER.report('Create Mutation file in %.2fs.', '_createMutationfile')
             except Exception as e:
                 msg = traceback.format_exc()
                 LOGGER.warn(f"Error in creating mutation file for {chid} {resid} {wt_aa} {mut_aa}")
@@ -921,18 +923,43 @@ class PDBfeatures:
                     msg = traceback.format_exc()
                     LOGGER.warn(msg)
             if 'DELTA_Hbond' in sel_feats:
-                if not 'Hbond' in d:
-                    self.calcHbondfeature(chain_list=[chid])
-                else:
-                    if not isinstance(d['Hbond'], np.ndarray):
+                """
+                DELTA_Hbond is in TANDEM_FEATS['v1.1'] feature set.
+                We will save the features in later use.
+                The format is as follow:
+                self.feats[chid] = {
+                    'D2': {
+                        'A': int,
+                        'C': int,
+                        'E': int,
+                        ...
+                    }
+                }
+                """
+                key1 = f'{wt_aa}{resid}'  # e.g., 'D2'
+                key2 = mut_aa             # e.g., 'A'
+                if key1 not in d:
+                    d[key1] = {}
+                    
+                # If having precomputed feature, go for it :-) 
+                if key2 in d[key1]:
+                    f[i]['DELTA_Hbond'] = d[key1][key2]
+                else: # No, we calculate it :-(
+                    if not 'Hbond' in d:
                         self.calcHbondfeature(chain_list=[chid])
-                try:
-                    ag = calcHbond(mutpath, chain_list=[chid])
-                    f[i]['DELTA_Hbond'] = ag.ca[chid].getData('hbond')[indices[0]] - \
-                        self.feats[chid]['Hbond'][indices[0]]
-                except Exception as e:
-                    msg = traceback.format_exc()
-                    LOGGER.warn(msg)
+                    else:
+                        if not isinstance(d['Hbond'], np.ndarray):
+                            self.calcHbondfeature(chain_list=[chid])
+                    try:
+                        ag = calcHbond(mutpath, chain_list=[chid])
+                        DELTA_Hbond = ag.ca[chid].getData('hbond')[indices[0]] - \
+                            self.feats[chid]['Hbond'][indices[0]]
+                        f[i]['DELTA_Hbond'] = DELTA_Hbond
+                        d[key1][key2] = DELTA_Hbond
+                    except Exception:
+                        msg = traceback.format_exc()
+                        LOGGER.warn(msg)
+                        
             if 'DELTA_DSS' in sel_feats:
                 if not 'SSbond' in d:
                     self.calcDSSfeatures()
@@ -1018,7 +1045,6 @@ class PDBfeatures:
         f_dtype = np.dtype([(f, 'f') for f in sel_feats])
         f = np.full(len(resids), np.nan, dtype=f_dtype)
 
-        LOGGER.timeit('_calcFeatures')
         # Calculate GNM and ANM features
         for env in ['chain', 'reduced', 'sliced', 'full']:
             s = '_' + env
@@ -1130,12 +1156,11 @@ class PDBfeatures:
                         'GNM_Eigval5_1_sliced', 'GNM_SEall_', 'GNM_SE20_sliced',
                         'GNM_rmsf_overall_full', 'GNM_Ventropy_full', 'GNM_Eigval1_full', 'GNM_Eigval2_full', 
                         'GNM_Eigval5_1_full', 'GNM_SEall_full', 'GNM_SE20_full',
-                        ]:
+                    ]:
                         f[name][i] = d[name]
                     else:
                         # residue features
                         f[name][i] = d[name][indices[0]]
-        LOGGER.report('PDB features for {} computed in %.2fs.'.format(self.pdbID), '_calcFeatures')
         return f
 
 def calcPDBfeatures(mapped_SAVs, custom_PDB=None, refresh=False, 
@@ -1153,7 +1178,6 @@ def calcPDBfeatures(mapped_SAVs, custom_PDB=None, refresh=False,
         selected features
     folder: str
         folder to save PDB features
-
 
     format is defined as follows:
         ### if custom_PDB is available:
@@ -1214,6 +1238,8 @@ def calcPDBfeatures(mapped_SAVs, custom_PDB=None, refresh=False,
             else:
                 groups[pdbID]['asu'].append(i)
     
+    job_directory = kwargs["job_directory"] if "job_directory" in kwargs else '.'
+    
     # Compute features for each group
     ndone = 0
     for pdbID, formats in groups.items():
@@ -1225,7 +1251,7 @@ def calcPDBfeatures(mapped_SAVs, custom_PDB=None, refresh=False,
             try:
                 # Non-AF custom PDB
                 if format == 'custom':
-                    pdbPath = fixPDB(custom_PDB, format, folder=FIX_PDB_DIR, refresh=True)
+                    pdbPath = fixPDB(custom_PDB, format, folder=job_directory, refresh=refresh)
                     pdb_coords = mapped_SAVs[indices]['Asymmetric_PDB_coords']
                 # AF custom PDB file
                 elif custom_PDB is not None and format == 'af':
@@ -1233,7 +1259,7 @@ def calcPDBfeatures(mapped_SAVs, custom_PDB=None, refresh=False,
                     pdb_coords = mapped_SAVs[indices]['Asymmetric_PDB_coords']
                 # Not custom PDB
                 else:
-                    pdbPath = fixPDB(pdbID, format, folder=FIX_PDB_DIR, refresh=True)
+                    pdbPath = fixPDB(pdbID, format, folder=job_directory, refresh=refresh)
                     if format == 'asu':
                         pdb_coords = mapped_SAVs[indices]['Asymmetric_PDB_coords']
                     elif format == 'opm':
@@ -1242,7 +1268,7 @@ def calcPDBfeatures(mapped_SAVs, custom_PDB=None, refresh=False,
                         pdb_coords = mapped_SAVs[indices]['Asymmetric_PDB_coords']
                     else:# format.startswith('bas'):
                         pdb_coords = mapped_SAVs[indices]['BioUnit_PDB_coords']
-            except Exception as e:
+            except Exception:
                 msg = traceback.format_exc()
                 LOGGER.warn(msg)
                 continue
@@ -1254,10 +1280,6 @@ def calcPDBfeatures(mapped_SAVs, custom_PDB=None, refresh=False,
                 # Load PDB structure and calculate features
                 LOGGER.info(f"Loading PDB {pdbPath}...")
                 obj = PDBfeatures(pdbPath, format=format, recover_pickle=not(refresh), **kwargs)
-                # if "full" not in obj._gnm:
-                    # obj._gnm['full'] = {chID: None for chID in obj.chids}
-                # if "full" not in obj._anm:
-                    # obj._anm['full'] = {chID: None for chID in obj.chids}
             except Exception as e:
                 msg = traceback.format_exc()
                 LOGGER.warn(msg)

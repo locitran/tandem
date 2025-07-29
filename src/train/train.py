@@ -4,7 +4,7 @@ import logging
 import pandas as pd
 import numpy as np
 import random
-from .modules import Preprocessing, DelayedEarlyStopping, Callback_CSVLogger, BinaryF1Score
+from .modules import Preprocessing, DelayedEarlyStopping, Callback_CSVLogger, BinaryF1Score, GradientLoggingModel, GradientLogger
 from .modules import build_model, np_to_dataset, build_optimizer, plot_acc_loss, build_model_from_config, plot_acc_loss_3fold_CV
 from .split_data import split_data
 from .config import model_config
@@ -23,16 +23,13 @@ from sklearn.model_selection import StratifiedKFold
 
 filedir = os.path.dirname(os.path.abspath(__file__))
 
-def is_model_compiled(model):
-    return hasattr(model, 'optimizer') and model.optimizer is not None
-
 def get_seed(seed=150):
     random.seed(seed)
     tf.random.set_seed(seed)
     np.random.seed(seed)
     return seed
 
-def train_model(train_ds, val_ds, cfg, folder, filename, model_input=None, seed=None, initial_biase=None):
+def train_model(train_ds, val_ds, cfg, folder, filename, model_input=None, seed=None, initial_biase=None, logging_model=None):
     """
     Trains a deep learning model on the given training and validation datasets, with optional transfer learning.
 
@@ -68,7 +65,8 @@ def train_model(train_ds, val_ds, cfg, folder, filename, model_input=None, seed=
     if model_input is not None:
         model = model_input
     else:
-        model = build_model(cfg, initial_biase)
+        model = build_model(cfg, initial_biase, logging_model=logging_model)
+    
     optimizer = tf.keras.optimizers.Nadam(learning_rate=cfg.optimizer.learning_rate)
     optimizer.build(model.trainable_variables)
     
@@ -76,6 +74,11 @@ def train_model(train_ds, val_ds, cfg, folder, filename, model_input=None, seed=
         data=[train_ds, val_ds],
         name=['train', 'val'],
         log_file=f'{folder}/history_{filename}.csv'
+    )
+    gradient_logger = GradientLogger(
+        log_file=f'{folder}/gradient_{filename}.csv',
+        W6_01_log_file=f'{folder}/W6_01_{filename}.csv',
+        W6_02_log_file=f'{folder}/W6_02_{filename}.csv',
     )
     early_stopping = DelayedEarlyStopping(**cfg.training.callbacks.EarlyStopping)
     model.compile(
@@ -88,11 +91,18 @@ def train_model(train_ds, val_ds, cfg, folder, filename, model_input=None, seed=
             BinaryF1Score(name='f1_score')
         ]
     )
+    # model.save(os.path.join(folder, f'{filename}_initial.h5'))
+    
+    if logging_model:
+        callbacks = [early_stopping, csv_logger, gradient_logger]
+    else:
+        callbacks = [early_stopping, csv_logger]
+        
     model.fit(
         train_ds,
         epochs=cfg.training.n_epochs,
         validation_data=val_ds,
-        callbacks=[early_stopping, csv_logger],
+        callbacks=callbacks,
         batch_size=300,
     )
     model.save(os.path.join(folder, f'{filename}.h5'), include_optimizer=True)
@@ -129,27 +139,30 @@ def reproduce_foundation_model(name='reproduce_foundation_model'):
     GJB2_nan_SAV_coords, GJB2_nan_labels, GJB2_nan_features = GJB2_unk
     RYR1_nan_SAV_coords, RYR1_nan_labels, RYR1_nan_features = RYR1_unk
     
-    # Convert numpy array to tensorflow dataset
-    GJB2_nan_ds = np_to_dataset(GJB2_nan_features, GJB2_nan_labels, shuffle=False, batch_size=300, seed=seed)
-    GJB2_notnan_ds = np_to_dataset(GJB2_notnan_features, GJB2_notnan_labels, shuffle=False, batch_size=300, seed=seed)
-    RYR1_nan_ds = np_to_dataset(RYR1_nan_features, RYR1_nan_labels, shuffle=False, batch_size=300, seed=seed)
-    RYR1_notnan_ds = np_to_dataset(RYR1_notnan_features, RYR1_notnan_labels, shuffle=False, batch_size=300, seed=seed)
-    
+        
     input_shape = R20000[2].shape[1]
     cfg = get_config(input_shape, n_hidden=n_hidden, patience=patience, dropout_rate=0.0)
+    
+    # Convert numpy array to tensorflow dataset
+    GJB2_nan_ds = np_to_dataset(GJB2_nan_features, GJB2_nan_labels, shuffle=False, batch_size=cfg.training.batch_size, seed=seed)
+    GJB2_notnan_ds = np_to_dataset(GJB2_notnan_features, GJB2_notnan_labels, shuffle=False, batch_size=cfg.training.batch_size, seed=seed)
+    RYR1_nan_ds = np_to_dataset(RYR1_nan_features, RYR1_nan_labels, shuffle=False, batch_size=cfg.training.batch_size, seed=seed)
+    RYR1_notnan_ds = np_to_dataset(RYR1_notnan_features, RYR1_notnan_labels, shuffle=False, batch_size=cfg.training.batch_size, seed=seed)
+
 
     ##################### 3. Train ####################################
     evaluations = {}
     for i, fold in folds.items():
         train, val, test = fold['train'], fold['val'], fold['test']
-        train_ds = np_to_dataset(train['x'], train['y'], shuffle=True, batch_size=300, seed=seed)
-        val_ds = np_to_dataset(val['x'], val['y'], shuffle=False, batch_size=300, seed=seed)
-        test_ds = np_to_dataset(test['x'], test['y'], shuffle=False, batch_size=300, seed=seed)
+        train_ds = np_to_dataset(train['x'], train['y'], shuffle=True, batch_size=cfg.training.batch_size, seed=seed)
+        val_ds = np_to_dataset(val['x'], val['y'], shuffle=False, batch_size=cfg.training.batch_size, seed=seed)
+        test_ds = np_to_dataset(test['x'], test['y'], shuffle=False, batch_size=cfg.training.batch_size, seed=seed)
         initial_biase = np.log([np.sum(train['y'][:, 0]) / np.sum(train['y'][:, 1])]) # Ref: https://www.tensorflow.org/tutorials/structured_data/imbalanced_data
+        # model = train_model_test(
         model = train_model(
             train_ds, val_ds, cfg=cfg,
             folder=log_dir, filename=f'fold_{i+1}', model_input=None, 
-            seed=seed, initial_biase=initial_biase
+            seed=seed, initial_biase=initial_biase, logging_model=False
         )
         
         ### Evaluation
@@ -196,7 +209,7 @@ def reproduce_foundation_model(name='reproduce_foundation_model'):
     folds_history = [pd.read_csv(f'{log_dir}/history_fold_{i}.csv') for i in range(1, 6)]
     fig = plot_acc_loss(folds_history, 'Training History')
     fig.savefig(f'{log_dir}/training_history.png')
-    fig.close()
+    # fig.close()
     
 def reproduce_transfer_learning_model(
     features,

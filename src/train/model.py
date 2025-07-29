@@ -62,5 +62,3 @@ class DNN(tf.keras.Model):
         # batch_size x 10 --> batch_size x 2
         x = self.output_layer(x)
         return self.softmax(x)
-    
-
