@@ -13,5 +13,7 @@ fpdf==1.7.2
 gdown==5.2.0
 scikit-learn==1.6.1
 seaborn==0.13.2
+ml_collections==1.0.0
+prettytable==3.16.0
 # Editable Git install with no remote (PyRONN==4.0rc0)
 -e ./pyRONN

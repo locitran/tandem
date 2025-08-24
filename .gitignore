@@ -171,6 +171,7 @@ pending_task.txt
 train_test.py
 slurm_jupyter.sh
 
+._.
 ._.DS_Store
 .DS_Store
 hbdebug.dat
@@ -202,3 +203,6 @@ models/different_number_of_layers/20250423-1234-tandem/n_hidden-5/shap_values_GJ
 models/different_number_of_layers/20250423-1234-tandem/n_hidden-5/shap_values_fold_1_Jun19.npy
 
 rhapsody/
+
+.gradio
+.vscode

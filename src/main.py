@@ -6,8 +6,6 @@ from .utils.settings import ROOT_DIR
 from .utils.logger import LOGGER
 from .features.PolyPhen2 import printSAVlist
 
-# from prody import LOGGER
-
 __all__ = ['tandem_dimple']
 
 def tandem_dimple(
@@ -58,19 +56,21 @@ def tandem_dimple(
     # Save the Uniprot2PDB map
     t.getUniprot2PDBmap(folder=job_directory, filename=job_name)
     # Calculate the feature matrix
-    t.getFeatMatrix(withSAVs=True, folder=job_directory, filename=job_name)
-    # Calculate predictions
-    t.predictSAVs(
-        models=models, 
-        r20000=r20000, 
-        model_names='TANDEM-DIMPE_v1',
-        folder=job_directory,
-        filename=job_name
-    )
-    
-    for label in LOGGER._reports:
-        LOGGER.info(f"  {label}: {LOGGER._reports[label]:.2f}s ({LOGGER._report_times[label]} time(s))")
-        
-    LOGGER.report('Run time elapsed in %.2fs.', "_runtime")
-    LOGGER.close(logfile)
     return t
+    
+    # t.getFeatMatrix(withSAVs=True, folder=job_directory, filename=job_name)
+    # # Calculate predictions
+    # t.predictSAVs(
+    #     models=models, 
+    #     r20000=r20000, 
+    #     model_names='TANDEM-DIMPE_v1',
+    #     folder=job_directory,
+    #     filename=job_name
+    # )
+    
+    # for label in LOGGER._reports:
+    #     LOGGER.info(f"  {label}: {LOGGER._reports[label]:.2f}s ({LOGGER._report_times[label]} time(s))")
+        
+    # LOGGER.report('Run time elapsed in %.2fs.', "_runtime")
+    # LOGGER.close(logfile)
+    # return t
