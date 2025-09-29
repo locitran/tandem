@@ -1,0 +1,50 @@
+.session-frozen {
+  background-color: #f0f0f0; 
+  color: #666 !important; 
+} 
+
+/* Headings from ### */
+.boxed-markdown h3 {
+  font-size: 22px;
+  font-weight: bold;
+  color: #ffffff;
+  padding: 10px;
+}
+
+/* Paragraphs (plain text) */
+.boxed-markdown p {
+  font-size: 14px;
+  padding-left: 10px;
+  padding-bottom: 1px;
+  margin-bottom: 1px;
+}
+
+.checkbox {
+  border-radius: 8px !important;
+  padding: 5px 5px !important;
+}
+
+.checkbox label,
+.checkbox .label {
+  font-size: 14px;   /* same as your button text */
+  font-weight: bold;
+  font-weight: 700;
+}
+
+/* Uploading button and checkbox */
+#upload-btn {
+  font-size: 14px ;
+  font-weight: 300 ;
+  border-radius: 8px !important;
+  padding: 5px 5px !important;
+}
+
+#submit-btn {
+  font-size: 16px ;
+  font-weight: 300 ;
+  border-radius: 8px !important;
+  padding: 5px 5px !important;
+}
+
+
+

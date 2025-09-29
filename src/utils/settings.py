@@ -27,6 +27,8 @@ TMP_DIR = ROOT_DIR + '/src/features/tmp'
 MATLAB_DIR = ROOT_DIR + '/src/features/matlab'
 
 CLUSTER = ROOT_DIR + '/data/R20000/c30_clstr_May13.csv'
+CLUSTER = ROOT_DIR + '/data/c30_clstr_May13_full_rhd.csv'
+
 FEAT_STATS = ROOT_DIR + '/data/R20000/stats/features_stats.csv'
 TANDEM_R20000 = ROOT_DIR + '/data/R20000/final_features.csv'
 TANDEM_GJB2 = ROOT_DIR + '/data/GJB2/final_features.csv'
@@ -86,4 +88,5 @@ seq_feat = {
 }
 cols = {**dynamics_feat, **structure_feat, **seq_feat}
 
-TANDEM_v1dot1 = os.path.join(ROOT_DIR, 'models', 'different_number_of_layers/20250423-1234-tandem/n_hidden-5')
+# TANDEM_v1dot1 = os.path.join(ROOT_DIR, 'models', 'different_number_of_layers/20250423-1234-tandem/n_hidden-5')
+TANDEM_v1dot1 = os.path.join(ROOT_DIR, 'models', 'tandem')

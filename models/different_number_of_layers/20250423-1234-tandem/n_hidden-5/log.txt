@@ -1,0 +1,133 @@
+Start Time = 20250914-1258
+Tensorflow Version: 2.17.0
+Tensorflow Version should be 2.17
+Feature set: ['GNM_co_rank_full', 'ANM_stiffness_chain', 'GNM_V2_full', 'GNM_V1_full', 'GNM_Eigval1_full', 'GNM_rankV2_full', 'GNM_Eigval2_full', 'GNM_rankV1_full', 'ANM_effectiveness_chain', 'SASA', 'loop_percent', 'AG1', 'Dcom', 'AG5', 'AG3', 'SSbond', 'Hbond', 'DELTA_Hbond', 'sheet_percent', 'helix_percent', 'Rg', 'IDRs', 'Lside', 'deltaLside', 'entropy', 'wtPSIC', 'deltaPSIC', 'consurf', 'ACNR', 'BLOSUM', 'ranked_MI', 'deltaPolarity', 'deltaCharge']
+Num GPUs Available: 0
+GPUs: []
+**************************************************
+Missing values in the dataframe:
+consurf: 		 2
+ACNR: 		 2
+deltaPSIC: 		 1
+SF1: 		 11
+SF2: 		 11
+SF3: 		 11
+entropy: 		 3769
+ranked_MI: 		 3769
+1 members: 1428 clusters
+2 members: 226 clusters
+3 members: 57 clusters
+4 members: 24 clusters
+5 members: 18 clusters
+7 members: 8 clusters
+6 members: 6 clusters
+9 members: 3 clusters
+8 members: 2 clusters
+36 members: 1 clusters
+10 members: 1 clusters
+No. UniProtID: 2423, No. SAVs: 20361, and No. clusters: 1774
+No. pathogenic SAVs: 13626 and benign SAVs: 6735
+**************************************************
+> Deleting cluster P29033 from data_sorted
+No. clusters: 1773
+No. SAVs after deleting P29033: 20295
+**************************************************
+Test set percent = 10.03% is larger than 10%: Breaking the loop
+No. adding to test set: 34
+Cluster IDs added to the test set: [67, 5, 11, 17, 23, 29, 35, 41, 47, 53, 59, 65, 72, 78, 84, 90, 96, 102, 108, 114, 120, 126, 132, 138, 144, 150, 156, 162, 168, 174, 180, 186, 192, 198]
+Member IDs added to the test set: ['P29033', 'P07101', 'Q8IWU9', 'P00439', 'Q9UHC9', 'O15118', 'P22304', 'P30613', 'P14618', 'P35520', 'P11509', 'Q16696', 'P05181', 'P20813', 'P11712', 'P10632', 'P33261', 'P00966', 'P11413', 'Q93099', 'P15848', 'P54802', 'P60484', 'Q06124', 'P09619', 'P16234', 'P10721', 'P07333', 'P78504', 'Q9NR61', 'P52701', 'Q15831', 'P08559', 'P06400', 'P00156', 'P78527', 'Q14353', 'Q13224', 'Q12879', 'Q9H251', 'P51648', 'P30838', 'P18074', 'O94759', 'Q8TD43', 'P00813', 'O14733', 'P36507', 'P45985', 'Q02750', 'Q96L73', 'O43240', 'P06870', 'P07288', 'P20151', 'O60259', 'Q9Y5K2', 'P23946', 'P07477', 'Q92876', 'P46597', 'P03891']
+> Delete test indices from data_sorted
+No. clusters after deleting test indices: 1740
+No. SAVs after deleting test indices: 18596
+**************************************************
+> Adding cluster P04745 to the validation set
+Fold 0: 
+         Train: n_SAVs = 14651, % SAVs = 71.96%, n_pathogenic = 8967, n_benign = 5684, ratio = 1.58:1, n_clusters = 1652, n_members = 2189
+         Val: n_SAVs = 3667, % SAVs = 18.01%, n_pathogenic = 3010, n_benign = 657, ratio = 4.58:1, n_clusters = 88, n_members = 168
+         Test: n_SAVs = 2043, % SAVs = 10.03%, n_pathogenic = 1649, n_benign = 394, ratio = 4.19:1, n_clusters = 34, n_members = 62
+Fold 1: 
+         Train: n_SAVs = 14652, % SAVs = 71.96%, n_pathogenic = 9287, n_benign = 5365, ratio = 1.73:1, n_clusters = 1541, n_members = 2039
+         Val: n_SAVs = 3666, % SAVs = 18.01%, n_pathogenic = 2690, n_benign = 976, ratio = 2.76:1, n_clusters = 199, n_members = 318
+         Test: n_SAVs = 2043, % SAVs = 10.03%, n_pathogenic = 1649, n_benign = 394, ratio = 4.19:1, n_clusters = 34, n_members = 62
+Fold 2: 
+         Train: n_SAVs = 14653, % SAVs = 71.97%, n_pathogenic = 10113, n_benign = 4540, ratio = 2.23:1, n_clusters = 1403, n_members = 1861
+         Val: n_SAVs = 3665, % SAVs = 18.00%, n_pathogenic = 1864, n_benign = 1801, ratio = 1.03:1, n_clusters = 337, n_members = 496
+         Test: n_SAVs = 2043, % SAVs = 10.03%, n_pathogenic = 1649, n_benign = 394, ratio = 4.19:1, n_clusters = 34, n_members = 62
+Fold 3: 
+         Train: n_SAVs = 14653, % SAVs = 71.97%, n_pathogenic = 9852, n_benign = 4801, ratio = 2.05:1, n_clusters = 1255, n_members = 1733
+         Val: n_SAVs = 3665, % SAVs = 18.00%, n_pathogenic = 2125, n_benign = 1540, ratio = 1.38:1, n_clusters = 485, n_members = 624
+         Test: n_SAVs = 2043, % SAVs = 10.03%, n_pathogenic = 1649, n_benign = 394, ratio = 4.19:1, n_clusters = 34, n_members = 62
+Fold 4: 
+         Train: n_SAVs = 14663, % SAVs = 72.02%, n_pathogenic = 9689, n_benign = 4974, ratio = 1.95:1, n_clusters = 1109, n_members = 1606
+         Val: n_SAVs = 3655, % SAVs = 17.95%, n_pathogenic = 2288, n_benign = 1367, ratio = 1.67:1, n_clusters = 631, n_members = 751
+         Test: n_SAVs = 2043, % SAVs = 10.03%, n_pathogenic = 1649, n_benign = 394, ratio = 4.19:1, n_clusters = 34, n_members = 62
+Label ratio plot saved to ./label_ratio.png
+Load R20000 dataset
+**************************************************
+Missing values in the dataframe:
+labels: 		 83
+entropy: 		 6
+ranked_MI: 		 6
+No. Unknown SAVs 25.0 (benign), 22.0 (pathogenic), and 83 (NaN)
+**************************************************
+Missing values in the dataframe:
+labels: 		 30
+entropy: 		 52
+ranked_MI: 		 52
+No. Unknown SAVs 45.0 (benign), 45.0 (pathogenic), and 30 (NaN)
+Input Layer: 33
+Model Configuration: 
++-----------+------------+------------+--------------+----------------+----+--------+-----------+
+|   Layer   | Activation | Batch Norm | Dropout Rate |  Initializer   | L1 |   L2   | N Neurons |
++-----------+------------+------------+--------------+----------------+----+--------+-----------+
+|   Input   |     -      |     -      |     0.0      |       -        | -  |   -    |     33    |
+| hidden_00 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     33    |
+| hidden_01 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     33    |
+| hidden_02 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     33    |
+| hidden_03 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     33    |
+| hidden_04 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     10    |
+|   Output  |  softmax   |     -      |      -       |       -        | -  |   -    |     2     |
++-----------+------------+------------+--------------+----------------+----+--------+-----------+
+Training Configuration: 
++-----------+------------+----------+--------------------------+---------------------+
+|  Training | Batch Size | N Epochs |           Loss           |       Metrics       |
++-----------+------------+----------+--------------------------+---------------------+
+|  Training |    300     |   300    | categorical_crossentropy | ['accuracy', 'AUC'] |
+| Optimizer |   5e-05    |  Nadam   |            -             |          -          |
++-----------+------------+----------+--------------------------+---------------------+
+
+Model Summary:
+Total trainable parameters: 4,850
+Restoring model weights from the end of the best epoch: 100.
+Epoch 101: best epoch
+Fold 1 - val_loss: 0.51, val_accuracy: 77.3%, val_auc: 0.84, val_precision: 0.77, val_recall: 0.77, val_f1: 0.77, test_loss: 0.43, test_accuracy: 82.1%, test_auc: 0.90, test_precision: 0.82, test_recall: 0.82, test_f1: 0.82, RYR1_loss: 0.57, RYR1_accuracy: 71.1%, RYR1_auc: 0.79, RYR1_precision: 0.71, RYR1_recall: 0.71, RYR1_notnan_f1: 0.71, GJB2_loss: 0.40, GJB2_accuracy: 87.2%, GJB2_auc: 0.91, GJB2_precision: 0.87, GJB2_recall: 0.87, GJB2_notnan_f1: 0.87
+
+Model Summary:
+Total trainable parameters: 4,850
+Restoring model weights from the end of the best epoch: 91.
+Epoch 92: best epoch
+Fold 2 - val_loss: 0.44, val_accuracy: 81.8%, val_auc: 0.89, val_precision: 0.82, val_recall: 0.82, val_f1: 0.82, test_loss: 0.39, test_accuracy: 84.4%, test_auc: 0.92, test_precision: 0.84, test_recall: 0.84, test_f1: 0.84, RYR1_loss: 0.58, RYR1_accuracy: 72.2%, RYR1_auc: 0.78, RYR1_precision: 0.72, RYR1_recall: 0.72, RYR1_notnan_f1: 0.72, GJB2_loss: 0.42, GJB2_accuracy: 85.1%, GJB2_auc: 0.92, GJB2_precision: 0.85, GJB2_recall: 0.85, GJB2_notnan_f1: 0.85
+
+Model Summary:
+Total trainable parameters: 4,850
+Restoring model weights from the end of the best epoch: 103.
+Epoch 104: best epoch
+Fold 3 - val_loss: 0.51, val_accuracy: 76.9%, val_auc: 0.84, val_precision: 0.77, val_recall: 0.77, val_f1: 0.77, test_loss: 0.40, test_accuracy: 84.0%, test_auc: 0.91, test_precision: 0.84, test_recall: 0.84, test_f1: 0.84, RYR1_loss: 0.55, RYR1_accuracy: 70.0%, RYR1_auc: 0.82, RYR1_precision: 0.70, RYR1_recall: 0.70, RYR1_notnan_f1: 0.70, GJB2_loss: 0.43, GJB2_accuracy: 83.0%, GJB2_auc: 0.90, GJB2_precision: 0.83, GJB2_recall: 0.83, GJB2_notnan_f1: 0.83
+
+Model Summary:
+Total trainable parameters: 4,850
+Restoring model weights from the end of the best epoch: 125.
+Epoch 126: best epoch
+Fold 4 - val_loss: 0.49, val_accuracy: 77.8%, val_auc: 0.86, val_precision: 0.78, val_recall: 0.78, val_f1: 0.78, test_loss: 0.39, test_accuracy: 84.0%, test_auc: 0.91, test_precision: 0.84, test_recall: 0.84, test_f1: 0.84, RYR1_loss: 0.55, RYR1_accuracy: 72.2%, RYR1_auc: 0.81, RYR1_precision: 0.72, RYR1_recall: 0.72, RYR1_notnan_f1: 0.72, GJB2_loss: 0.44, GJB2_accuracy: 83.0%, GJB2_auc: 0.89, GJB2_precision: 0.83, GJB2_recall: 0.83, GJB2_notnan_f1: 0.83
+
+Model Summary:
+Total trainable parameters: 4,850
+Restoring model weights from the end of the best epoch: 56.
+Epoch 57: best epoch
+Fold 5 - val_loss: 0.53, val_accuracy: 75.2%, val_auc: 0.83, val_precision: 0.75, val_recall: 0.75, val_f1: 0.75, test_loss: 0.40, test_accuracy: 83.6%, test_auc: 0.91, test_precision: 0.84, test_recall: 0.84, test_f1: 0.84, RYR1_loss: 0.53, RYR1_accuracy: 72.2%, RYR1_auc: 0.83, RYR1_precision: 0.72, RYR1_recall: 0.72, RYR1_notnan_f1: 0.72, GJB2_loss: 0.41, GJB2_accuracy: 85.1%, GJB2_auc: 0.92, GJB2_precision: 0.85, GJB2_recall: 0.85, GJB2_notnan_f1: 0.85
+-----------------------------------------------------------------
+Vali - loss: 0.50±0.02, accuracy: 77.8±1.1%, auc: 0.85±0.01
+Test - loss: 0.40±0.01, accuracy: 83.6±0.4%, auc: 0.91±0.00
+GJB2 - loss: 0.42±0.01, accuracy: 84.7±0.8%, auc: 0.91±0.01
+RYR1 - loss: 0.56±0.01, accuracy: 71.6±0.4%, auc: 0.81±0.01
+-----------------------------------------------------------------

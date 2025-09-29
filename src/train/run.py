@@ -61,6 +61,23 @@ def getR20000(feat_path, clstr_path, feat_names, folder=None):
             folds[i][entity]['y'] = labels[idx]
 
     R20000 = [SAV_coords, labels, features]
+
+    # Add Sep 6 to try "Several potential swappable clusters"
+    for i in range(5):
+        fold = folds[i]
+        for _set in ['train', 'val', 'test']:
+            target = fold[_set]
+            data = []
+            # e.g. folds[0]['train']['n_SAVs']
+            for j in range(target['n_SAVs']):
+                data.append(
+                    {
+                        'SAV': target['SAV_coords'][j],
+                        'x': target['x'][j],
+                        'y': target['y'][j],
+                    }
+                )
+            target['data'] = np.array(data)
     return folds, R20000, preprocess_feat
 
 def getTestset(feat_path, feat_names, preprocess_feat, name=None):
@@ -132,7 +149,7 @@ def plot_label_ratio(folds, folder):
     _LOGGER.error("Label ratio plot saved to %s", out) # Write to log
 
 def get_config(input_shape=33, n_hidden=5, patience=50, dropout_rate=0., 
-               n_neuron_per_hidden=None, n_neuron_last_hidden=None):
+               n_neuron_per_hidden=None, n_neuron_last_hidden=None, verbose=True):
     cfg = model_config()
     cfg.model.input.n_neurons = input_shape
     _LOGGER.error("Input Layer: %d", cfg.model.input.n_neurons) # Write to log
@@ -143,7 +160,7 @@ def get_config(input_shape=33, n_hidden=5, patience=50, dropout_rate=0.,
     n_neuron_last_hidden = 10 if n_neuron_last_hidden is None else n_neuron_last_hidden
     
     weight_initialization = ['glorot_uniform', 'glorot_normal', 'he_normal', 'he_uniform']
-    initializer = 'he_uniform'
+    initializer = 'glorot_uniform'
     
     for item in cfg.model.hidden:
         del cfg['model']['hidden'][item]
@@ -161,22 +178,23 @@ def get_config(input_shape=33, n_hidden=5, patience=50, dropout_rate=0.,
         }
     cfg['training']['callbacks']['EarlyStopping']['patience'] = patience
 
-    from prettytable import PrettyTable
-    # print cfg as table
-    tb = PrettyTable()
-    tb.field_names = ["Layer", "Activation", "Batch Norm", "Dropout Rate", "Initializer", "L1", "L2", "N Neurons"]
-    tb.add_row(["Input", "-", "-", cfg.model.input.dropout_rate, "-", "-", "-", cfg.model.input.n_neurons])
-    for layer in cfg.model.hidden:
-        tb.add_row([layer, cfg.model.hidden[layer].activation, cfg.model.hidden[layer].batch_norm, cfg.model.hidden[layer].dropout_rate, cfg.model.hidden[layer].initializer, cfg.model.hidden[layer].l1, cfg.model.hidden[layer].l2, cfg.model.hidden[layer].n_neurons])
-    tb.add_row(["Output", cfg.model.output.activation, "-", "-", "-", "-", "-", cfg.model.output.n_neurons])
-    _LOGGER.error("Model Configuration: \n%s", tb) # Write to log
+    if verbose:
+        from prettytable import PrettyTable
+        # print cfg as table
+        tb = PrettyTable()
+        tb.field_names = ["Layer", "Activation", "Batch Norm", "Dropout Rate", "Initializer", "L1", "L2", "N Neurons"]
+        tb.add_row(["Input", "-", "-", cfg.model.input.dropout_rate, "-", "-", "-", cfg.model.input.n_neurons])
+        for layer in cfg.model.hidden:
+            tb.add_row([layer, cfg.model.hidden[layer].activation, cfg.model.hidden[layer].batch_norm, cfg.model.hidden[layer].dropout_rate, cfg.model.hidden[layer].initializer, cfg.model.hidden[layer].l1, cfg.model.hidden[layer].l2, cfg.model.hidden[layer].n_neurons])
+        tb.add_row(["Output", cfg.model.output.activation, "-", "-", "-", "-", "-", cfg.model.output.n_neurons])
+        _LOGGER.error("Model Configuration: \n%s", tb) # Write to log
 
-    # print training and optimizer
-    tb = PrettyTable()
-    tb.field_names = ["Training", "Batch Size", "N Epochs", "Loss", "Metrics"]
-    tb.add_row(["Training", cfg.training.batch_size, cfg.training.n_epochs, cfg.training.loss, cfg.training.metrics])
-    tb.add_row(["Optimizer", cfg.optimizer.learning_rate, cfg.optimizer.name, "-", "-"])
-    _LOGGER.error("Training Configuration: \n%s", tb) # Write to log
+        # print training and optimizer
+        tb = PrettyTable()
+        tb.field_names = ["Training", "Batch Size", "N Epochs", "Loss", "Metrics"]
+        tb.add_row(["Training", cfg.training.batch_size, cfg.training.n_epochs, cfg.training.loss, cfg.training.metrics])
+        tb.add_row(["Optimizer", cfg.optimizer.learning_rate, cfg.optimizer.name, "-", "-"])
+        _LOGGER.error("Training Configuration: \n%s", tb) # Write to log
     return cfg
 
 def train_model(folds, cfg, log_dir, 
@@ -349,25 +367,3 @@ def train_model(folds, cfg, log_dir,
     fig.savefig(f'{log_dir}/training_history.png')
     return models, df_overall
 
-# def main():
-#     seed = get_seed(seed=150)
-#     ##################### 1. Set up logging and experiment name #####################
-#     NAME_OF_EXPERIMENT = 'test'
-#     current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M")
-#     n_hidden=6 ; patience=50
-#     log_dir = os.path.join('logs', NAME_OF_EXPERIMENT, f'improve-{current_time}-seed-{seed}-n_hidden-{n_hidden}')
-#     if not os.path.exists(log_dir):
-#         os.makedirs(log_dir)
-#     logging.basicConfig(filename=f'{log_dir}/log.txt', level=logging.ERROR, format='%(message)s')
-#     use_all_gpus()
-#     feat_names = None
-#     folds, R20000, preprocess_feat = getR20000(feat_path, clstr_path, feat_names)
-#     GJB2_knw, GJB2_unk = getTestset(GJB2_path, feat_names, preprocess_feat, name="GJB2")
-#     RYR1_knw, RYR1_unk = getTestset(RYR1_path, feat_names, preprocess_feat, name="RYR1")
-
-#     input_shape = R20000[2].shape[1]
-#     cfg = get_config(input_shape, n_hidden=n_hidden, patience=patience)
-#     train_model(folds, cfg, log_dir, GJB2_knw, GJB2_unk, RYR1_knw, RYR1_unk, seed=seed)
-
-# if __name__ == '__main__':
-#     main()

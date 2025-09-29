@@ -151,3 +151,12 @@ Fold 3 - val_loss: 0.5, val_accuracy: 78.6%, val_auc: 0.9, val_precision: 0.8, v
 val_loss: 0.4±0.0, val_accuracy: 78.6±0.0%, val_auc: 0.9±0.0, val_precision: 0.8±0.0, val_recall: 0.8±0.0
 test_loss: 0.2±0.0, test_accuracy: 93.3±6.7%, test_auc: 1.0±0.0, test_precision: 0.9±0.1, test_recall: 0.9±0.1
 -----------------------------------------------------------------
+
+
+Fold 1 - val_loss: 0.4, val_accuracy: 78.6%, val_auc: 0.9, val_precision: 0.8, val_recall: 0.8, val_f1: 0.8, test_loss: 0.2, test_accuracy: 80.0%, test_auc: 1.0, test_precision: 0.8, test_recall: 0.8, test_f1: 0.8
+Fold 2 - val_loss: 0.4, val_accuracy: 78.6%, val_auc: 0.9, val_precision: 0.8, val_recall: 0.8, val_f1: 0.8, test_loss: 0.2, test_accuracy: 100.0%, test_auc: 1.0, test_precision: 1.0, test_recall: 1.0, test_f1: 1.0
+Fold 3 - val_loss: 0.5, val_accuracy: 78.6%, val_auc: 0.9, val_precision: 0.8, val_recall: 0.8, val_f1: 0.8, test_loss: 0.2, test_accuracy: 100.0%, test_auc: 1.0, test_precision: 1.0, test_recall: 1.0, test_f1: 1.0
+-----------------------------------------------------------------
+val_loss: 0.4±0.0, val_accuracy: 78.6±0.0%, val_auc: 0.9±0.0, val_precision: 0.8±0.0, val_recall: 0.8±0.0, val_f1: 0.8±0.0
+test_loss: 0.2±0.0, test_accuracy: 93.3±6.7%, test_auc: 1.0±0.0, test_precision: 0.9±0.1, test_recall: 0.9±0.1, test_f1: 0.8±0.0
+-----------------------------------------------------------------

@@ -133,6 +133,34 @@ Test - loss: 0.40±0.01, accuracy: 83.6±0.4%, auc: 0.91±0.00
 GJB2 - loss: 0.42±0.01, accuracy: 84.7±0.8%, auc: 0.91±0.01
 RYR1 - loss: 0.56±0.01, accuracy: 71.6±0.4%, auc: 0.81±0.01
 -----------------------------------------------------------------
+
+
+Fold 1 - val_loss: 0.51, val_accuracy: 77.3%, val_auc: 0.84, val_precision: 0.77, val_recall: 0.77, val_f1: 0.77, test_loss: 0.43, test_accuracy: 82.1%, test_auc: 0.90, test_precision: 0.82, test_recall: 0.82, test_f1: 0.82, RYR1_loss: 0.57, RYR1_accuracy: 71.1%, RYR1_auc: 0.79, RYR1_precision: 0.71, RYR1_recall: 0.71, RYR1_notnan_f1: 0.71, GJB2_loss: 0.40, GJB2_accuracy: 87.2%, GJB2_auc: 0.91, GJB2_precision: 0.87, GJB2_recall: 0.87, GJB2_notnan_f1: 0.87
+Fold 2 - val_loss: 0.44, val_accuracy: 81.8%, val_auc: 0.89, val_precision: 0.82, val_recall: 0.82, val_f1: 0.82, test_loss: 0.39, test_accuracy: 84.4%, test_auc: 0.92, test_precision: 0.84, test_recall: 0.84, test_f1: 0.84, RYR1_loss: 0.58, RYR1_accuracy: 72.2%, RYR1_auc: 0.78, RYR1_precision: 0.72, RYR1_recall: 0.72, RYR1_notnan_f1: 0.72, GJB2_loss: 0.42, GJB2_accuracy: 85.1%, GJB2_auc: 0.92, GJB2_precision: 0.85, GJB2_recall: 0.85, GJB2_notnan_f1: 0.85
+Fold 3 - val_loss: 0.51, val_accuracy: 76.9%, val_auc: 0.84, val_precision: 0.77, val_recall: 0.77, val_f1: 0.77, test_loss: 0.40, test_accuracy: 84.0%, test_auc: 0.91, test_precision: 0.84, test_recall: 0.84, test_f1: 0.84, RYR1_loss: 0.55, RYR1_accuracy: 70.0%, RYR1_auc: 0.82, RYR1_precision: 0.70, RYR1_recall: 0.70, RYR1_notnan_f1: 0.70, GJB2_loss: 0.43, GJB2_accuracy: 83.0%, GJB2_auc: 0.90, GJB2_precision: 0.83, GJB2_recall: 0.83, GJB2_notnan_f1: 0.83
+Fold 4 - val_loss: 0.49, val_accuracy: 77.8%, val_auc: 0.86, val_precision: 0.78, val_recall: 0.78, val_f1: 0.78, test_loss: 0.39, test_accuracy: 84.0%, test_auc: 0.91, test_precision: 0.84, test_recall: 0.84, test_f1: 0.84, RYR1_loss: 0.55, RYR1_accuracy: 72.2%, RYR1_auc: 0.81, RYR1_precision: 0.72, RYR1_recall: 0.72, RYR1_notnan_f1: 0.72, GJB2_loss: 0.44, GJB2_accuracy: 83.0%, GJB2_auc: 0.89, GJB2_precision: 0.83, GJB2_recall: 0.83, GJB2_notnan_f1: 0.83
+Fold 5 - val_loss: 0.53, val_accuracy: 75.2%, val_auc: 0.83, val_precision: 0.75, val_recall: 0.75, val_f1: 0.75, test_loss: 0.40, test_accuracy: 83.6%, test_auc: 0.91, test_precision: 0.84, test_recall: 0.84, test_f1: 0.84, RYR1_loss: 0.53, RYR1_accuracy: 72.2%, RYR1_auc: 0.83, RYR1_precision: 0.72, RYR1_recall: 0.72, RYR1_notnan_f1: 0.72, GJB2_loss: 0.41, GJB2_accuracy: 85.1%, GJB2_auc: 0.92, GJB2_precision: 0.85, GJB2_recall: 0.85, GJB2_notnan_f1: 0.85
+-----------------------------------------------------------------
+Vali - loss: 0.50±0.02, accuracy: 77.8±1.1%, auc: 0.85±0.01
+Test - loss: 0.40±0.01, accuracy: 83.6±0.4%, auc: 0.91±0.00
+GJB2 - loss: 0.42±0.01, accuracy: 84.7±0.8%, auc: 0.91±0.01
+RYR1 - loss: 0.56±0.01, accuracy: 71.6±0.4%, auc: 0.81±0.01
+-----------------------------------------------------------------
+
+
+
+Fold 1 - val_loss: 0.51, val_accuracy: 77.3%, val_auc: 0.84, val_precision: 0.77, val_recall: 0.77, val_f1: 0.77, test_loss: 0.43, test_accuracy: 82.1%, test_auc: 0.90, test_precision: 0.82, test_recall: 0.82, test_f1: 0.82, RYR1_loss: 0.56, RYR1_accuracy: 70.0%, RYR1_auc: 0.80, RYR1_precision: 0.70, RYR1_recall: 0.70, GJB2_notnan_f1: 0.85, GJB2_loss: 0.41, GJB2_accuracy: 85.1%, GJB2_auc: 0.91, GJB2_precision: 0.85, GJB2_recall: 0.85, RYR1_notnan_f1: 0.70
+Fold 2 - val_loss: 0.44, val_accuracy: 81.7%, val_auc: 0.88, val_precision: 0.82, val_recall: 0.82, val_f1: 0.82, test_loss: 0.39, test_accuracy: 84.6%, test_auc: 0.92, test_precision: 0.85, test_recall: 0.85, test_f1: 0.85, RYR1_loss: 0.58, RYR1_accuracy: 72.2%, RYR1_auc: 0.78, RYR1_precision: 0.72, RYR1_recall: 0.72, GJB2_notnan_f1: 0.85, GJB2_loss: 0.42, GJB2_accuracy: 85.1%, GJB2_auc: 0.91, GJB2_precision: 0.85, GJB2_recall: 0.85, RYR1_notnan_f1: 0.72
+Fold 3 - val_loss: 0.53, val_accuracy: 76.2%, val_auc: 0.83, val_precision: 0.76, val_recall: 0.76, val_f1: 0.76, test_loss: 0.40, test_accuracy: 84.1%, test_auc: 0.91, test_precision: 0.84, test_recall: 0.84, test_f1: 0.84, RYR1_loss: 0.55, RYR1_accuracy: 73.3%, RYR1_auc: 0.83, RYR1_precision: 0.73, RYR1_recall: 0.73, GJB2_notnan_f1: 0.83, GJB2_loss: 0.43, GJB2_accuracy: 83.0%, GJB2_auc: 0.90, GJB2_precision: 0.83, GJB2_recall: 0.83, RYR1_notnan_f1: 0.73
+Fold 4 - val_loss: 0.49, val_accuracy: 78.0%, val_auc: 0.86, val_precision: 0.78, val_recall: 0.78, val_f1: 0.78, test_loss: 0.39, test_accuracy: 84.0%, test_auc: 0.91, test_precision: 0.84, test_recall: 0.84, test_f1: 0.84, RYR1_loss: 0.54, RYR1_accuracy: 71.1%, RYR1_auc: 0.84, RYR1_precision: 0.71, RYR1_recall: 0.71, GJB2_notnan_f1: 0.83, GJB2_loss: 0.44, GJB2_accuracy: 83.0%, GJB2_auc: 0.90, GJB2_precision: 0.83, GJB2_recall: 0.83, RYR1_notnan_f1: 0.71
+Fold 5 - val_loss: 0.52, val_accuracy: 75.6%, val_auc: 0.83, val_precision: 0.76, val_recall: 0.76, val_f1: 0.76, test_loss: 0.40, test_accuracy: 83.7%, test_auc: 0.91, test_precision: 0.84, test_recall: 0.84, test_f1: 0.84, RYR1_loss: 0.55, RYR1_accuracy: 71.1%, RYR1_auc: 0.81, RYR1_precision: 0.71, RYR1_recall: 0.71, GJB2_notnan_f1: 0.85, GJB2_loss: 0.41, GJB2_accuracy: 85.1%, GJB2_auc: 0.93, GJB2_precision: 0.85, GJB2_recall: 0.85, RYR1_notnan_f1: 0.71
+-----------------------------------------------------------------
+Vali - loss: 0.50±0.02, accuracy: 77.7±1.1%, auc: 0.85±0.01
+Test - loss: 0.40±0.01, accuracy: 83.7±0.4%, auc: 0.91±0.00
+GJB2 - loss: 0.42±0.01, accuracy: 84.3±0.5%, auc: 0.91±0.01
+RYR1 - loss: 0.55±0.01, accuracy: 71.6±0.6%, auc: 0.81±0.01
+-----------------------------------------------------------------
+
 Input Layer: 33
 Model Configuration: 
 +-----------+------------+------------+--------------+----------------+----+--------+-----------+
@@ -165,6 +193,12 @@ Vali - loss: 0.50±0.02, accuracy: 77.7±1.1%, auc: 0.85±0.01
 Test - loss: 0.40±0.01, accuracy: 83.7±0.4%, auc: 0.91±0.00
 GJB2 - loss: 0.45±0.01, accuracy: 83.4±0.8%, auc: 0.89±0.01
 RYR1 - loss: 0.56±0.01, accuracy: 70.7±2.2%, auc: 0.80±0.01
+
+foundation Model
+transfer model 
+alphamissense
+SAV
+correct label
 -----------------------------------------------------------------
 Input Layer: 33
 Model Configuration: 

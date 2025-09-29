@@ -1,0 +1,65 @@
+Start Time = 20250905-1601
+Tensorflow Version: 2.17.0
+Tensorflow Version should be 2.17
+Feature set: ['GNM_co_rank_full', 'ANM_stiffness_chain', 'GNM_V2_full', 'GNM_V1_full', 'GNM_Eigval1_full', 'GNM_rankV2_full', 'GNM_Eigval2_full', 'GNM_rankV1_full', 'ANM_effectiveness_chain', 'SASA', 'loop_percent', 'AG1', 'Dcom', 'AG5', 'AG3', 'SSbond', 'Hbond', 'DELTA_Hbond', 'sheet_percent', 'helix_percent', 'Rg', 'IDRs', 'Lside', 'deltaLside', 'entropy', 'wtPSIC', 'deltaPSIC', 'consurf', 'ACNR', 'BLOSUM', 'ranked_MI', 'deltaPolarity', 'deltaCharge']
+Num GPUs Available: 0
+GPUs: []
+Load R20000 dataset
+**************************************************
+Missing values in the dataframe:
+labels: 		 83
+entropy: 		 6
+ranked_MI: 		 6
+No. Unknown SAVs 25 (benign), 22 (pathogenic), and 83 (NaN)
+**************************************************
+Missing values in the dataframe:
+labels: 		 30
+entropy: 		 52
+ranked_MI: 		 52
+No. Unknown SAVs 45 (benign), 45 (pathogenic), and 30 (NaN)
+Input Layer: 33
+Model Configuration: 
++-----------+------------+------------+--------------+----------------+----+--------+-----------+
+|   Layer   | Activation | Batch Norm | Dropout Rate |  Initializer   | L1 |   L2   | N Neurons |
++-----------+------------+------------+--------------+----------------+----+--------+-----------+
+|   Input   |     -      |     -      |     0.0      |       -        | -  |   -    |     33    |
+| hidden_00 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     33    |
+| hidden_01 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     33    |
+| hidden_02 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     33    |
+| hidden_03 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     33    |
+| hidden_04 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     10    |
+|   Output  |  softmax   |     -      |      -       |       -        | -  |   -    |     2     |
++-----------+------------+------------+--------------+----------------+----+--------+-----------+
+Training Configuration: 
++-----------+------------+----------+--------------------------+---------------------+
+|  Training | Batch Size | N Epochs |           Loss           |       Metrics       |
++-----------+------------+----------+--------------------------+---------------------+
+|  Training |    300     |   300    | categorical_crossentropy | ['accuracy', 'AUC'] |
+| Optimizer |   5e-05    |  Nadam   |            -             |          -          |
++-----------+------------+----------+--------------------------+---------------------+
+
+Model Summary:
+Total trainable parameters: 4,850
+Fold 1 - val_loss: 0.51, val_accuracy: 77.3%, val_auc: 0.84, val_precision: 0.77, val_recall: 0.77, val_f1: 0.77, test_loss: 0.43, test_accuracy: 82.1%, test_auc: 0.90, test_precision: 0.82, test_recall: 0.82, test_f1: 0.82, RYR1_loss: 0.57, RYR1_accuracy: 71.1%, RYR1_auc: 0.79, RYR1_precision: 0.71, RYR1_recall: 0.71, GJB2_notnan_f1: 0.87, GJB2_loss: 0.40, GJB2_accuracy: 87.2%, GJB2_auc: 0.91, GJB2_precision: 0.87, GJB2_recall: 0.87, RYR1_notnan_f1: 0.71
+
+Model Summary:
+Total trainable parameters: 4,850
+Fold 2 - val_loss: 0.44, val_accuracy: 81.8%, val_auc: 0.89, val_precision: 0.82, val_recall: 0.82, val_f1: 0.82, test_loss: 0.39, test_accuracy: 84.4%, test_auc: 0.92, test_precision: 0.84, test_recall: 0.84, test_f1: 0.84, RYR1_loss: 0.58, RYR1_accuracy: 72.2%, RYR1_auc: 0.78, RYR1_precision: 0.72, RYR1_recall: 0.72, GJB2_notnan_f1: 0.85, GJB2_loss: 0.42, GJB2_accuracy: 85.1%, GJB2_auc: 0.92, GJB2_precision: 0.85, GJB2_recall: 0.85, RYR1_notnan_f1: 0.72
+
+Model Summary:
+Total trainable parameters: 4,850
+Fold 3 - val_loss: 0.51, val_accuracy: 76.9%, val_auc: 0.84, val_precision: 0.77, val_recall: 0.77, val_f1: 0.77, test_loss: 0.40, test_accuracy: 84.0%, test_auc: 0.91, test_precision: 0.84, test_recall: 0.84, test_f1: 0.84, RYR1_loss: 0.55, RYR1_accuracy: 70.0%, RYR1_auc: 0.82, RYR1_precision: 0.70, RYR1_recall: 0.70, GJB2_notnan_f1: 0.83, GJB2_loss: 0.43, GJB2_accuracy: 83.0%, GJB2_auc: 0.90, GJB2_precision: 0.83, GJB2_recall: 0.83, RYR1_notnan_f1: 0.70
+
+Model Summary:
+Total trainable parameters: 4,850
+Fold 4 - val_loss: 0.49, val_accuracy: 77.8%, val_auc: 0.86, val_precision: 0.78, val_recall: 0.78, val_f1: 0.78, test_loss: 0.39, test_accuracy: 84.0%, test_auc: 0.91, test_precision: 0.84, test_recall: 0.84, test_f1: 0.84, RYR1_loss: 0.55, RYR1_accuracy: 72.2%, RYR1_auc: 0.81, RYR1_precision: 0.72, RYR1_recall: 0.72, GJB2_notnan_f1: 0.83, GJB2_loss: 0.44, GJB2_accuracy: 83.0%, GJB2_auc: 0.89, GJB2_precision: 0.83, GJB2_recall: 0.83, RYR1_notnan_f1: 0.72
+
+Model Summary:
+Total trainable parameters: 4,850
+Fold 5 - val_loss: 0.53, val_accuracy: 75.2%, val_auc: 0.83, val_precision: 0.75, val_recall: 0.75, val_f1: 0.75, test_loss: 0.40, test_accuracy: 83.6%, test_auc: 0.91, test_precision: 0.84, test_recall: 0.84, test_f1: 0.84, RYR1_loss: 0.53, RYR1_accuracy: 72.2%, RYR1_auc: 0.83, RYR1_precision: 0.72, RYR1_recall: 0.72, GJB2_notnan_f1: 0.85, GJB2_loss: 0.41, GJB2_accuracy: 85.1%, GJB2_auc: 0.92, GJB2_precision: 0.85, GJB2_recall: 0.85, RYR1_notnan_f1: 0.72
+-----------------------------------------------------------------
+Vali - loss: 0.50±0.02, accuracy: 77.8±1.1%, auc: 0.85±0.01
+Test - loss: 0.40±0.01, accuracy: 83.6±0.4%, auc: 0.91±0.00
+GJB2 - loss: 0.42±0.01, accuracy: 84.7±0.8%, auc: 0.91±0.01
+RYR1 - loss: 0.56±0.01, accuracy: 71.6±0.4%, auc: 0.81±0.01
+-----------------------------------------------------------------

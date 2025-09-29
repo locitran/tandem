@@ -1,0 +1,107 @@
+Start Time = 20250923-1134
+Tensorflow Version: 2.17.0
+Tensorflow Version should be 2.17
+Feature set: ['GNM_co_rank_full', 'ANM_stiffness_chain', 'GNM_V2_full', 'GNM_V1_full', 'GNM_Eigval1_full', 'GNM_rankV2_full', 'GNM_Eigval2_full', 'GNM_rankV1_full', 'ANM_effectiveness_chain', 'SASA', 'loop_percent', 'AG1', 'Dcom', 'AG5', 'AG3', 'SSbond', 'Hbond', 'DELTA_Hbond', 'sheet_percent', 'helix_percent', 'Rg', 'IDRs', 'Lside', 'deltaLside', 'entropy', 'wtPSIC', 'deltaPSIC', 'consurf', 'ACNR', 'BLOSUM', 'ranked_MI', 'deltaPolarity', 'deltaCharge']
+Num GPUs Available: 0
+GPUs: []
+> Deleting cluster P29033 from data_sorted
+No. clusters: 1777
+No. SAVs after deleting P29033: 20295
+**************************************************
+Test set percent = 10.03% is larger than 10%: Breaking the loop
+No. adding to test set: 34
+Cluster IDs added to the test set: [67, 5, 11, 17, 23, 29, 35, 41, 47, 53, 59, 65, 72, 78, 84, 90, 96, 102, 108, 114, 120, 126, 132, 138, 144, 150, 156, 162, 168, 174, 180, 186, 192, 198]
+Member IDs added to the test set: ['P29033', 'P07101', 'Q8IWU9', 'P00439', 'Q9UHC9', 'O15118', 'P22304', 'P30613', 'P14618', 'P35520', 'P11509', 'Q16696', 'P05181', 'P20813', 'P11712', 'P10632', 'P33261', 'P00966', 'P11413', 'Q93099', 'P15848', 'P54802', 'P60484', 'Q06124', 'P09619', 'P16234', 'P10721', 'P07333', 'P78504', 'Q9NR61', 'P52701', 'Q15831', 'P08559', 'P06400', 'P00156', 'P78527', 'Q14353', 'Q13224', 'Q12879', 'Q9H251', 'P51648', 'P30838', 'P18074', 'O94759', 'Q8TD43', 'P00813', 'O14733', 'P36507', 'P45985', 'Q02750', 'Q96L73', 'O43240', 'P06870', 'P07288', 'P20151', 'O60259', 'Q9Y5K2', 'P23946', 'P07477', 'Q92876', 'P46597', 'P03891']
+> Delete test indices from data_sorted
+No. clusters after deleting test indices: 1744
+No. SAVs after deleting test indices: 18596
+**************************************************
+Load R20000 dataset
+Fold  1 
+ 	Train n_SAVs 14,651 (71.956%)	path 8,967 ben 5,684 ratio   1.578	clust 1,656 memb 2,193
+	Val   n_SAVs 3,667 (18.010%)	path 3,010 ben 657 ratio   4.581	clust 88 memb 168
+	Test  n_SAVs 2,043 (10.034%)	path 1,649 ben 394 ratio   4.185	clust 34 memb 62
+Fold  2 
+ 	Train n_SAVs 14,669 (72.045%)	path 9,394 ben 5,275 ratio   1.781	clust 1,545 memb 2,034
+	Val   n_SAVs 3,649 (17.922%)	path 2,583 ben 1,066 ratio   2.423	clust 199 memb 327
+	Test  n_SAVs 2,043 (10.034%)	path 1,649 ben 394 ratio   4.185	clust 34 memb 62
+Fold  3 
+ 	Train n_SAVs 14,653 (71.966%)	path 10,116 ben 4,537 ratio   2.230	clust 1,402 memb 1,863
+	Val   n_SAVs 3,665 (18.000%)	path 1,861 ben 1,804 ratio   1.032	clust 342 memb 498
+	Test  n_SAVs 2,043 (10.034%)	path 1,649 ben 394 ratio   4.185	clust 34 memb 62
+Fold  4 
+ 	Train n_SAVs 14,636 (71.883%)	path 9,854 ben 4,782 ratio   2.061	clust 1,260 memb 1,747
+	Val   n_SAVs 3,682 (18.084%)	path 2,123 ben 1,559 ratio   1.362	clust 484 memb 614
+	Test  n_SAVs 2,043 (10.034%)	path 1,649 ben 394 ratio   4.185	clust 34 memb 62
+Fold  5 
+ 	Train n_SAVs 14,663 (72.015%)	path 9,674 ben 4,989 ratio   1.939	clust 1,113 memb 1,607
+	Val   n_SAVs 3,655 (17.951%)	path 2,303 ben 1,352 ratio   1.703	clust 631 memb 754
+	Test  n_SAVs 2,043 (10.034%)	path 1,649 ben 394 ratio   4.185	clust 34 memb 62
+**************************************************
+Missing values in the dataframe:
+labels: 		 83
+entropy: 		 6
+ranked_MI: 		 6
+No. Unknown SAVs 25.0 (benign), 22.0 (pathogenic), and 83 (NaN)
+**************************************************
+Missing values in the dataframe:
+labels: 		 30
+entropy: 		 52
+ranked_MI: 		 52
+No. Unknown SAVs 45.0 (benign), 45.0 (pathogenic), and 30 (NaN)
+Input Layer: 33
+Model Configuration: 
++-----------+------------+------------+--------------+----------------+----+--------+-----------+
+|   Layer   | Activation | Batch Norm | Dropout Rate |  Initializer   | L1 |   L2   | N Neurons |
++-----------+------------+------------+--------------+----------------+----+--------+-----------+
+|   Input   |     -      |     -      |     0.0      |       -        | -  |   -    |     33    |
+| hidden_00 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     33    |
+| hidden_01 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     33    |
+| hidden_02 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     33    |
+| hidden_03 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     33    |
+| hidden_04 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     10    |
+|   Output  |  softmax   |     -      |      -       |       -        | -  |   -    |     2     |
++-----------+------------+------------+--------------+----------------+----+--------+-----------+
+Training Configuration: 
++-----------+------------+----------+--------------------------+---------------------+
+|  Training | Batch Size | N Epochs |           Loss           |       Metrics       |
++-----------+------------+----------+--------------------------+---------------------+
+|  Training |    300     |   300    | categorical_crossentropy | ['accuracy', 'AUC'] |
+| Optimizer |   5e-05    |  Nadam   |            -             |          -          |
++-----------+------------+----------+--------------------------+---------------------+
+
+Model Summary:
+Total trainable parameters: 4,850
+Restoring model weights from the end of the best epoch: 100.
+Epoch 101: best epoch
+Fold 1 - val_loss: 0.51, val_accuracy: 77.3%, val_auc: 0.84, val_precision: 0.77, val_recall: 0.77, val_f1: 0.77, test_loss: 0.43, test_accuracy: 82.1%, test_auc: 0.90, test_precision: 0.82, test_recall: 0.82, test_f1: 0.82, RYR1_loss: 0.57, RYR1_accuracy: 71.1%, RYR1_auc: 0.79, RYR1_precision: 0.71, RYR1_recall: 0.71, RYR1_notnan_f1: 0.71, GJB2_loss: 0.40, GJB2_accuracy: 87.2%, GJB2_auc: 0.91, GJB2_precision: 0.87, GJB2_recall: 0.87, GJB2_notnan_f1: 0.87
+
+Model Summary:
+Total trainable parameters: 4,850
+Restoring model weights from the end of the best epoch: 87.
+Epoch 88: best epoch
+Fold 2 - val_loss: 0.47, val_accuracy: 80.2%, val_auc: 0.87, val_precision: 0.80, val_recall: 0.80, val_f1: 0.80, test_loss: 0.39, test_accuracy: 84.3%, test_auc: 0.92, test_precision: 0.84, test_recall: 0.84, test_f1: 0.84, RYR1_loss: 0.57, RYR1_accuracy: 72.2%, RYR1_auc: 0.78, RYR1_precision: 0.72, RYR1_recall: 0.72, RYR1_notnan_f1: 0.72, GJB2_loss: 0.42, GJB2_accuracy: 87.2%, GJB2_auc: 0.92, GJB2_precision: 0.87, GJB2_recall: 0.87, GJB2_notnan_f1: 0.87
+
+Model Summary:
+Total trainable parameters: 4,850
+Restoring model weights from the end of the best epoch: 93.
+Epoch 94: best epoch
+Fold 3 - val_loss: 0.52, val_accuracy: 76.3%, val_auc: 0.84, val_precision: 0.76, val_recall: 0.76, val_f1: 0.76, test_loss: 0.40, test_accuracy: 84.0%, test_auc: 0.91, test_precision: 0.84, test_recall: 0.84, test_f1: 0.84, RYR1_loss: 0.54, RYR1_accuracy: 73.3%, RYR1_auc: 0.84, RYR1_precision: 0.73, RYR1_recall: 0.73, RYR1_notnan_f1: 0.73, GJB2_loss: 0.42, GJB2_accuracy: 85.1%, GJB2_auc: 0.91, GJB2_precision: 0.85, GJB2_recall: 0.85, GJB2_notnan_f1: 0.85
+
+Model Summary:
+Total trainable parameters: 4,850
+Restoring model weights from the end of the best epoch: 165.
+Epoch 166: best epoch
+Fold 4 - val_loss: 0.49, val_accuracy: 77.5%, val_auc: 0.85, val_precision: 0.77, val_recall: 0.77, val_f1: 0.77, test_loss: 0.40, test_accuracy: 83.7%, test_auc: 0.91, test_precision: 0.84, test_recall: 0.84, test_f1: 0.84, RYR1_loss: 0.58, RYR1_accuracy: 71.1%, RYR1_auc: 0.79, RYR1_precision: 0.71, RYR1_recall: 0.71, RYR1_notnan_f1: 0.71, GJB2_loss: 0.45, GJB2_accuracy: 83.0%, GJB2_auc: 0.89, GJB2_precision: 0.83, GJB2_recall: 0.83, GJB2_notnan_f1: 0.83
+
+Model Summary:
+Total trainable parameters: 4,850
+Restoring model weights from the end of the best epoch: 51.
+Epoch 52: best epoch
+Fold 5 - val_loss: 0.53, val_accuracy: 75.3%, val_auc: 0.83, val_precision: 0.75, val_recall: 0.75, val_f1: 0.75, test_loss: 0.40, test_accuracy: 83.7%, test_auc: 0.91, test_precision: 0.84, test_recall: 0.84, test_f1: 0.84, RYR1_loss: 0.54, RYR1_accuracy: 71.1%, RYR1_auc: 0.81, RYR1_precision: 0.71, RYR1_recall: 0.71, RYR1_notnan_f1: 0.71, GJB2_loss: 0.41, GJB2_accuracy: 85.1%, GJB2_auc: 0.92, GJB2_precision: 0.85, GJB2_recall: 0.85, GJB2_notnan_f1: 0.85
+-----------------------------------------------------------------
+Vali - loss: 0.50±0.01, accuracy: 77.3±0.8%, auc: 0.85±0.01
+Test - loss: 0.41±0.01, accuracy: 83.6±0.4%, auc: 0.91±0.00
+GJB2 - loss: 0.42±0.01, accuracy: 85.5±0.8%, auc: 0.91±0.01
+RYR1 - loss: 0.56±0.01, accuracy: 71.8±0.4%, auc: 0.80±0.01
+-----------------------------------------------------------------

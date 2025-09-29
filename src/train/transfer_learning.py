@@ -9,12 +9,16 @@ from sklearn.model_selection import train_test_split
 from sklearn.model_selection import StratifiedKFold
 
 from .run import use_all_gpus, get_config
-from .run import getR20000, getTestset
+# from .run import getR20000, getTestset
+# from .process_data import getR20000, getTestset
 from ..utils.settings import FEAT_STATS, dynamics_feat, structure_feat, seq_feat
 from ..utils.settings import TANDEM_R20000, TANDEM_GJB2, TANDEM_RYR1, TANDEM_PKD1
 from ..utils.settings import ROOT_DIR, CLUSTER
 from .modules import np_to_dataset, Preprocessing, plot_acc_loss_3fold_CV, Callback_CSVLogger, DelayedEarlyStopping, build_optimizer, BinaryF1Score
 from .config import model_config
+from ..features import TANDEM_FEATS
+from .process_data import getR20000, getTestset, onehot_encoding
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -40,15 +44,20 @@ def train_model(base_models,
                 TANDEM_testSet,
                 name,
                 seed=73):
-    NAME_OF_EXPERIMENT = f'TransferLearning_{name}'
+    NAME_OF_EXPERIMENT = f'tf_{name}'
     current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M")
-    log_dir = os.path.join(ROOT_DIR, 'logs', NAME_OF_EXPERIMENT, f'{name}-{current_time}-seed-{seed}')
+    log_dir = os.path.join(ROOT_DIR, 'logs', NAME_OF_EXPERIMENT, f'{current_time}-seed-{seed}')
     os.makedirs(log_dir, exist_ok=True)
     logging.basicConfig(filename=f'{log_dir}/log.txt', level=logging.ERROR, format='%(message)s')
     logging.error("Start Time = %s", current_time)
     use_all_gpus()
 
-    R20000_folds, R20000, preprocess_feat, test_knw, test_unk, input_shape = import_data(TANDEM_testSet)
+    # R20000_folds, R20000, preprocess_feat, test_knw, test_unk, input_shape = import_data(TANDEM_testSet)
+    ##################### 1. Set up feature set #####################
+    t_sel_feats = TANDEM_FEATS['v1.1']
+    logging.error(f"Feature set: {t_sel_feats}")
+    R20000_folds, R20000, preprocess_feat = getR20000(TANDEM_R20000, CLUSTER, feat_names=t_sel_feats)
+    test_knw, test_unk = getTestset(TANDEM_testSet, t_sel_feats, preprocess_feat) 
 
     SAV_coords, labels, features = test_knw
     VUS_coords, VUS_labels, VUS_features = test_unk
@@ -57,7 +66,7 @@ def train_model(base_models,
     ##################### 3. Set up model configuration #####################
     patience = 50
     n_hidden = 5
-    cfg = get_config(input_shape, n_hidden=n_hidden, patience=patience, dropout_rate=0.0)
+    cfg = get_config(33, n_hidden=n_hidden, patience=patience, dropout_rate=0.0)
     cfg.training.callbacks.EarlyStopping.start_from_epoch = 10
     logging.error("Start from epoch: %d", cfg.training.callbacks.EarlyStopping.start_from_epoch)
 
@@ -141,7 +150,7 @@ def train_model(base_models,
                 log_file=f'{model_dir}/history_fold_{split_idx}.csv',
             )
             early_stopping = DelayedEarlyStopping(**cfg.training.callbacks.EarlyStopping)
-            models = [os.path.join(base_models, f'model_fold_{i}.h5') for i in range(1, 6)]
+            models = [os.path.join(base_models, f'fold_{i}.h5') for i in range(1, 6)]
             model = tf.keras.models.load_model(models[model_idx])
             
             # Optimizer
@@ -194,20 +203,6 @@ def train_model(base_models,
                 'test_loss': after_test_performance[0], 'test_accuracy': after_test_performance[1], 'test_auc': after_test_performance[2], 'test_precision': after_test_performance[3], 'test_recall': after_test_performance[4], 'test_f1': after_test_performance[5],
                 'knw_loss': after_knw_performance[0], 'knw_accuracy': after_knw_performance[1], 'knw_auc': after_knw_performance[2], 'knw_precision': after_knw_performance[3], 'knw_recall': after_knw_performance[4], 'knw_f1': after_knw_performance[5],
             }
-            # logging.error("Fold %d before - R20000_val_loss: %.2f, R20000_val_accuracy: %.2f%%, R20000_val_auc: %.2f, R20000_val_precision: %.2f, R20000_val_recall: %.2f, R20000_test_loss: %.2f, R20000_test_accuracy: %.2f%%, R20000_test_auc: %.2f, R20000_test_precision: %.2f, R20000_test_recall: %.2f, val_loss: %.2f, val_accuracy: %.2f%%, val_auc: %.2f, val_precision: %.2f, val_recall: %.2f, test_loss: %.2f, test_accuracy: %.2f%%, test_auc: %.2f, test_precision: %.2f, test_recall: %.2f, knw_loss: %.2f, knw_accuracy: %.2f%%, knw_auc: %.2f, knw_precision: %.2f, knw_recall: %.2f",
-            #               split_idx+1, 
-            #               before_R20000_val_performance[0], before_R20000_val_performance[1]*100, before_R20000_val_performance[2], before_R20000_val_performance[3], before_R20000_val_performance[4],
-            #               before_R20000_test_performance[0], before_R20000_test_performance[1]*100, before_R20000_test_performance[2], before_R20000_test_performance[3], before_R20000_test_performance[4],
-            #               before_val_performance[0], before_val_performance[1]*100, before_val_performance[2], before_val_performance[3], before_val_performance[4],
-            #               before_test_performance[0], before_test_performance[1]*100, before_test_performance[2], before_test_performance[3], before_test_performance[4],
-            #               before_knw_performance[0], before_knw_performance[1]*100, before_knw_performance[2], before_knw_performance[3], before_knw_performance[4])
-            # logging.error("Fold %d after - R20000_val_loss: %.2f, R20000_val_accuracy: %.2f%%, R20000_val_auc: %.2f, R20000_val_precision: %.2f, R20000_val_recall: %.2f, R20000_test_loss: %.2f, R20000_test_accuracy: %.2f%%, R20000_test_auc: %.2f, R20000_test_precision: %.2f, R20000_test_recall: %.2f, val_loss: %.2f, val_accuracy: %.2f%%, val_auc: %.2f, val_precision: %.2f, val_recall: %.2f, test_loss: %.2f, test_accuracy: %.2f%%, test_auc: %.2f, test_precision: %.2f, test_recall: %.2f, knw_loss: %.2f, knw_accuracy: %.2f%%, knw_auc: %.2f, knw_precision: %.2f, knw_recall: %.2f",
-            #               split_idx+1,
-            #               after_R20000_val_performance[0], after_R20000_val_performance[1]*100, after_R20000_val_performance[2], after_R20000_val_performance[3], after_R20000_val_performance[4],
-            #               after_R20000_test_performance[0], after_R20000_test_performance[1]*100, after_R20000_test_performance[2], after_R20000_test_performance[3], after_R20000_test_performance[4],
-            #               after_val_performance[0], after_val_performance[1]*100, after_val_performance[2], after_val_performance[3], after_val_performance[4],
-            #               after_test_performance[0], after_test_performance[1]*100, after_test_performance[2], after_test_performance[3], after_test_performance[4],
-            #               after_knw_performance[0], after_knw_performance[1]*100, after_knw_performance[2], after_knw_performance[3], after_knw_performance[4])
             
             logging.error("Fold %d before - R20000_val_loss: %.2f, R20000_val_accuracy: %.2f%%, R20000_val_auc: %.2f, R20000_val_precision: %.2f, R20000_val_recall: %.2f, R20000_val_f1: %.2f, R20000_test_loss: %.2f, R20000_test_accuracy: %.2f%%, R20000_test_auc: %.2f, R20000_test_precision: %.2f, R20000_test_recall: %.2f, R20000_test_f1: %.2f, val_loss: %.2f, val_accuracy: %.2f%%, val_auc: %.2f, val_precision: %.2f, val_recall: %.2f, val_f1: %.2f, test_loss: %.2f, test_accuracy: %.2f%%, test_auc: %.2f, test_precision: %.2f, test_recall: %.2f, test_f1: %.2f, knw_loss: %.2f, knw_accuracy: %.2f%%, knw_auc: %.2f, knw_precision: %.2f, knw_recall: %.2f, knw_f1: %.2f",
               split_idx+1, 

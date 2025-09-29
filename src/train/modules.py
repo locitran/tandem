@@ -185,11 +185,12 @@ class DelayedEarlyStopping(tf.keras.callbacks.EarlyStopping):
                 if self.wait >= self.patience:
                     self.stopped_epoch = epoch
                     self.model.stop_training = True
-                    # _LOGGER.error(f"Restoring model weights from the end of the best epoch: {self.best_epoch}.")
-                    # _LOGGER.error(f"Epoch {self.best_epoch + 1}: best epoch")
+                    _LOGGER.error(f"Restoring model weights from the end of the best epoch: {self.best_epoch}.")
+                    _LOGGER.error(f"Epoch {self.best_epoch + 1}: best epoch")
                     self.model.set_weights(self.best_weights)
 
-
+from keras.saving import register_keras_serializable
+@register_keras_serializable(package="custom", name="BinaryF1Score")
 class BinaryF1Score(tf.keras.metrics.Metric):
     def __init__(self, name='f1_score', **kwargs):
         super(BinaryF1Score, self).__init__(name=name, **kwargs)
@@ -375,7 +376,7 @@ class GradientLogger(tf.keras.callbacks.Callback):
         # import sys
         # sys.exit()
 
-def build_model(cfg, output_bias=None, logging_model=None):
+def build_model(cfg, output_bias=None, logging_model=None, verbose=True):
     """Build a neural network model based on the configuration file
     Args:
         cfg: dict
@@ -407,13 +408,14 @@ def build_model(cfg, output_bias=None, logging_model=None):
 
     model = tf.keras.Model(inputs=X, outputs=Y, name="TANDEM-DIMPLE")
 
-    # Print model summary
-    _LOGGER.error("\nModel Summary:")
-    model.summary()
+    if verbose:
+        # Print model summary
+        _LOGGER.error("\nModel Summary:")
+        model.summary()
 
-    # Print total number of trainable parameters
-    total_params = np.sum([np.prod(v.shape) for v in model.trainable_variables])
-    _LOGGER.error(f"Total trainable parameters: {total_params:,}")
+        # Print total number of trainable parameters
+        total_params = np.sum([np.prod(v.shape) for v in model.trainable_variables])
+        _LOGGER.error(f"Total trainable parameters: {total_params:,}")
 
     if logging_model:
         tf.config.run_functions_eagerly(True)
@@ -465,7 +467,7 @@ def plot_acc_loss(folds, title, labels=[r'R20000$_{train}$', r'R20000$_{val}$'])
     # Set y labels
     axes[0, 0].set_ylabel('Loss', fontsize=25)
     axes[1, 0].set_ylabel('Accuracy', fontsize=25)
-    axes[1, 2].legend(fontsize=25, loc='best') # Set legends
+    axes[1, 2].legend(fontsize=20, loc='best') # Set legends
     for ax in axes[0]: # y-loss range
         ax.set_ylim([0.4, 0.65])
     for ax in axes[1]: # y-accuracy range
