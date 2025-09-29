@@ -15,5 +15,6 @@ scikit-learn==1.6.1
 seaborn==0.13.2
 ml_collections==1.0.0
 prettytable==3.16.0
+tensorflow==2.17.0
 # Editable Git install with no remote (PyRONN==4.0rc0)
 -e ./pyRONN

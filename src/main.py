@@ -45,8 +45,8 @@ def tandem_dimple(
     if isinstance(features, np.ndarray):
         t.setFeatureMatrix(features)
     else:
-        t.getUniprot2PDBmap(folder=job_directory, filename='Uniprot2PDB.txt')
         t.setCustomPDB(custom_PDB)
+        t.getUniprot2PDBmap(folder=job_directory, filename='Uniprot2PDB.txt')
         t.getFeatMatrix(withSAVs=True, folder=job_directory, filename='features.csv')    
         
     if labels:
