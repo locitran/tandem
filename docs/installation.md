@@ -66,6 +66,8 @@ bash scripts/download_consurf_db.sh data/consurf/db # 2.5G, ~2m
 # Please skip this database for now
 # We will download this database later
 bash scripts/download_uniref90.sh data/consurf # 90G, ~127m
+bash scripts/download_uniref50.sh data/consurf # 
+
 # dependencies for ConSurf tool
 conda install -c conda-forge -c bioconda mmseqs2
 sudo apt install cd-hit

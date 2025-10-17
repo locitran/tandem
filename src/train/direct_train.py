@@ -8,8 +8,8 @@ import tensorflow as tf
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import StratifiedKFold
 
-from .run import use_all_gpus, get_config, get_seed
-from .run import getR20000, getTestset
+from ..olds.run import use_all_gpus, get_config, get_seed
+from ..olds.run import getR20000, getTestset
 from ..utils.settings import FEAT_STATS, dynamics_feat, structure_feat, seq_feat
 from ..utils.settings import TANDEM_R20000, TANDEM_GJB2, TANDEM_RYR1, TANDEM_PKD1
 from ..utils.settings import ROOT_DIR, CLUSTER

@@ -170,6 +170,7 @@ notebooks/
 pending_task.txt
 train_test.py
 slurm_jupyter.sh
+src/olds/
 
 ._.
 ._.DS_Store

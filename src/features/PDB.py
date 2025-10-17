@@ -17,7 +17,6 @@ from ..dynamics.entropy import calcSpectralEntropy
 from ..dynamics.paa import calcShapeFactors
 from ..dynamics.contact import calcAG, calcDisulfideBonds
 from ..dynamics.contact import calcRGandDcom, calcBJCEnergy, calcLside
-from ..utils.settings import FIX_PDB_DIR
 from ..fixer import createMutationfile, fixPDB
 from .dssp import calcSecondary
 from .naccess import calcAccessibility

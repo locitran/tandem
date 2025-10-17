@@ -88,5 +88,6 @@ seq_feat = {
 }
 cols = {**dynamics_feat, **structure_feat, **seq_feat}
 
-# TANDEM_v1dot1 = os.path.join(ROOT_DIR, 'models', 'different_number_of_layers/20250423-1234-tandem/n_hidden-5')
-TANDEM_v1dot1 = os.path.join(ROOT_DIR, 'models', 'tandem')
+TANDEM_v1dot1 = os.path.join(ROOT_DIR, 'models', 'TANDEM')
+TANDEM_v1dot1_GJB2 = os.path.join(ROOT_DIR, 'models', 'TANDEM_GJB2')
+TANDEM_v1dot1_RYR1 = os.path.join(ROOT_DIR, 'models', 'TANDEM_RYR1')

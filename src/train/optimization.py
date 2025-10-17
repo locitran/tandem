@@ -5,8 +5,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .run import train_model, use_all_gpus, get_config
-from .run import getR20000, getTestset
+from ..olds.run import train_model, use_all_gpus, get_config
+from ..olds.run import getR20000, getTestset
 from ..utils.settings import FEAT_STATS, dynamics_feat, structure_feat, seq_feat
 from ..utils.settings import TANDEM_R20000, TANDEM_GJB2, TANDEM_RYR1, CLUSTER
 from ..utils.settings import RHAPSODY_R20000, RHAPSODY_GJB2, RHAPSODY_RYR1, CLUSTER

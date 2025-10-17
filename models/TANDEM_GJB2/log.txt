@@ -1,0 +1,633 @@
+Logging into file: /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/log.txt
+Logging started at 2025-09-30 21:19:45.537949
+Start Time = 20250930-2119
+Num GPUs Available: 0
+GPUs: []
+Feature set: ['GNM_co_rank_full', 'ANM_stiffness_chain', 'GNM_V2_full', 'GNM_V1_full', 'GNM_Eigval1_full', 'GNM_rankV2_full', 'GNM_Eigval2_full', 'GNM_rankV1_full', 'ANM_effectiveness_chain', 'SASA', 'loop_percent', 'AG1', 'Dcom', 'AG5', 'AG3', 'SSbond', 'Hbond', 'DELTA_Hbond', 'sheet_percent', 'helix_percent', 'Rg', 'IDRs', 'Lside', 'deltaLside', 'entropy', 'wtPSIC', 'deltaPSIC', 'consurf', 'ACNR', 'BLOSUM', 'ranked_MI', 'deltaPolarity', 'deltaCharge']
+> Deleting cluster P29033 from data_sorted
+No. clusters: 1777
+No. SAVs after deleting P29033: 20295
+**************************************************
+Test set percent = 10.03% is larger than 10%: Breaking the loop
+No. adding to test set: 34
+Cluster IDs added to the test set: [67, 5, 11, 17, 23, 29, 35, 41, 47, 53, 59, 65, 72, 78, 84, 90, 96, 102, 108, 114, 120, 126, 132, 138, 144, 150, 156, 162, 168, 174, 180, 186, 192, 198]
+Member IDs added to the test set: ['P29033', 'P07101', 'Q8IWU9', 'P00439', 'Q9UHC9', 'O15118', 'P22304', 'P30613', 'P14618', 'P35520', 'P11509', 'Q16696', 'P05181', 'P20813', 'P11712', 'P10632', 'P33261', 'P00966', 'P11413', 'Q93099', 'P15848', 'P54802', 'P60484', 'Q06124', 'P09619', 'P16234', 'P10721', 'P07333', 'P78504', 'Q9NR61', 'P52701', 'Q15831', 'P08559', 'P06400', 'P00156', 'P78527', 'Q14353', 'Q13224', 'Q12879', 'Q9H251', 'P51648', 'P30838', 'P18074', 'O94759', 'Q8TD43', 'P00813', 'O14733', 'P36507', 'P45985', 'Q02750', 'Q96L73', 'O43240', 'P06870', 'P07288', 'P20151', 'O60259', 'Q9Y5K2', 'P23946', 'P07477', 'Q92876', 'P46597', 'P03891']
+> Delete test indices from data_sorted
+No. clusters after deleting test indices: 1744
+No. SAVs after deleting test indices: 18596
+**************************************************
+Load R20000 dataset
+Fold  1 
+ 	Train n_SAVs 14,651 (71.956%)	path 8,967 ben 5,684 ratio   1.578	clust 1,656 memb 2,193
+	Val   n_SAVs 3,667 (18.010%)	path 3,010 ben 657 ratio   4.581	clust 88 memb 168
+	Test  n_SAVs 2,043 (10.034%)	path 1,649 ben 394 ratio   4.185	clust 34 memb 62
+Fold  2 
+ 	Train n_SAVs 14,669 (72.045%)	path 9,394 ben 5,275 ratio   1.781	clust 1,545 memb 2,034
+	Val   n_SAVs 3,649 (17.922%)	path 2,583 ben 1,066 ratio   2.423	clust 199 memb 327
+	Test  n_SAVs 2,043 (10.034%)	path 1,649 ben 394 ratio   4.185	clust 34 memb 62
+Fold  3 
+ 	Train n_SAVs 14,653 (71.966%)	path 10,116 ben 4,537 ratio   2.230	clust 1,402 memb 1,863
+	Val   n_SAVs 3,665 (18.000%)	path 1,861 ben 1,804 ratio   1.032	clust 342 memb 498
+	Test  n_SAVs 2,043 (10.034%)	path 1,649 ben 394 ratio   4.185	clust 34 memb 62
+Fold  4 
+ 	Train n_SAVs 14,636 (71.883%)	path 9,854 ben 4,782 ratio   2.061	clust 1,260 memb 1,747
+	Val   n_SAVs 3,682 (18.084%)	path 2,123 ben 1,559 ratio   1.362	clust 484 memb 614
+	Test  n_SAVs 2,043 (10.034%)	path 1,649 ben 394 ratio   4.185	clust 34 memb 62
+Fold  5 
+ 	Train n_SAVs 14,663 (72.015%)	path 9,674 ben 4,989 ratio   1.939	clust 1,113 memb 1,607
+	Val   n_SAVs 3,655 (17.951%)	path 2,303 ben 1,352 ratio   1.703	clust 631 memb 754
+	Test  n_SAVs 2,043 (10.034%)	path 1,649 ben 394 ratio   4.185	clust 34 memb 62
+**************************************************
+Missing values in the dataframe:
+labels: 		 83
+entropy: 		 6
+ranked_MI: 		 6
+No. Unknown SAVs 25.0 (benign), 22.0 (pathogenic), and 83 (NaN)
+Input Layer: 33
+Model Configuration: 
++-----------+------------+------------+--------------+----------------+----+--------+-----------+
+|   Layer   | Activation | Batch Norm | Dropout Rate |  Initializer   | L1 |   L2   | N Neurons |
++-----------+------------+------------+--------------+----------------+----+--------+-----------+
+|   Input   |     -      |     -      |     0.0      |       -        | -  |   -    |     33    |
+| hidden_00 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     33    |
+| hidden_01 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     33    |
+| hidden_02 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     33    |
+| hidden_03 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     33    |
+| hidden_04 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     10    |
+|   Output  |  softmax   |     -      |      -       |       -        | -  |   -    |     2     |
++-----------+------------+------------+--------------+----------------+----+--------+-----------+
+Training Configuration: 
++-----------+------------+----------+--------------------------+---------------------+
+|  Training | Batch Size | N Epochs |           Loss           |       Metrics       |
++-----------+------------+----------+--------------------------+---------------------+
+|  Training |    300     |   300    | categorical_crossentropy | ['accuracy', 'AUC'] |
+| Optimizer |   5e-05    |  Nadam   |            -             |          -          |
++-----------+------------+----------+--------------------------+---------------------+
+Start from epoch: 10
+Fold 1 - Train: 14pos + 14neg, Val: 6pos + 8neg, Test: 2pos + 3neg
+Train: ['P29033 4 G D' 'P29033 34 M T' 'P29033 203 I T' 'P29033 37 V I'
+ 'P29033 165 R W' 'P29033 170 N S' 'P29033 206 N S' 'P29033 16 H Y'
+ 'P29033 111 I T' 'P29033 59 G A' 'P29033 75 R Q' 'P29033 205 L V'
+ 'P29033 83 F L' 'P29033 121 I V' 'P29033 184 R Q' 'P29033 210 L V'
+ 'P29033 163 M T' 'P29033 143 R W' 'P29033 95 V M' 'P29033 202 C F'
+ 'P29033 195 M T' 'P29033 143 R Q' 'P29033 214 L V' 'P29033 123 T N'
+ 'P29033 170 N K' 'P29033 107 I L' 'P29033 197 A T' 'P29033 44 W C']
+Val: ['P29033 156 V I' 'P29033 161 F S' 'P29033 215 I M' 'P29033 197 A S'
+ 'P29033 179 D N' 'P29033 153 V I' 'P29033 27 V I' 'P29033 114 E G'
+ 'P29033 168 K R' 'P29033 217 Y D' 'P29033 127 R H' 'P29033 90 L P'
+ 'P29033 75 R W' 'P29033 84 V L']
+Test: ['P29033 100 H Q' 'P29033 50 D N' 'P29033 115 F V' 'P29033 44 W S'
+ 'P29033 4 G V']
+Fold 2 - Train: 13pos + 15neg, Val: 7pos + 7neg, Test: 2pos + 3neg
+Train: ['P29033 156 V I' 'P29033 161 F S' 'P29033 215 I M' 'P29033 34 M T'
+ 'P29033 197 A S' 'P29033 203 I T' 'P29033 37 V I' 'P29033 170 N S'
+ 'P29033 206 N S' 'P29033 179 D N' 'P29033 111 I T' 'P29033 75 R Q'
+ 'P29033 153 V I' 'P29033 27 V I' 'P29033 121 I V' 'P29033 184 R Q'
+ 'P29033 114 E G' 'P29033 210 L V' 'P29033 168 K R' 'P29033 217 Y D'
+ 'P29033 127 R H' 'P29033 143 R Q' 'P29033 123 T N' 'P29033 197 A T'
+ 'P29033 90 L P' 'P29033 75 R W' 'P29033 84 V L' 'P29033 44 W C']
+Val: ['P29033 4 G D' 'P29033 165 R W' 'P29033 16 H Y' 'P29033 59 G A'
+ 'P29033 205 L V' 'P29033 83 F L' 'P29033 163 M T' 'P29033 143 R W'
+ 'P29033 95 V M' 'P29033 202 C F' 'P29033 195 M T' 'P29033 214 L V'
+ 'P29033 170 N K' 'P29033 107 I L']
+Test: ['P29033 100 H Q' 'P29033 50 D N' 'P29033 115 F V' 'P29033 44 W S'
+ 'P29033 4 G V']
+Fold 3 - Train: 13pos + 15neg, Val: 7pos + 7neg, Test: 2pos + 3neg
+Train: ['P29033 156 V I' 'P29033 4 G D' 'P29033 161 F S' 'P29033 215 I M'
+ 'P29033 197 A S' 'P29033 165 R W' 'P29033 179 D N' 'P29033 16 H Y'
+ 'P29033 59 G A' 'P29033 205 L V' 'P29033 83 F L' 'P29033 153 V I'
+ 'P29033 27 V I' 'P29033 114 E G' 'P29033 168 K R' 'P29033 163 M T'
+ 'P29033 143 R W' 'P29033 95 V M' 'P29033 202 C F' 'P29033 217 Y D'
+ 'P29033 127 R H' 'P29033 195 M T' 'P29033 214 L V' 'P29033 170 N K'
+ 'P29033 107 I L' 'P29033 90 L P' 'P29033 75 R W' 'P29033 84 V L']
+Val: ['P29033 34 M T' 'P29033 203 I T' 'P29033 37 V I' 'P29033 170 N S'
+ 'P29033 206 N S' 'P29033 111 I T' 'P29033 75 R Q' 'P29033 121 I V'
+ 'P29033 184 R Q' 'P29033 210 L V' 'P29033 143 R Q' 'P29033 123 T N'
+ 'P29033 197 A T' 'P29033 44 W C']
+Test: ['P29033 100 H Q' 'P29033 50 D N' 'P29033 115 F V' 'P29033 44 W S'
+ 'P29033 4 G V']
+Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+Restoring model weights from the end of the best epoch: 217.
+Epoch 218: best epoch
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Fold 1 before - R20000_val_loss: 0.51, R20000_val_accuracy: 77.34%, R20000_val_auc: 0.84, R20000_val_precision: 0.77, R20000_val_recall: 0.77, R20000_val_f1: 0.77, R20000_test_loss: 0.43, R20000_test_accuracy: 82.09%, R20000_test_auc: 0.90, R20000_test_precision: 0.82, R20000_test_recall: 0.82, R20000_test_f1: 0.82, val_loss: 0.44, val_accuracy: 85.71%, val_auc: 0.88, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.35, test_accuracy: 100.00%, test_auc: 1.00, test_precision: 1.00, test_recall: 1.00, test_f1: 1.00, knw_loss: 0.40, knw_accuracy: 87.23%, knw_auc: 0.91, knw_precision: 0.87, knw_recall: 0.87, knw_f1: 0.87
+Fold 1 after - R20000_val_loss: 0.68, R20000_val_accuracy: 71.83%, R20000_val_auc: 0.78, R20000_val_precision: 0.72, R20000_val_recall: 0.72, R20000_val_f1: 0.72, R20000_test_loss: 0.50, R20000_test_accuracy: 79.34%, R20000_test_auc: 0.87, R20000_test_precision: 0.79, R20000_test_recall: 0.79, R20000_test_f1: 0.79, val_loss: 0.33, val_accuracy: 85.71%, val_auc: 0.96, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.12, test_accuracy: 100.00%, test_auc: 1.00, test_precision: 1.00, test_recall: 1.00, test_f1: 1.00, knw_loss: 0.25, knw_accuracy: 91.49%, knw_auc: 0.97, knw_precision: 0.91, knw_recall: 0.91, knw_f1: 0.91
+Predictions on test data
+P29033 100 H Q	0.083	0	0
+P29033 50 D N	0.713	1	1
+P29033 115 F V	0.019	0	0
+P29033 44 W S	0.986	1	1
+P29033 4 G V	0.092	0	0
+Predictions on val data
+P29033 156 V I	0.008	0	0
+P29033 161 F S	0.958	1	1
+P29033 215 I M	0.016	0	0
+P29033 197 A S	0.092	0	1
+P29033 179 D N	0.815	1	1
+P29033 153 V I	0.023	0	0
+P29033 27 V I	0.725	1	0
+P29033 114 E G	0.041	0	0
+P29033 168 K R	0.202	0	0
+P29033 217 Y D	0.045	0	0
+P29033 127 R H	0.029	0	0
+P29033 90 L P	0.946	1	1
+P29033 75 R W	0.955	1	1
+P29033 84 V L	0.942	1	1
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Restoring model weights from the end of the best epoch: 386.
+Epoch 387: best epoch
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Fold 2 before - R20000_val_loss: 0.51, R20000_val_accuracy: 77.34%, R20000_val_auc: 0.84, R20000_val_precision: 0.77, R20000_val_recall: 0.77, R20000_val_f1: 0.77, R20000_test_loss: 0.43, R20000_test_accuracy: 82.09%, R20000_test_auc: 0.90, R20000_test_precision: 0.82, R20000_test_recall: 0.82, R20000_test_f1: 0.82, val_loss: 0.38, val_accuracy: 85.71%, val_auc: 0.95, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.35, test_accuracy: 100.00%, test_auc: 1.00, test_precision: 1.00, test_recall: 1.00, test_f1: 1.00, knw_loss: 0.40, knw_accuracy: 87.23%, knw_auc: 0.91, knw_precision: 0.87, knw_recall: 0.87, knw_f1: 0.87
+Fold 2 after - R20000_val_loss: 0.78, R20000_val_accuracy: 69.62%, R20000_val_auc: 0.75, R20000_val_precision: 0.70, R20000_val_recall: 0.70, R20000_val_f1: 0.70, R20000_test_loss: 0.54, R20000_test_accuracy: 78.27%, R20000_test_auc: 0.86, R20000_test_precision: 0.78, R20000_test_recall: 0.78, R20000_test_f1: 0.78, val_loss: 0.25, val_accuracy: 85.71%, val_auc: 0.96, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.09, test_accuracy: 100.00%, test_auc: 1.00, test_precision: 1.00, test_recall: 1.00, test_f1: 1.00, knw_loss: 0.20, knw_accuracy: 91.49%, knw_auc: 0.98, knw_precision: 0.91, knw_recall: 0.91, knw_f1: 0.91
+Predictions on test data
+P29033 100 H Q	0.145	0	0
+P29033 50 D N	0.879	1	1
+P29033 115 F V	0.014	0	0
+P29033 44 W S	0.993	1	1
+P29033 4 G V	0.081	0	0
+Predictions on val data
+P29033 4 G D	0.157	0	0
+P29033 165 R W	0.634	1	0
+P29033 16 H Y	0.591	1	0
+P29033 59 G A	0.984	1	1
+P29033 205 L V	0.936	1	1
+P29033 83 F L	0.498	0	0
+P29033 163 M T	0.910	1	1
+P29033 143 R W	0.972	1	1
+P29033 95 V M	0.889	1	1
+P29033 202 C F	0.954	1	1
+P29033 195 M T	0.957	1	1
+P29033 214 L V	0.006	0	0
+P29033 170 N K	0.071	0	0
+P29033 107 I L	0.000	0	0
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Restoring model weights from the end of the best epoch: 25.
+Epoch 26: best epoch
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Fold 3 before - R20000_val_loss: 0.51, R20000_val_accuracy: 77.34%, R20000_val_auc: 0.84, R20000_val_precision: 0.77, R20000_val_recall: 0.77, R20000_val_f1: 0.77, R20000_test_loss: 0.43, R20000_test_accuracy: 82.09%, R20000_test_auc: 0.90, R20000_test_precision: 0.82, R20000_test_recall: 0.82, R20000_test_f1: 0.82, val_loss: 0.40, val_accuracy: 85.71%, val_auc: 0.91, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.35, test_accuracy: 100.00%, test_auc: 1.00, test_precision: 1.00, test_recall: 1.00, test_f1: 1.00, knw_loss: 0.40, knw_accuracy: 87.23%, knw_auc: 0.91, knw_precision: 0.87, knw_recall: 0.87, knw_f1: 0.87
+Fold 3 after - R20000_val_loss: 0.53, R20000_val_accuracy: 76.03%, R20000_val_auc: 0.83, R20000_val_precision: 0.76, R20000_val_recall: 0.76, R20000_val_f1: 0.76, R20000_test_loss: 0.44, R20000_test_accuracy: 81.60%, R20000_test_auc: 0.89, R20000_test_precision: 0.82, R20000_test_recall: 0.82, R20000_test_f1: 0.82, val_loss: 0.39, val_accuracy: 85.71%, val_auc: 0.91, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.31, test_accuracy: 100.00%, test_auc: 1.00, test_precision: 1.00, test_recall: 1.00, test_f1: 1.00, knw_loss: 0.37, knw_accuracy: 87.23%, knw_auc: 0.93, knw_precision: 0.87, knw_recall: 0.87, knw_f1: 0.87
+5 out of the last 5 calls to <function TensorFlowTrainer.make_predict_function.<locals>.one_step_on_data_distributed at 0x7f461ad4aa20> triggered tf.function retracing. Tracing is expensive and the excessive number of tracings could be due to (1) creating @tf.function repeatedly in a loop, (2) passing tensors with different shapes, (3) passing Python objects instead of tensors. For (1), please define your @tf.function outside of the loop. For (2), @tf.function has reduce_retracing=True option that can avoid unnecessary retracing. For (3), please refer to https://www.tensorflow.org/guide/function#controlling_retracing and https://www.tensorflow.org/api_docs/python/tf/function for  more details.
+Predictions on test data
+P29033 100 H Q	0.322	0	0
+P29033 50 D N	0.597	1	1
+P29033 115 F V	0.121	0	0
+P29033 44 W S	0.930	1	1
+P29033 4 G V	0.312	0	0
+6 out of the last 6 calls to <function TensorFlowTrainer.make_predict_function.<locals>.one_step_on_data_distributed at 0x7f461ad4aa20> triggered tf.function retracing. Tracing is expensive and the excessive number of tracings could be due to (1) creating @tf.function repeatedly in a loop, (2) passing tensors with different shapes, (3) passing Python objects instead of tensors. For (1), please define your @tf.function outside of the loop. For (2), @tf.function has reduce_retracing=True option that can avoid unnecessary retracing. For (3), please refer to https://www.tensorflow.org/guide/function#controlling_retracing and https://www.tensorflow.org/api_docs/python/tf/function for  more details.
+Predictions on val data
+P29033 34 M T	0.299	0	1
+P29033 203 I T	0.801	1	0
+P29033 37 V I	0.543	1	1
+P29033 170 N S	0.062	0	0
+P29033 206 N S	0.784	1	1
+P29033 111 I T	0.032	0	0
+P29033 75 R Q	0.809	1	1
+P29033 121 I V	0.028	0	0
+P29033 184 R Q	0.835	1	1
+P29033 210 L V	0.377	0	0
+P29033 143 R Q	0.877	1	1
+P29033 123 T N	0.058	0	0
+P29033 197 A T	0.302	0	0
+P29033 44 W C	0.917	1	1
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Save df_VUS to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_0/VUS_pathogenicity_prob.csv
+Save df_VUS to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_0/VUS_pathogenicity_pred.csv
+Save folds_history to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_0/training_history.png
+Save before_train_overall to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_0/before_training.csv
+Save after_train_overall to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_0/after_training.csv
+Before Training
+-----------------------------------------------------------------
+R20000_val_loss	0.51±0.00, R20000_val_accuracy	77.34±0.00%, 
+R20000_test_loss	0.43±0.00, R20000_test_accuracy	82.09±0.00%, 
+val_loss	0.40±0.02, val_accuracy	85.71±0.00%, 
+test_loss	0.35±0.00, test_accuracy	100.00±0.00%, 
+knw_loss	0.40±0.00, knw_accuracy	87.23±0.00%, 
+-----------------------------------------------------------------
+After Training
+R20000_val_loss	0.67±0.07, R20000_val_accuracy	72.49±1.88%, 
+R20000_test_loss	0.49±0.03, R20000_test_accuracy	79.74±0.98%, 
+val_loss	0.32±0.04, val_accuracy	85.71±0.00%, 
+test_loss	0.18±0.07, test_accuracy	100.00±0.00%, 
+knw_loss	0.27±0.05, knw_accuracy	90.07±1.42%, 
+-----------------------------------------------------------------
+
+Restoring model weights from the end of the best epoch: 177.
+Epoch 178: best epoch
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Fold 1 before - R20000_val_loss: 0.47, R20000_val_accuracy: 80.21%, R20000_val_auc: 0.87, R20000_val_precision: 0.80, R20000_val_recall: 0.80, R20000_val_f1: 0.80, R20000_test_loss: 0.39, R20000_test_accuracy: 84.29%, R20000_test_auc: 0.92, R20000_test_precision: 0.84, R20000_test_recall: 0.84, R20000_test_f1: 0.84, val_loss: 0.48, val_accuracy: 85.71%, val_auc: 0.89, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.38, test_accuracy: 100.00%, test_auc: 1.00, test_precision: 1.00, test_recall: 1.00, test_f1: 1.00, knw_loss: 0.42, knw_accuracy: 87.23%, knw_auc: 0.92, knw_precision: 0.87, knw_recall: 0.87, knw_f1: 0.87
+Fold 1 after - R20000_val_loss: 0.50, R20000_val_accuracy: 79.45%, R20000_val_auc: 0.87, R20000_val_precision: 0.79, R20000_val_recall: 0.79, R20000_val_f1: 0.79, R20000_test_loss: 0.43, R20000_test_accuracy: 82.57%, R20000_test_auc: 0.90, R20000_test_precision: 0.83, R20000_test_recall: 0.83, R20000_test_f1: 0.83, val_loss: 0.37, val_accuracy: 85.71%, val_auc: 0.95, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.15, test_accuracy: 100.00%, test_auc: 1.00, test_precision: 1.00, test_recall: 1.00, test_f1: 1.00, knw_loss: 0.27, knw_accuracy: 91.49%, knw_auc: 0.96, knw_precision: 0.91, knw_recall: 0.91, knw_f1: 0.91
+Predictions on test data
+P29033 100 H Q	0.103	0	0
+P29033 50 D N	0.694	1	1
+P29033 115 F V	0.028	0	0
+P29033 44 W S	0.985	1	1
+P29033 4 G V	0.162	0	0
+Predictions on val data
+P29033 156 V I	0.017	0	0
+P29033 161 F S	0.944	1	1
+P29033 215 I M	0.032	0	0
+P29033 197 A S	0.091	0	1
+P29033 179 D N	0.777	1	1
+P29033 153 V I	0.040	0	0
+P29033 27 V I	0.754	1	0
+P29033 114 E G	0.078	0	0
+P29033 168 K R	0.249	0	0
+P29033 217 Y D	0.089	0	0
+P29033 127 R H	0.051	0	0
+P29033 90 L P	0.917	1	1
+P29033 75 R W	0.939	1	1
+P29033 84 V L	0.920	1	1
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Restoring model weights from the end of the best epoch: 525.
+Epoch 526: best epoch
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Fold 2 before - R20000_val_loss: 0.47, R20000_val_accuracy: 80.21%, R20000_val_auc: 0.87, R20000_val_precision: 0.80, R20000_val_recall: 0.80, R20000_val_f1: 0.80, R20000_test_loss: 0.39, R20000_test_accuracy: 84.29%, R20000_test_auc: 0.92, R20000_test_precision: 0.84, R20000_test_recall: 0.84, R20000_test_f1: 0.84, val_loss: 0.39, val_accuracy: 85.71%, val_auc: 0.94, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.38, test_accuracy: 100.00%, test_auc: 1.00, test_precision: 1.00, test_recall: 1.00, test_f1: 1.00, knw_loss: 0.42, knw_accuracy: 87.23%, knw_auc: 0.92, knw_precision: 0.87, knw_recall: 0.87, knw_f1: 0.87
+Fold 2 after - R20000_val_loss: 0.67, R20000_val_accuracy: 76.65%, R20000_val_auc: 0.84, R20000_val_precision: 0.77, R20000_val_recall: 0.77, R20000_val_f1: 0.77, R20000_test_loss: 0.53, R20000_test_accuracy: 80.52%, R20000_test_auc: 0.88, R20000_test_precision: 0.81, R20000_test_recall: 0.81, R20000_test_f1: 0.81, val_loss: 0.23, val_accuracy: 85.71%, val_auc: 0.98, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.05, test_accuracy: 100.00%, test_auc: 1.00, test_precision: 1.00, test_recall: 1.00, test_f1: 1.00, knw_loss: 0.16, knw_accuracy: 91.49%, knw_auc: 0.99, knw_precision: 0.91, knw_recall: 0.91, knw_f1: 0.91
+Predictions on test data
+P29033 100 H Q	0.046	0	0
+P29033 50 D N	0.926	1	1
+P29033 115 F V	0.004	0	0
+P29033 44 W S	0.998	1	1
+P29033 4 G V	0.055	0	0
+Predictions on val data
+P29033 4 G D	0.097	0	0
+P29033 165 R W	0.676	1	0
+P29033 16 H Y	0.284	0	0
+P29033 59 G A	0.996	1	1
+P29033 205 L V	0.961	1	1
+P29033 83 F L	0.617	1	0
+P29033 163 M T	0.898	1	1
+P29033 143 R W	0.979	1	1
+P29033 95 V M	0.878	1	1
+P29033 202 C F	0.933	1	1
+P29033 195 M T	0.969	1	1
+P29033 214 L V	0.002	0	0
+P29033 170 N K	0.047	0	0
+P29033 107 I L	0.000	0	0
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Restoring model weights from the end of the best epoch: 17.
+Epoch 18: best epoch
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Fold 3 before - R20000_val_loss: 0.47, R20000_val_accuracy: 80.21%, R20000_val_auc: 0.87, R20000_val_precision: 0.80, R20000_val_recall: 0.80, R20000_val_f1: 0.80, R20000_test_loss: 0.39, R20000_test_accuracy: 84.29%, R20000_test_auc: 0.92, R20000_test_precision: 0.84, R20000_test_recall: 0.84, R20000_test_f1: 0.84, val_loss: 0.39, val_accuracy: 85.71%, val_auc: 0.92, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.38, test_accuracy: 100.00%, test_auc: 1.00, test_precision: 1.00, test_recall: 1.00, test_f1: 1.00, knw_loss: 0.42, knw_accuracy: 87.23%, knw_auc: 0.92, knw_precision: 0.87, knw_recall: 0.87, knw_f1: 0.87
+Fold 3 after - R20000_val_loss: 0.47, R20000_val_accuracy: 79.94%, R20000_val_auc: 0.87, R20000_val_precision: 0.80, R20000_val_recall: 0.80, R20000_val_f1: 0.80, R20000_test_loss: 0.40, R20000_test_accuracy: 84.19%, R20000_test_auc: 0.91, R20000_test_precision: 0.84, R20000_test_recall: 0.84, R20000_test_f1: 0.84, val_loss: 0.39, val_accuracy: 85.71%, val_auc: 0.92, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.36, test_accuracy: 100.00%, test_auc: 1.00, test_precision: 1.00, test_recall: 1.00, test_f1: 1.00, knw_loss: 0.40, knw_accuracy: 87.23%, knw_auc: 0.93, knw_precision: 0.87, knw_recall: 0.87, knw_f1: 0.87
+Predictions on test data
+P29033 100 H Q	0.296	0	0
+P29033 50 D N	0.582	1	1
+P29033 115 F V	0.137	0	0
+P29033 44 W S	0.930	1	1
+P29033 4 G V	0.452	0	0
+Predictions on val data
+P29033 34 M T	0.265	0	1
+P29033 203 I T	0.728	1	0
+P29033 37 V I	0.514	1	1
+P29033 170 N S	0.080	0	0
+P29033 206 N S	0.776	1	1
+P29033 111 I T	0.038	0	0
+P29033 75 R Q	0.763	1	1
+P29033 121 I V	0.037	0	0
+P29033 184 R Q	0.790	1	1
+P29033 210 L V	0.344	0	0
+P29033 143 R Q	0.845	1	1
+P29033 123 T N	0.080	0	0
+P29033 197 A T	0.273	0	0
+P29033 44 W C	0.924	1	1
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Save df_VUS to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_1/VUS_pathogenicity_prob.csv
+Save df_VUS to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_1/VUS_pathogenicity_pred.csv
+Save folds_history to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_1/training_history.png
+Save before_train_overall to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_1/before_training.csv
+Save after_train_overall to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_1/after_training.csv
+Before Training
+-----------------------------------------------------------------
+R20000_val_loss	0.47±0.00, R20000_val_accuracy	80.21±0.00%, 
+R20000_test_loss	0.39±0.00, R20000_test_accuracy	84.29±0.00%, 
+val_loss	0.42±0.03, val_accuracy	85.71±0.00%, 
+test_loss	0.38±0.00, test_accuracy	100.00±0.00%, 
+knw_loss	0.42±0.00, knw_accuracy	87.23±0.00%, 
+-----------------------------------------------------------------
+After Training
+R20000_val_loss	0.55±0.06, R20000_val_accuracy	78.68±1.02%, 
+R20000_test_loss	0.45±0.04, R20000_test_accuracy	82.43±1.06%, 
+val_loss	0.33±0.05, val_accuracy	85.71±0.00%, 
+test_loss	0.19±0.09, test_accuracy	100.00±0.00%, 
+knw_loss	0.28±0.07, knw_accuracy	90.07±1.42%, 
+-----------------------------------------------------------------
+
+Restoring model weights from the end of the best epoch: 223.
+Epoch 224: best epoch
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Fold 1 before - R20000_val_loss: 0.52, R20000_val_accuracy: 76.29%, R20000_val_auc: 0.84, R20000_val_precision: 0.76, R20000_val_recall: 0.76, R20000_val_f1: 0.76, R20000_test_loss: 0.40, R20000_test_accuracy: 84.04%, R20000_test_auc: 0.91, R20000_test_precision: 0.84, R20000_test_recall: 0.84, R20000_test_f1: 0.84, val_loss: 0.49, val_accuracy: 85.71%, val_auc: 0.88, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.40, test_accuracy: 80.00%, test_auc: 0.96, test_precision: 0.80, test_recall: 0.80, test_f1: 0.80, knw_loss: 0.42, knw_accuracy: 85.11%, knw_auc: 0.91, knw_precision: 0.85, knw_recall: 0.85, knw_f1: 0.85
+Fold 1 after - R20000_val_loss: 0.57, R20000_val_accuracy: 76.86%, R20000_val_auc: 0.84, R20000_val_precision: 0.77, R20000_val_recall: 0.77, R20000_val_f1: 0.77, R20000_test_loss: 0.45, R20000_test_accuracy: 81.89%, R20000_test_auc: 0.89, R20000_test_precision: 0.82, R20000_test_recall: 0.82, R20000_test_f1: 0.82, val_loss: 0.36, val_accuracy: 85.71%, val_auc: 0.94, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.14, test_accuracy: 100.00%, test_auc: 1.00, test_precision: 1.00, test_recall: 1.00, test_f1: 1.00, knw_loss: 0.25, knw_accuracy: 91.49%, knw_auc: 0.97, knw_precision: 0.91, knw_recall: 0.91, knw_f1: 0.91
+Predictions on test data
+P29033 100 H Q	0.066	0	0
+P29033 50 D N	0.709	1	1
+P29033 115 F V	0.027	0	0
+P29033 44 W S	0.988	1	1
+P29033 4 G V	0.165	0	0
+Predictions on val data
+P29033 156 V I	0.011	0	0
+P29033 161 F S	0.970	1	1
+P29033 215 I M	0.026	0	0
+P29033 197 A S	0.084	0	1
+P29033 179 D N	0.802	1	1
+P29033 153 V I	0.024	0	0
+P29033 27 V I	0.792	1	0
+P29033 114 E G	0.086	0	0
+P29033 168 K R	0.179	0	0
+P29033 217 Y D	0.081	0	0
+P29033 127 R H	0.034	0	0
+P29033 90 L P	0.952	1	1
+P29033 75 R W	0.955	1	1
+P29033 84 V L	0.956	1	1
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Restoring model weights from the end of the best epoch: 586.
+Epoch 587: best epoch
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Fold 2 before - R20000_val_loss: 0.52, R20000_val_accuracy: 76.29%, R20000_val_auc: 0.84, R20000_val_precision: 0.76, R20000_val_recall: 0.76, R20000_val_f1: 0.76, R20000_test_loss: 0.40, R20000_test_accuracy: 84.04%, R20000_test_auc: 0.91, R20000_test_precision: 0.84, R20000_test_recall: 0.84, R20000_test_f1: 0.84, val_loss: 0.37, val_accuracy: 85.71%, val_auc: 0.94, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.40, test_accuracy: 80.00%, test_auc: 0.96, test_precision: 0.80, test_recall: 0.80, test_f1: 0.80, knw_loss: 0.42, knw_accuracy: 85.11%, knw_auc: 0.91, knw_precision: 0.85, knw_recall: 0.85, knw_f1: 0.85
+Fold 2 after - R20000_val_loss: 0.66, R20000_val_accuracy: 76.45%, R20000_val_auc: 0.83, R20000_val_precision: 0.76, R20000_val_recall: 0.76, R20000_val_f1: 0.76, R20000_test_loss: 0.57, R20000_test_accuracy: 79.74%, R20000_test_auc: 0.87, R20000_test_precision: 0.80, R20000_test_recall: 0.80, R20000_test_f1: 0.80, val_loss: 0.19, val_accuracy: 92.86%, val_auc: 0.98, val_precision: 0.93, val_recall: 0.93, val_f1: 0.93, test_loss: 0.05, test_accuracy: 100.00%, test_auc: 1.00, test_precision: 1.00, test_recall: 1.00, test_f1: 1.00, knw_loss: 0.15, knw_accuracy: 93.62%, knw_auc: 0.99, knw_precision: 0.94, knw_recall: 0.94, knw_f1: 0.94
+Predictions on test data
+P29033 100 H Q	0.034	0	0
+P29033 50 D N	0.906	1	1
+P29033 115 F V	0.007	0	0
+P29033 44 W S	0.997	1	1
+P29033 4 G V	0.049	0	0
+Predictions on val data
+P29033 4 G D	0.049	0	0
+P29033 165 R W	0.436	0	0
+P29033 16 H Y	0.194	0	0
+P29033 59 G A	0.994	1	1
+P29033 205 L V	0.970	1	1
+P29033 83 F L	0.711	1	0
+P29033 163 M T	0.924	1	1
+P29033 143 R W	0.978	1	1
+P29033 95 V M	0.894	1	1
+P29033 202 C F	0.926	1	1
+P29033 195 M T	0.956	1	1
+P29033 214 L V	0.003	0	0
+P29033 170 N K	0.034	0	0
+P29033 107 I L	0.000	0	0
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Restoring model weights from the end of the best epoch: 15.
+Epoch 16: best epoch
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Fold 3 before - R20000_val_loss: 0.52, R20000_val_accuracy: 76.29%, R20000_val_auc: 0.84, R20000_val_precision: 0.76, R20000_val_recall: 0.76, R20000_val_f1: 0.76, R20000_test_loss: 0.40, R20000_test_accuracy: 84.04%, R20000_test_auc: 0.91, R20000_test_precision: 0.84, R20000_test_recall: 0.84, R20000_test_f1: 0.84, val_loss: 0.40, val_accuracy: 85.71%, val_auc: 0.90, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.40, test_accuracy: 80.00%, test_auc: 0.96, test_precision: 0.80, test_recall: 0.80, test_f1: 0.80, knw_loss: 0.42, knw_accuracy: 85.11%, knw_auc: 0.91, knw_precision: 0.85, knw_recall: 0.85, knw_f1: 0.85
+Fold 3 after - R20000_val_loss: 0.52, R20000_val_accuracy: 76.43%, R20000_val_auc: 0.84, R20000_val_precision: 0.76, R20000_val_recall: 0.76, R20000_val_f1: 0.76, R20000_test_loss: 0.40, R20000_test_accuracy: 83.75%, R20000_test_auc: 0.91, R20000_test_precision: 0.84, R20000_test_recall: 0.84, R20000_test_f1: 0.84, val_loss: 0.40, val_accuracy: 85.71%, val_auc: 0.90, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.38, test_accuracy: 100.00%, test_auc: 0.98, test_precision: 1.00, test_recall: 1.00, test_f1: 1.00, knw_loss: 0.40, knw_accuracy: 87.23%, knw_auc: 0.92, knw_precision: 0.87, knw_recall: 0.87, knw_f1: 0.87
+Predictions on test data
+P29033 100 H Q	0.292	0	0
+P29033 50 D N	0.570	1	1
+P29033 115 F V	0.157	0	0
+P29033 44 W S	0.947	1	1
+P29033 4 G V	0.499	0	0
+Predictions on val data
+P29033 34 M T	0.320	0	1
+P29033 203 I T	0.833	1	0
+P29033 37 V I	0.569	1	1
+P29033 170 N S	0.069	0	0
+P29033 206 N S	0.828	1	1
+P29033 111 I T	0.041	0	0
+P29033 75 R Q	0.788	1	1
+P29033 121 I V	0.042	0	0
+P29033 184 R Q	0.816	1	1
+P29033 210 L V	0.411	0	0
+P29033 143 R Q	0.886	1	1
+P29033 123 T N	0.099	0	0
+P29033 197 A T	0.292	0	0
+P29033 44 W C	0.939	1	1
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Save df_VUS to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_2/VUS_pathogenicity_prob.csv
+Save df_VUS to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_2/VUS_pathogenicity_pred.csv
+Save folds_history to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_2/training_history.png
+Save before_train_overall to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_2/before_training.csv
+Save after_train_overall to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_2/after_training.csv
+Before Training
+-----------------------------------------------------------------
+R20000_val_loss	0.52±0.00, R20000_val_accuracy	76.29±0.00%, 
+R20000_test_loss	0.40±0.00, R20000_test_accuracy	84.04±0.00%, 
+val_loss	0.42±0.03, val_accuracy	85.71±0.00%, 
+test_loss	0.40±0.00, test_accuracy	80.00±0.00%, 
+knw_loss	0.42±0.00, knw_accuracy	85.11±0.00%, 
+-----------------------------------------------------------------
+After Training
+R20000_val_loss	0.59±0.04, R20000_val_accuracy	76.58±0.14%, 
+R20000_test_loss	0.47±0.05, R20000_test_accuracy	81.79±1.16%, 
+val_loss	0.32±0.06, val_accuracy	88.10±2.38%, 
+test_loss	0.19±0.10, test_accuracy	100.00±0.00%, 
+knw_loss	0.27±0.07, knw_accuracy	90.78±1.88%, 
+-----------------------------------------------------------------
+
+Restoring model weights from the end of the best epoch: 213.
+Epoch 214: best epoch
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Fold 1 before - R20000_val_loss: 0.49, R20000_val_accuracy: 77.46%, R20000_val_auc: 0.85, R20000_val_precision: 0.77, R20000_val_recall: 0.77, R20000_val_f1: 0.77, R20000_test_loss: 0.40, R20000_test_accuracy: 83.70%, R20000_test_auc: 0.91, R20000_test_precision: 0.84, R20000_test_recall: 0.84, R20000_test_f1: 0.84, val_loss: 0.52, val_accuracy: 78.57%, val_auc: 0.84, val_precision: 0.79, val_recall: 0.79, val_f1: 0.79, test_loss: 0.41, test_accuracy: 80.00%, test_auc: 0.96, test_precision: 0.80, test_recall: 0.80, test_f1: 0.80, knw_loss: 0.45, knw_accuracy: 82.98%, knw_auc: 0.89, knw_precision: 0.83, knw_recall: 0.83, knw_f1: 0.83
+Fold 1 after - R20000_val_loss: 0.56, R20000_val_accuracy: 76.72%, R20000_val_auc: 0.84, R20000_val_precision: 0.77, R20000_val_recall: 0.77, R20000_val_f1: 0.77, R20000_test_loss: 0.48, R20000_test_accuracy: 80.57%, R20000_test_auc: 0.88, R20000_test_precision: 0.81, R20000_test_recall: 0.81, R20000_test_f1: 0.81, val_loss: 0.36, val_accuracy: 85.71%, val_auc: 0.95, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.13, test_accuracy: 100.00%, test_auc: 1.00, test_precision: 1.00, test_recall: 1.00, test_f1: 1.00, knw_loss: 0.25, knw_accuracy: 91.49%, knw_auc: 0.97, knw_precision: 0.91, knw_recall: 0.91, knw_f1: 0.91
+Predictions on test data
+P29033 100 H Q	0.032	0	0
+P29033 50 D N	0.693	1	1
+P29033 115 F V	0.021	0	0
+P29033 44 W S	0.983	1	1
+P29033 4 G V	0.116	0	0
+Predictions on val data
+P29033 156 V I	0.020	0	0
+P29033 161 F S	0.966	1	1
+P29033 215 I M	0.026	0	0
+P29033 197 A S	0.086	0	1
+P29033 179 D N	0.745	1	1
+P29033 153 V I	0.053	0	0
+P29033 27 V I	0.784	1	0
+P29033 114 E G	0.055	0	0
+P29033 168 K R	0.148	0	0
+P29033 217 Y D	0.048	0	0
+P29033 127 R H	0.020	0	0
+P29033 90 L P	0.953	1	1
+P29033 75 R W	0.953	1	1
+P29033 84 V L	0.936	1	1
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Restoring model weights from the end of the best epoch: 504.
+Epoch 505: best epoch
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Fold 2 before - R20000_val_loss: 0.49, R20000_val_accuracy: 77.46%, R20000_val_auc: 0.85, R20000_val_precision: 0.77, R20000_val_recall: 0.77, R20000_val_f1: 0.77, R20000_test_loss: 0.40, R20000_test_accuracy: 83.70%, R20000_test_auc: 0.91, R20000_test_precision: 0.84, R20000_test_recall: 0.84, R20000_test_f1: 0.84, val_loss: 0.43, val_accuracy: 85.71%, val_auc: 0.88, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.41, test_accuracy: 80.00%, test_auc: 0.96, test_precision: 0.80, test_recall: 0.80, test_f1: 0.80, knw_loss: 0.45, knw_accuracy: 82.98%, knw_auc: 0.89, knw_precision: 0.83, knw_recall: 0.83, knw_f1: 0.83
+Fold 2 after - R20000_val_loss: 0.68, R20000_val_accuracy: 75.58%, R20000_val_auc: 0.83, R20000_val_precision: 0.76, R20000_val_recall: 0.76, R20000_val_f1: 0.76, R20000_test_loss: 0.58, R20000_test_accuracy: 77.83%, R20000_test_auc: 0.86, R20000_test_precision: 0.78, R20000_test_recall: 0.78, R20000_test_f1: 0.78, val_loss: 0.21, val_accuracy: 85.71%, val_auc: 0.98, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.06, test_accuracy: 100.00%, test_auc: 1.00, test_precision: 1.00, test_recall: 1.00, test_f1: 1.00, knw_loss: 0.17, knw_accuracy: 91.49%, knw_auc: 0.99, knw_precision: 0.91, knw_recall: 0.91, knw_f1: 0.91
+Predictions on test data
+P29033 100 H Q	0.019	0	0
+P29033 50 D N	0.936	1	1
+P29033 115 F V	0.012	0	0
+P29033 44 W S	0.996	1	1
+P29033 4 G V	0.128	0	0
+Predictions on val data
+P29033 4 G D	0.147	0	0
+P29033 165 R W	0.571	1	0
+P29033 16 H Y	0.164	0	0
+P29033 59 G A	0.993	1	1
+P29033 205 L V	0.934	1	1
+P29033 83 F L	0.621	1	0
+P29033 163 M T	0.887	1	1
+P29033 143 R W	0.977	1	1
+P29033 95 V M	0.782	1	1
+P29033 202 C F	0.937	1	1
+P29033 195 M T	0.955	1	1
+P29033 214 L V	0.002	0	0
+P29033 170 N K	0.051	0	0
+P29033 107 I L	0.000	0	0
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Restoring model weights from the end of the best epoch: 18.
+Epoch 19: best epoch
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Fold 3 before - R20000_val_loss: 0.49, R20000_val_accuracy: 77.46%, R20000_val_auc: 0.85, R20000_val_precision: 0.77, R20000_val_recall: 0.77, R20000_val_f1: 0.77, R20000_test_loss: 0.40, R20000_test_accuracy: 83.70%, R20000_test_auc: 0.91, R20000_test_precision: 0.84, R20000_test_recall: 0.84, R20000_test_f1: 0.84, val_loss: 0.40, val_accuracy: 85.71%, val_auc: 0.91, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.41, test_accuracy: 80.00%, test_auc: 0.96, test_precision: 0.80, test_recall: 0.80, test_f1: 0.80, knw_loss: 0.45, knw_accuracy: 82.98%, knw_auc: 0.89, knw_precision: 0.83, knw_recall: 0.83, knw_f1: 0.83
+Fold 3 after - R20000_val_loss: 0.49, R20000_val_accuracy: 77.87%, R20000_val_auc: 0.86, R20000_val_precision: 0.78, R20000_val_recall: 0.78, R20000_val_f1: 0.78, R20000_test_loss: 0.41, R20000_test_accuracy: 82.97%, R20000_test_auc: 0.90, R20000_test_precision: 0.83, R20000_test_recall: 0.83, R20000_test_f1: 0.83, val_loss: 0.40, val_accuracy: 85.71%, val_auc: 0.90, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.36, test_accuracy: 80.00%, test_auc: 0.96, test_precision: 0.80, test_recall: 0.80, test_f1: 0.80, knw_loss: 0.41, knw_accuracy: 85.11%, knw_auc: 0.91, knw_precision: 0.85, knw_recall: 0.85, knw_f1: 0.85
+Predictions on test data
+P29033 100 H Q	0.216	0	0
+P29033 50 D N	0.571	1	1
+P29033 115 F V	0.135	0	0
+P29033 44 W S	0.930	1	1
+P29033 4 G V	0.517	1	0
+Predictions on val data
+P29033 34 M T	0.373	0	1
+P29033 203 I T	0.818	1	0
+P29033 37 V I	0.583	1	1
+P29033 170 N S	0.058	0	0
+P29033 206 N S	0.796	1	1
+P29033 111 I T	0.062	0	0
+P29033 75 R Q	0.766	1	1
+P29033 121 I V	0.038	0	0
+P29033 184 R Q	0.770	1	1
+P29033 210 L V	0.420	0	0
+P29033 143 R Q	0.850	1	1
+P29033 123 T N	0.065	0	0
+P29033 197 A T	0.309	0	0
+P29033 44 W C	0.915	1	1
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Save df_VUS to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_3/VUS_pathogenicity_prob.csv
+Save df_VUS to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_3/VUS_pathogenicity_pred.csv
+Save folds_history to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_3/training_history.png
+Save before_train_overall to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_3/before_training.csv
+Save after_train_overall to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_3/after_training.csv
+Before Training
+-----------------------------------------------------------------
+R20000_val_loss	0.49±0.00, R20000_val_accuracy	77.46±0.00%, 
+R20000_test_loss	0.40±0.00, R20000_test_accuracy	83.70±0.00%, 
+val_loss	0.45±0.04, val_accuracy	83.33±2.38%, 
+test_loss	0.41±0.00, test_accuracy	80.00±0.00%, 
+knw_loss	0.45±0.00, knw_accuracy	82.98±0.00%, 
+-----------------------------------------------------------------
+After Training
+R20000_val_loss	0.58±0.05, R20000_val_accuracy	76.72±0.66%, 
+R20000_test_loss	0.49±0.05, R20000_test_accuracy	80.45±1.48%, 
+val_loss	0.32±0.06, val_accuracy	85.71±0.00%, 
+test_loss	0.18±0.09, test_accuracy	93.33±6.67%, 
+knw_loss	0.28±0.07, knw_accuracy	89.36±2.13%, 
+-----------------------------------------------------------------
+
+Restoring model weights from the end of the best epoch: 208.
+Epoch 209: best epoch
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Fold 1 before - R20000_val_loss: 0.53, R20000_val_accuracy: 75.32%, R20000_val_auc: 0.83, R20000_val_precision: 0.75, R20000_val_recall: 0.75, R20000_val_f1: 0.75, R20000_test_loss: 0.40, R20000_test_accuracy: 83.65%, R20000_test_auc: 0.91, R20000_test_precision: 0.84, R20000_test_recall: 0.84, R20000_test_f1: 0.84, val_loss: 0.46, val_accuracy: 78.57%, val_auc: 0.89, val_precision: 0.79, val_recall: 0.79, val_f1: 0.79, test_loss: 0.39, test_accuracy: 100.00%, test_auc: 1.00, test_precision: 1.00, test_recall: 1.00, test_f1: 1.00, knw_loss: 0.41, knw_accuracy: 85.11%, knw_auc: 0.92, knw_precision: 0.85, knw_recall: 0.85, knw_f1: 0.85
+Fold 1 after - R20000_val_loss: 0.58, R20000_val_accuracy: 75.84%, R20000_val_auc: 0.83, R20000_val_precision: 0.76, R20000_val_recall: 0.76, R20000_val_f1: 0.76, R20000_test_loss: 0.45, R20000_test_accuracy: 82.04%, R20000_test_auc: 0.89, R20000_test_precision: 0.82, R20000_test_recall: 0.82, R20000_test_f1: 0.82, val_loss: 0.36, val_accuracy: 85.71%, val_auc: 0.94, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.16, test_accuracy: 100.00%, test_auc: 1.00, test_precision: 1.00, test_recall: 1.00, test_f1: 1.00, knw_loss: 0.26, knw_accuracy: 91.49%, knw_auc: 0.97, knw_precision: 0.91, knw_recall: 0.91, knw_f1: 0.91
+Predictions on test data
+P29033 100 H Q	0.098	0	0
+P29033 50 D N	0.637	1	1
+P29033 115 F V	0.024	0	0
+P29033 44 W S	0.988	1	1
+P29033 4 G V	0.149	0	0
+Predictions on val data
+P29033 156 V I	0.016	0	0
+P29033 161 F S	0.953	1	1
+P29033 215 I M	0.027	0	0
+P29033 197 A S	0.115	0	1
+P29033 179 D N	0.694	1	1
+P29033 153 V I	0.040	0	0
+P29033 27 V I	0.792	1	0
+P29033 114 E G	0.043	0	0
+P29033 168 K R	0.208	0	0
+P29033 217 Y D	0.065	0	0
+P29033 127 R H	0.045	0	0
+P29033 90 L P	0.937	1	1
+P29033 75 R W	0.968	1	1
+P29033 84 V L	0.935	1	1
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Restoring model weights from the end of the best epoch: 573.
+Epoch 574: best epoch
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Fold 2 before - R20000_val_loss: 0.53, R20000_val_accuracy: 75.32%, R20000_val_auc: 0.83, R20000_val_precision: 0.75, R20000_val_recall: 0.75, R20000_val_f1: 0.75, R20000_test_loss: 0.40, R20000_test_accuracy: 83.65%, R20000_test_auc: 0.91, R20000_test_precision: 0.84, R20000_test_recall: 0.84, R20000_test_f1: 0.84, val_loss: 0.38, val_accuracy: 85.71%, val_auc: 0.94, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.39, test_accuracy: 100.00%, test_auc: 1.00, test_precision: 1.00, test_recall: 1.00, test_f1: 1.00, knw_loss: 0.41, knw_accuracy: 85.11%, knw_auc: 0.92, knw_precision: 0.85, knw_recall: 0.85, knw_f1: 0.85
+Fold 2 after - R20000_val_loss: 0.77, R20000_val_accuracy: 74.28%, R20000_val_auc: 0.80, R20000_val_precision: 0.74, R20000_val_recall: 0.74, R20000_val_f1: 0.74, R20000_test_loss: 0.56, R20000_test_accuracy: 80.86%, R20000_test_auc: 0.87, R20000_test_precision: 0.81, R20000_test_recall: 0.81, R20000_test_f1: 0.81, val_loss: 0.21, val_accuracy: 92.86%, val_auc: 0.98, val_precision: 0.93, val_recall: 0.93, val_f1: 0.93, test_loss: 0.06, test_accuracy: 100.00%, test_auc: 1.00, test_precision: 1.00, test_recall: 1.00, test_f1: 1.00, knw_loss: 0.16, knw_accuracy: 91.49%, knw_auc: 0.99, knw_precision: 0.91, knw_recall: 0.91, knw_f1: 0.91
+Predictions on test data
+P29033 100 H Q	0.060	0	0
+P29033 50 D N	0.918	1	1
+P29033 115 F V	0.004	0	0
+P29033 44 W S	0.998	1	1
+P29033 4 G V	0.053	0	0
+Predictions on val data
+P29033 4 G D	0.091	0	0
+P29033 165 R W	0.767	1	0
+P29033 16 H Y	0.155	0	0
+P29033 59 G A	0.997	1	1
+P29033 205 L V	0.960	1	1
+P29033 83 F L	0.487	0	0
+P29033 163 M T	0.924	1	1
+P29033 143 R W	0.994	1	1
+P29033 95 V M	0.890	1	1
+P29033 202 C F	0.951	1	1
+P29033 195 M T	0.969	1	1
+P29033 214 L V	0.004	0	0
+P29033 170 N K	0.047	0	0
+P29033 107 I L	0.000	0	0
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Restoring model weights from the end of the best epoch: 78.
+Epoch 79: best epoch
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Fold 3 before - R20000_val_loss: 0.53, R20000_val_accuracy: 75.32%, R20000_val_auc: 0.83, R20000_val_precision: 0.75, R20000_val_recall: 0.75, R20000_val_f1: 0.75, R20000_test_loss: 0.40, R20000_test_accuracy: 83.65%, R20000_test_auc: 0.91, R20000_test_precision: 0.84, R20000_test_recall: 0.84, R20000_test_f1: 0.84, val_loss: 0.41, val_accuracy: 85.71%, val_auc: 0.92, val_precision: 0.86, val_recall: 0.86, val_f1: 0.86, test_loss: 0.39, test_accuracy: 100.00%, test_auc: 1.00, test_precision: 1.00, test_recall: 1.00, test_f1: 1.00, knw_loss: 0.41, knw_accuracy: 85.11%, knw_auc: 0.92, knw_precision: 0.85, knw_recall: 0.85, knw_f1: 0.85
+Fold 3 after - R20000_val_loss: 0.54, R20000_val_accuracy: 75.87%, R20000_val_auc: 0.83, R20000_val_precision: 0.76, R20000_val_recall: 0.76, R20000_val_f1: 0.76, R20000_test_loss: 0.42, R20000_test_accuracy: 82.72%, R20000_test_auc: 0.90, R20000_test_precision: 0.83, R20000_test_recall: 0.83, R20000_test_f1: 0.83, val_loss: 0.40, val_accuracy: 78.57%, val_auc: 0.91, val_precision: 0.79, val_recall: 0.79, val_f1: 0.79, test_loss: 0.29, test_accuracy: 100.00%, test_auc: 1.00, test_precision: 1.00, test_recall: 1.00, test_f1: 1.00, knw_loss: 0.33, knw_accuracy: 85.11%, knw_auc: 0.95, knw_precision: 0.85, knw_recall: 0.85, knw_f1: 0.85
+Predictions on test data
+P29033 100 H Q	0.208	0	0
+P29033 50 D N	0.527	1	1
+P29033 115 F V	0.072	0	0
+P29033 44 W S	0.959	1	1
+P29033 4 G V	0.314	0	0
+Predictions on val data
+P29033 34 M T	0.206	0	1
+P29033 203 I T	0.747	1	0
+P29033 37 V I	0.428	0	1
+P29033 170 N S	0.070	0	0
+P29033 206 N S	0.774	1	1
+P29033 111 I T	0.014	0	0
+P29033 75 R Q	0.832	1	1
+P29033 121 I V	0.022	0	0
+P29033 184 R Q	0.827	1	1
+P29033 210 L V	0.269	0	0
+P29033 143 R Q	0.885	1	1
+P29033 123 T N	0.044	0	0
+P29033 197 A T	0.247	0	0
+P29033 44 W C	0.959	1	1
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Save df_VUS to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_4/VUS_pathogenicity_prob.csv
+Save df_VUS to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_4/VUS_pathogenicity_pred.csv
+Save folds_history to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_4/training_history.png
+Save before_train_overall to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_4/before_training.csv
+Save after_train_overall to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/model_4/after_training.csv
+Before Training
+-----------------------------------------------------------------
+R20000_val_loss	0.53±0.00, R20000_val_accuracy	75.32±0.00%, 
+R20000_test_loss	0.40±0.00, R20000_test_accuracy	83.65±0.00%, 
+val_loss	0.41±0.02, val_accuracy	83.33±2.38%, 
+test_loss	0.39±0.00, test_accuracy	100.00±0.00%, 
+knw_loss	0.41±0.00, knw_accuracy	85.11±0.00%, 
+-----------------------------------------------------------------
+After Training
+R20000_val_loss	0.63±0.07, R20000_val_accuracy	75.33±0.52%, 
+R20000_test_loss	0.48±0.04, R20000_test_accuracy	81.87±0.54%, 
+val_loss	0.32±0.06, val_accuracy	85.71±4.12%, 
+test_loss	0.17±0.07, test_accuracy	100.00±0.00%, 
+knw_loss	0.25±0.05, knw_accuracy	89.36±2.13%, 
+-----------------------------------------------------------------
+
+Save df_VUS_prob to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/VUS_pathogenicity_prob_total.csv
+Save df_VUS_pred to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/VUS_pathogenicity_pred_total.csv
+Save baseline to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/baseline.csv
+Save best to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/csv.csv
+Save before_transfer to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/before_transfer.csv
+Save after_transfer to /mnt/nas_1/YangLab/loci/tandem/logs/TANDEM_GJB2/20250930-2119-seed-73/after_transfer.csv
+End Time = 20250930-2123
+##################################################

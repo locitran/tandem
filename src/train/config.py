@@ -83,7 +83,7 @@ CONFIG_IMPROVE = ml_collections.ConfigDict({
     },
     'training': {
         'batch_size': 300,
-        'n_epochs': 300,
+        'n_epochs': 1000,
         'loss': 'categorical_crossentropy',
         'metrics': ['accuracy', 
                     'AUC', 

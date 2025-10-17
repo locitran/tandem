@@ -1,0 +1,107 @@
+Logging into file: /mnt/nas_1/YangLab/loci/tandem/logs/reproduce_foundation_model/20250930-1304/log.txt
+Logging started at 2025-09-30 13:04:11.404437
+Start Time = 20250930-1304
+Tensorflow Version: 2.17.0
+Tensorflow Version should be 2.17
+Feature set: ['ANM_MSF-chain', 'ANM_MSF-reduced', 'ANM_MSF-sliced', 'ANM_effectiveness-chain', 'ANM_effectiveness-reduced', 'ANM_effectiveness-sliced', 'ANM_sensitivity-chain', 'ANM_sensitivity-reduced', 'ANM_sensitivity-sliced', 'BLOSUM', 'Delta_PSIC', 'Delta_SASA', 'EVmut-DeltaE_epist', 'EVmut-DeltaE_indep', 'EVmut-mut_aa_freq', 'EVmut-wt_aa_cons', 'GNM_MSF-chain', 'GNM_MSF-reduced', 'GNM_MSF-sliced', 'GNM_effectiveness-chain', 'GNM_effectiveness-reduced', 'GNM_effectiveness-sliced', 'GNM_sensitivity-chain', 'GNM_sensitivity-reduced', 'GNM_sensitivity-sliced', 'SASA', 'SASA_in_complex', 'entropy', 'ranked_MI', 'stiffness-chain', 'stiffness-reduced', 'stiffness-sliced', 'wt_PSIC']
+Num GPUs Available: 0
+GPUs: []
+> Deleting cluster P29033 from data_sorted
+No. clusters: 1777
+No. SAVs after deleting P29033: 20295
+**************************************************
+Test set percent = 10.03% is larger than 10%: Breaking the loop
+No. adding to test set: 34
+Cluster IDs added to the test set: [67, 5, 11, 17, 23, 29, 35, 41, 47, 53, 59, 65, 72, 78, 84, 90, 96, 102, 108, 114, 120, 126, 132, 138, 144, 150, 156, 162, 168, 174, 180, 186, 192, 198]
+Member IDs added to the test set: ['P29033', 'P07101', 'Q8IWU9', 'P00439', 'Q9UHC9', 'O15118', 'P22304', 'P30613', 'P14618', 'P35520', 'P11509', 'Q16696', 'P05181', 'P20813', 'P11712', 'P10632', 'P33261', 'P00966', 'P11413', 'Q93099', 'P15848', 'P54802', 'P60484', 'Q06124', 'P09619', 'P16234', 'P10721', 'P07333', 'P78504', 'Q9NR61', 'P52701', 'Q15831', 'P08559', 'P06400', 'P00156', 'P78527', 'Q14353', 'Q13224', 'Q12879', 'Q9H251', 'P51648', 'P30838', 'P18074', 'O94759', 'Q8TD43', 'P00813', 'O14733', 'P36507', 'P45985', 'Q02750', 'Q96L73', 'O43240', 'P06870', 'P07288', 'P20151', 'O60259', 'Q9Y5K2', 'P23946', 'P07477', 'Q92876', 'P46597', 'P03891']
+> Delete test indices from data_sorted
+No. clusters after deleting test indices: 1744
+No. SAVs after deleting test indices: 18596
+**************************************************
+Load R20000 dataset
+Fold  1 
+ 	Train n_SAVs 14,651 (71.956%)	path 8,967 ben 5,684 ratio   1.578	clust 1,656 memb 2,193
+	Val   n_SAVs 3,667 (18.010%)	path 3,010 ben 657 ratio   4.581	clust 88 memb 168
+	Test  n_SAVs 2,043 (10.034%)	path 1,649 ben 394 ratio   4.185	clust 34 memb 62
+Fold  2 
+ 	Train n_SAVs 14,669 (72.045%)	path 9,378 ben 5,291 ratio   1.772	clust 1,545 memb 2,034
+	Val   n_SAVs 3,649 (17.922%)	path 2,599 ben 1,050 ratio   2.475	clust 199 memb 327
+	Test  n_SAVs 2,043 (10.034%)	path 1,649 ben 394 ratio   4.185	clust 34 memb 62
+Fold  3 
+ 	Train n_SAVs 14,653 (71.966%)	path 10,116 ben 4,537 ratio   2.230	clust 1,402 memb 1,863
+	Val   n_SAVs 3,665 (18.000%)	path 1,861 ben 1,804 ratio   1.032	clust 342 memb 498
+	Test  n_SAVs 2,043 (10.034%)	path 1,649 ben 394 ratio   4.185	clust 34 memb 62
+Fold  4 
+ 	Train n_SAVs 14,636 (71.883%)	path 9,868 ben 4,768 ratio   2.070	clust 1,260 memb 1,747
+	Val   n_SAVs 3,682 (18.084%)	path 2,109 ben 1,573 ratio   1.341	clust 484 memb 614
+	Test  n_SAVs 2,043 (10.034%)	path 1,649 ben 394 ratio   4.185	clust 34 memb 62
+Fold  5 
+ 	Train n_SAVs 14,663 (72.015%)	path 9,674 ben 4,989 ratio   1.939	clust 1,113 memb 1,607
+	Val   n_SAVs 3,655 (17.951%)	path 2,303 ben 1,352 ratio   1.703	clust 631 memb 754
+	Test  n_SAVs 2,043 (10.034%)	path 1,649 ben 394 ratio   4.185	clust 34 memb 62
+**************************************************
+Missing values in the dataframe:
+EVmut-DeltaE_indep: 		 4
+EVmut-DeltaE_epist: 		 4
+EVmut-wt_aa_cons: 		 4
+entropy: 		 6
+EVmut-mut_aa_freq: 		 4
+ranked_MI: 		 6
+labels: 		 83
+No. Unknown SAVs 25.0 (benign), 22.0 (pathogenic), and 83 (NaN)
+**************************************************
+Missing values in the dataframe:
+ranked_MI: 		 52
+EVmut-mut_aa_freq: 		 105
+EVmut-DeltaE_epist: 		 105
+EVmut-wt_aa_cons: 		 105
+EVmut-DeltaE_indep: 		 105
+entropy: 		 52
+labels: 		 30
+No. Unknown SAVs 45.0 (benign), 45.0 (pathogenic), and 30 (NaN)
+Input Layer: 33
+Model Configuration: 
++-----------+------------+------------+--------------+----------------+----+--------+-----------+
+|   Layer   | Activation | Batch Norm | Dropout Rate |  Initializer   | L1 |   L2   | N Neurons |
++-----------+------------+------------+--------------+----------------+----+--------+-----------+
+|   Input   |     -      |     -      |     0.0      |       -        | -  |   -    |     33    |
+| hidden_00 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     33    |
+| hidden_01 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     33    |
+| hidden_02 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     33    |
+| hidden_03 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     33    |
+| hidden_04 |    gelu    |   False    |     0.0      | glorot_uniform | 0  | 0.0001 |     10    |
+|   Output  |  softmax   |     -      |      -       |       -        | -  |   -    |     2     |
++-----------+------------+------------+--------------+----------------+----+--------+-----------+
+Training Configuration: 
++-----------+------------+----------+--------------------------+---------------------+
+|  Training | Batch Size | N Epochs |           Loss           |       Metrics       |
++-----------+------------+----------+--------------------------+---------------------+
+|  Training |    300     |   300    | categorical_crossentropy | ['accuracy', 'AUC'] |
+| Optimizer |   5e-05    |  Nadam   |            -             |          -          |
++-----------+------------+----------+--------------------------+---------------------+
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Fold 1 - val_loss: 0.51, val_accuracy: 77.1%, val_auc: 0.84, val_precision: 0.77, val_recall: 0.77, val_f1: 0.77, test_loss: 0.45, test_accuracy: 81.0%, test_auc: 0.88, test_precision: 0.81, test_recall: 0.81, test_f1: 0.81, RYR1_loss: 0.55, RYR1_accuracy: 76.7%, RYR1_auc: 0.82, RYR1_precision: 0.77, RYR1_recall: 0.77, RYR1_notnan_f1: 0.77, GJB2_loss: 0.34, GJB2_accuracy: 93.6%, GJB2_auc: 0.94, GJB2_precision: 0.94, GJB2_recall: 0.94, GJB2_notnan_f1: 0.94
+Restoring model weights from the end of the best epoch: 51.
+Epoch 52: best epoch
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Fold 2 - val_loss: 0.49, val_accuracy: 78.2%, val_auc: 0.86, val_precision: 0.78, val_recall: 0.78, val_f1: 0.78, test_loss: 0.43, test_accuracy: 83.3%, test_auc: 0.90, test_precision: 0.83, test_recall: 0.83, test_f1: 0.83, RYR1_loss: 0.57, RYR1_accuracy: 71.1%, RYR1_auc: 0.79, RYR1_precision: 0.71, RYR1_recall: 0.71, RYR1_notnan_f1: 0.71, GJB2_loss: 0.40, GJB2_accuracy: 87.2%, GJB2_auc: 0.92, GJB2_precision: 0.87, GJB2_recall: 0.87, GJB2_notnan_f1: 0.87
+Restoring model weights from the end of the best epoch: 182.
+Epoch 183: best epoch
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Fold 3 - val_loss: 0.54, val_accuracy: 75.1%, val_auc: 0.82, val_precision: 0.75, val_recall: 0.75, val_f1: 0.75, test_loss: 0.43, test_accuracy: 81.9%, test_auc: 0.89, test_precision: 0.82, test_recall: 0.82, test_f1: 0.82, RYR1_loss: 0.58, RYR1_accuracy: 74.4%, RYR1_auc: 0.78, RYR1_precision: 0.74, RYR1_recall: 0.74, RYR1_notnan_f1: 0.74, GJB2_loss: 0.39, GJB2_accuracy: 80.9%, GJB2_auc: 0.92, GJB2_precision: 0.81, GJB2_recall: 0.81, GJB2_notnan_f1: 0.81
+Restoring model weights from the end of the best epoch: 105.
+Epoch 106: best epoch
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Fold 4 - val_loss: 0.53, val_accuracy: 75.3%, val_auc: 0.83, val_precision: 0.75, val_recall: 0.75, val_f1: 0.75, test_loss: 0.42, test_accuracy: 83.4%, test_auc: 0.90, test_precision: 0.83, test_recall: 0.83, test_f1: 0.83, RYR1_loss: 0.59, RYR1_accuracy: 70.0%, RYR1_auc: 0.77, RYR1_precision: 0.70, RYR1_recall: 0.70, RYR1_notnan_f1: 0.70, GJB2_loss: 0.40, GJB2_accuracy: 83.0%, GJB2_auc: 0.92, GJB2_precision: 0.83, GJB2_recall: 0.83, GJB2_notnan_f1: 0.83
+Restoring model weights from the end of the best epoch: 84.
+Epoch 85: best epoch
+You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+Fold 5 - val_loss: 0.51, val_accuracy: 75.7%, val_auc: 0.84, val_precision: 0.76, val_recall: 0.76, val_f1: 0.76, test_loss: 0.43, test_accuracy: 83.5%, test_auc: 0.90, test_precision: 0.84, test_recall: 0.84, test_f1: 0.84, RYR1_loss: 0.59, RYR1_accuracy: 70.0%, RYR1_auc: 0.78, RYR1_precision: 0.70, RYR1_recall: 0.70, RYR1_notnan_f1: 0.70, GJB2_loss: 0.39, GJB2_accuracy: 87.2%, GJB2_auc: 0.93, GJB2_precision: 0.87, GJB2_recall: 0.87, GJB2_notnan_f1: 0.87
+-----------------------------------------------------------------
+Vali - loss: 0.51±0.01, accuracy: 76.3±0.6%, auc: 0.84±0.01
+Test - loss: 0.43±0.01, accuracy: 82.6±0.5%, auc: 0.89±0.00
+GJB2 - loss: 0.38±0.01, accuracy: 86.4±2.2%, auc: 0.93±0.00
+RYR1 - loss: 0.57±0.01, accuracy: 72.4±1.3%, auc: 0.79±0.01
+-----------------------------------------------------------------
+5 out of the last 5 calls to <function TensorFlowTrainer.make_predict_function.<locals>.one_step_on_data_distributed at 0x7f014a6691c0> triggered tf.function retracing. Tracing is expensive and the excessive number of tracings could be due to (1) creating @tf.function repeatedly in a loop, (2) passing tensors with different shapes, (3) passing Python objects instead of tensors. For (1), please define your @tf.function outside of the loop. For (2), @tf.function has reduce_retracing=True option that can avoid unnecessary retracing. For (3), please refer to https://www.tensorflow.org/guide/function#controlling_retracing and https://www.tensorflow.org/api_docs/python/tf/function for  more details.
+6 out of the last 6 calls to <function TensorFlowTrainer.make_predict_function.<locals>.one_step_on_data_distributed at 0x7f014a6368e0> triggered tf.function retracing. Tracing is expensive and the excessive number of tracings could be due to (1) creating @tf.function repeatedly in a loop, (2) passing tensors with different shapes, (3) passing Python objects instead of tensors. For (1), please define your @tf.function outside of the loop. For (2), @tf.function has reduce_retracing=True option that can avoid unnecessary retracing. For (3), please refer to https://www.tensorflow.org/guide/function#controlling_retracing and https://www.tensorflow.org/api_docs/python/tf/function for  more details.

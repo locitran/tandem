@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
-import logging
 import os
 import warnings
+from typing import Sequence
 warnings.filterwarnings("ignore")
 
 from ..utils.logger import LOGGER
@@ -50,7 +50,7 @@ def onehot_encoding(labels, n_classes):
 #### This section is written to swap cluster from validation set to training set
 # Aim to fix the issue of validation loss lower than training loss
 # appear in split 2
-from typing import Sequence
+
 
 # Retrieve indices of SAVs in R20000 given a list of UniProt ID
 def argSAVs(uid_list, SAVs):
@@ -425,7 +425,7 @@ def getR20000(
         LOGGER.info(msg)
 
     R20000 = [SAV_coords, labels, features] 
-    return folds, R20000, preprocess_feat
+    return folds, R20000, preprocess_feat, df_clstr
 
 def getTestset(feat_path, feat_names, preprocess_feat, name=None):
     df = pd.read_csv(feat_path)
