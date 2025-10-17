@@ -52,10 +52,8 @@ class Tandem(Features):
     def _calcPredictions(self, models=None):
         assert self.featMatrix is not None, 'Feature matrix not set.'
         # Convert the feature matrix to a NumPy array
-        # fm = self.featMatrix.view(np.float64).reshape(self.nSAVs, -1)
         feat_names = self.featMatrix.dtype.names
         fm = np.column_stack([self.featMatrix[name] for name in feat_names])
-        fm = self.featMatrix
         fm = self.preprocess(fm)
         
         # Load foundation models
