@@ -5,13 +5,26 @@ from . import TANDEM_FEATS
 from .Uniprot import seqScanning, mapSAVs2PDB
 from .PDB import calcPDBfeatures
 from .SEQ import calcSEQfeatures
-from ..model.data_processing import probs2mode_dtype
 from ..utils.logger import LOGGER 
 
 class Features:
 
     def __init__(self, query, refresh=False, **kwargs):
         
+
+        # global shape: (nSAVs, )
+        # individual shape
+        self.model2pred_dtype = np.dtype([
+            ('prob', object), # (n_models, ) 
+            ('pred', object), # (n_models, )
+            ('mode', 'i4'),
+            ('decision', 'U20'),
+            ('ratio', 'f4'),
+            ('path_prob', 'f4'),
+            ('path_prob_sem', 'f4'), 
+            ('shap', object), # (n_models, n_features)
+        ])
+
         # masked NumPy array that will contain all info about SAVs
         self.data = None
         self.data_dtype = np.dtype([
@@ -34,9 +47,10 @@ class Features:
             # labels for SAVs if available
             ('labels', 'i4'),
             # Predictions from TANDEM and TANDEM transfer learning
-            ('tandem', probs2mode_dtype),
-            ('tandem_tf', probs2mode_dtype),
+            ('tandem', self.model2pred_dtype),
+            ('tandem_dimple', self.model2pred_dtype),
         ])
+
         # number of SAVs
         self.nSAVs = None
         # NumPy array (num_SAVs)x(num_features)
@@ -54,7 +68,6 @@ class Features:
         self.setSAVs(query)
         # map SAVs to PDB structures
         self.Uniprot2PDBmap = None
-
         self.config = None
 
     def _isColSet(self, column):

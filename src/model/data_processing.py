@@ -54,7 +54,11 @@ class Preprocessing:
         """Normalizes the new input data based on the mean and std of the training data
         """
         return (new_data - self.mean) / self.std
-    
+
+    def denormalize(self, z_data):
+        """Inverse of normalize: returns values on the original scale."""
+        return z_data * self.std + self.mean
+
     def __call__(self, new_data):
         new_data = self.fill_na_mean(new_data)
         new_data = self.normalize(new_data)

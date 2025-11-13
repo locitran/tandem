@@ -167,7 +167,13 @@ def reproduce_foundation_model(
     n_hidden = 5
     
     use_all_gpus()
-    folds, R20000, preprocess_feat = getR20000(featds, clstr, feat_names=featset)
+    folds, R20000, preprocess_feat, df_clstr = getR20000(featds, clstr, feat_names=featset)
+    # Save train data (train+val) for shap analysis
+    R20000_train = np.vstack(
+        (folds[1]['train']['x'],
+        folds[1]['val']['x'])
+    )
+    np.save(f'{log_dir}/shap_background.npy', R20000_train)
 
     GJB2_knw, GJB2_unk = getTestset(gjb2ds, featset, preprocess_feat)
     RYR1_knw, RYR1_unk = getTestset(ryr1ds, featset, preprocess_feat)
@@ -325,6 +331,10 @@ def reproduce_transfer_learning_model(
     ##################### 5. Split test data #####################
     # 1. Split 3 folds (60% – 30% – 10%)
     train_indices, test_indices = train_test_split(np.arange(len(labels)), test_size=0.1, random_state=seed, stratify=labels)
+    # Save train data (train+val) for shap analysis
+    testset_train = test_knw[2][train_indices]
+    np.save(f'{log_dir}/shap_background.npy', testset_train)
+
     kf = StratifiedKFold(n_splits=3, random_state=seed, shuffle=True)
     folds = []
     for i, (train_idx, val_idx) in enumerate(kf.split(train_indices, labels[train_indices])):

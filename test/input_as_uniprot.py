@@ -24,9 +24,10 @@ from tandem.src.main import tandem_dimple
 
 # P21980
 
-query = 'P21980'
+query = 'P29033'
 td = tandem_dimple(
     query=query, # List of SAVs to be analyzed
-    job_name='P21980', # Define where the job will be saved
+    job_name='P29033', # Define where the job will be saved
+    custom_PDB='2ZW3',
     refresh=True, # Set to True to refresh the data
     )

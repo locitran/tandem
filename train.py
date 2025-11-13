@@ -3,7 +3,7 @@
 from src.train.train import reproduce_foundation_model, reproduce_transfer_learning_model
 # from src.train.direct_train import train_model
 from src.utils.settings import TANDEM_GJB2, TANDEM_RYR1, TANDEM_v1dot1, TANDEM_R20000, CLUSTER
-from src.utils.settings import RHAPSODY_R20000, RHAPSODY_GJB2, RHAPSODY_RYR1, RHAPSODY_FEATS
+from src.utils.settings import RHAPSODY_R20000, RHAPSODY_GJB2, RHAPSODY_RYR1, RHAPSODY_FEATS, seq_feat, dynamics_feat, structure_feat
 from src.features import TANDEM_FEATS
 if __name__ == "__main__":
 #     # train_model(
@@ -12,14 +12,23 @@ if __name__ == "__main__":
     #     name="RYR1",
     #     seed=100,
     # )
+    # featset = list(dynamics_feat.keys())
     # reproduce_foundation_model(
-    #     name='reproduce_foundation_model_noswap',
+    #     name='tandem_dyn',
     #     featds=TANDEM_R20000,
-    #     featset=TANDEM_FEATS['v1.1'],
+    #     featset=featset,
     #     gjb2ds=TANDEM_GJB2,
     #     ryr1ds=TANDEM_RYR1,
     #     clstr=CLUSTER,
     # )
+    reproduce_foundation_model(
+        name='reproduce_foundation_model_noswap',
+        featds=TANDEM_R20000,
+        featset=TANDEM_FEATS['v1.1'],
+        gjb2ds=TANDEM_GJB2,
+        ryr1ds=TANDEM_RYR1,
+        clstr=CLUSTER,
+    )
 
     # reproduce_foundation_model(
     #     name='reproduce_foundation_model',
@@ -30,14 +39,14 @@ if __name__ == "__main__":
     #     clstr=CLUSTER,
     # )
 
-    reproduce_transfer_learning_model(
-        base_models=TANDEM_v1dot1,
-        # base_models='/mnt/nas_1/YangLab/loci/tandem/logs/reproduce_foundation_model_noswap/20250930-2130',
-        TANDEM_testSet=TANDEM_RYR1,
-        # name="TANDEM_RYR1_noswap",
-        name="TANDEM_RYR1",
-        seed=0,
-    )
+    # reproduce_transfer_learning_model(
+    #     base_models=TANDEM_v1dot1,
+    #     # base_models='/mnt/nas_1/YangLab/loci/tandem/logs/reproduce_foundation_model_noswap/20250930-2130',
+    #     TANDEM_testSet=TANDEM_RYR1,
+    #     # name="TANDEM_RYR1_noswap",
+    #     name="TANDEM_RYR1",
+    #     seed=0,
+    # )
     
     # reproduce_transfer_learning_model(
     #     # base_models=TANDEM_v1dot1,

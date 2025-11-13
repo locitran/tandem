@@ -6,10 +6,9 @@ from typing import Sequence
 warnings.filterwarnings("ignore")
 
 from ..utils.logger import LOGGER
-from ..utils.settings import FEAT_STATS, dynamics_feat, structure_feat, seq_feat
 from ..utils.settings import TANDEM_R20000, TANDEM_GJB2, TANDEM_RYR1, TANDEM_PKD1
-from ..utils.settings import ROOT_DIR, CLUSTER
-from ..features import TANDEM_FEATS
+from ..utils.settings import ROOT_DIR, CLUSTER, FEAT_STATS
+from ..features import TANDEM_FEATS, dynamics_feat, structure_feat, sequence_feat
 
 class Preprocessing:
     def __init__(self, data):
@@ -29,7 +28,11 @@ class Preprocessing:
         """Normalizes the new input data based on the mean and std of the training data
         """
         return (new_data - self.mean) / self.std
-    
+
+    def denormalize(self, z_data):
+        """Inverse of normalize: returns values on the original scale."""
+        return z_data * self.std + self.mean
+
     def __call__(self, new_data):
         new_data = self.fill_na_mean(new_data)
         new_data = self.normalize(new_data)

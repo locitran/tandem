@@ -3,7 +3,9 @@ import csv
 import tensorflow as tf
 import pandas as pd
 import numpy as np
+import shap
 
+from scipy import stats
 from dataclasses import asdict
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import StratifiedKFold
@@ -12,8 +14,9 @@ from .features import TANDEM_FEATS
 from .features.features import Features
 from .utils.settings import TANDEM_v1dot1, TANDEM_R20000
 from .utils.logger import LOGGER
-from .model.data_processing import Preprocessing, onehot_encoding, probs2mode, np2ds
+from .model.data_processing import Preprocessing, onehot_encoding, np2ds
 from .model.train import TLConfig, train_model
+from .plot import plotSHAP_bar
 
 class Tandem(Features):
     
@@ -30,8 +33,6 @@ class Tandem(Features):
         Returns:
             models (list): List of models.
         """
-        assert os.path.exists(folder), f"Folder {folder} does not exist."
-        LOGGER.info(f"{folder}")
         models = []
         for root, dirs, files in os.walk(folder):
             for file in files:
@@ -40,7 +41,6 @@ class Tandem(Features):
 
         assert len(models) > 0, f"No models found in {folder}."
         LOGGER.info(f"Found {len(models)} models in {folder}.")
-        LOGGER.info(f"Loading models from {folder}.")
         models = [tf.keras.models.load_model(model) for model in models]
         return models
 
@@ -48,48 +48,20 @@ class Tandem(Features):
         df = pd.read_csv(data)
         fm = df[TANDEM_FEATS['v1.1']].values
         self.preprocess = Preprocessing(fm)
-
-    def _calcPredictions(self, models=None):
-        assert self.featMatrix is not None, 'Feature matrix not set.'
-        # Convert the feature matrix to a NumPy array
-        feat_names = self.featMatrix.dtype.names
-        fm = np.column_stack([self.featMatrix[name] for name in feat_names])
-        fm = self.preprocess(fm)
-        
-        # Load foundation models
-        fd_models = self.models
-        probs = []
-        for model in fd_models:
-            pred = model.predict(fm)
-            pred = pred[:, 1] # Get the probability of class 1: pathogenic
-            probs.append(pred)
-        probs = np.column_stack(probs)
-        self.data['tandem'] = probs2mode(probs)
-
-        # Load transfer learning models
-        if models:
-            tf_models = self.setModels(models)
-            probs = []
-            for model in tf_models:
-                pred = model.predict(fm)
-                pred = pred[:, 1] # Get the probability of class 1: pathogenic
-                probs.append(pred)
-            probs = np.array(probs).reshape(self.nSAVs, -1)
-            self.data['tandem_tf'] = probs2mode(probs)
-
-    def getPredictions(self, models=None, folder='.', filename=None):
+    
+    def getPredictions(self, models, folder='.', filename=None):
         # calc predictions
-        self._calcPredictions(models)
+        self.calcPredictions(models)
 
         # Convert to df
         df_tandem = pd.DataFrame(self.data['tandem'].tolist(), columns=self.data['tandem'].dtype.names)
-        df_tandem_tf = pd.DataFrame(self.data['tandem_tf'].tolist(), columns=self.data['tandem_tf'].dtype.names) if models else None
-        # if tandem_tf exists, add its columns with suffix "_tf"
-        if df_tandem_tf is not None:
+        df_tandem_dimple = pd.DataFrame(self.data['tandem_dimple'].tolist(), columns=self.data['tandem_dimple'].dtype.names) if models else None
+        # if tandem_dimple exists, add its columns with suffix "_tf"
+        if df_tandem_dimple is not None:
             # rename TF columns to have _tf suffix
-            df_tandem_tf = df_tandem_tf.add_suffix('_tf')
+            df_tandem_dimple = df_tandem_dimple.add_suffix('_tf')
             # merge by index (row-aligned)
-            df_tandem = pd.concat([df_tandem, df_tandem_tf], axis=1)
+            df_tandem = pd.concat([df_tandem, df_tandem_dimple], axis=1)
         # finally add SAVs column
         df_tandem.insert(loc=0, column='SAVs', value=self.data["SAVs"])
 
@@ -123,8 +95,8 @@ class Tandem(Features):
                     # base values
                     vote = data.get("ratio")
                     vote_s = f"{float(vote):.3f}" if pd.notnull(vote) else ""
-                    path = data.get("path_probs")
-                    sem = data.get("path_probs_sem")
+                    path = data.get("path_prob")
+                    sem = data.get("path_prob_sem")
                     if pd.notnull(path) and pd.notnull(sem):
                         path_s = f"{float(path):.3f}±{float(sem):.3f}"
                     elif pd.notnull(path):
@@ -165,6 +137,150 @@ class Tandem(Features):
                 LOGGER.info(f'Predictions are saved to {filepath}')
         return df_tandem
 
+    def calcPredictions(self, models):
+        assert os.path.isdir(models), f"Folder {models} does not exist."
+        assert self.featMatrix is not None, 'Feature matrix not set.'
+        
+        # Convert the feature matrix to a NumPy array
+        feat_names = self.featMatrix.dtype.names
+        fm = np.column_stack([self.featMatrix[name] for name in feat_names])
+        fm = self.preprocess(fm)
+        
+        # Load foundation models
+        fd_models = self.models
+        shap_background = np.load(f"{TANDEM_v1dot1}/shap_background.npy")
+        self.data['tandem'] = self._calcPredictions(
+            fm, shap_background, fd_models
+        )
+
+        # if TANDEM-DIMPLE is provided (models not None)
+        # Load tf models
+        if models != TANDEM_v1dot1:
+            tf_models = self.setModels(models)
+            shap_background = np.load(f"{models}/shap_background.npy")
+            self.data['tandem_dimple'] = self._calcPredictions(
+                fm, shap_background, tf_models
+            )
+
+    def _calcPredictions(self, featMatrix, shap_background, models):
+        "Voting average & SHAP"
+        
+        n_models = len(models)
+        n_features = featMatrix.shape[1]
+        probs = []
+        for model in models:
+            _pred = model.predict(featMatrix, verbose=False)
+            _pred = _pred[:, 1] # Get the probability of class 1: pathogenic
+            probs.append(_pred)
+        probs = np.column_stack(probs) # (nSAVs, n_models): 2D array
+
+        if probs.ndim == 1:
+            probs = probs.reshape(1, -1)
+        N, M = probs.shape
+        out = np.full(N, np.nan, dtype=self.model2pred_dtype)
+
+        # Convert probabilities to binary predictions
+        preds = (probs > 0.5).astype(int) # (nSAVs, n_models)
+        
+        # Get mode and count across the whole dataset
+        mode = stats.mode(preds, axis=1) 
+        mode_val = mode[0] # (nSAVs, )
+        mode_count = mode[1] # (nSAVs, )
+        decision = np.array([
+            "pathogenic" if val == 1 else "benign" for val in mode_val
+        ])
+        ratio = mode_count / M
+        mode_arr = np.repeat(mode_val[:, None], n_models, axis=1) # (nSAVs, n_models)
+        mask_2d  = np.abs(mode_arr-preds) # Mask the difference: # (nSAVs, n_models)
+        mask_3d  = np.repeat(mask_2d[:, :, None], n_features, axis=2) # (nSAVs, n_models, n_features)
+
+        # Calculate SHAP
+        featImp = self._calcSHAP(shap_background, featMatrix, models) # (nSAVs, n_models, n_features)
+        featImp_masked = np.ma.masked_array(featImp, mask=mask_3d) # (nSAVs, n_models, n_features)
+
+        # Broadcast mode_val to match vote shape
+        probs_masked = np.ma.array(probs, mask=mask_2d) # (nSAVs, n_models)
+        path_probs = probs_masked.mean(1) # (nSAVs, )
+        path_probs_sem = stats.sem(probs_masked, axis=1) # (nSAVs, )
+
+        for i in range(probs.shape[0]):
+            out['prob'][i] = probs[i]
+            out['pred'][i] = preds[i]
+            out['shap'][i] = featImp_masked[i]
+        out['mode'] = mode_val
+        out['decision'] = decision
+        out['ratio'] = ratio
+        out['path_prob'] = path_probs
+        out['path_prob_sem'] = path_probs_sem
+        return out
+
+    def _calcSHAP(self, trainSet, testSet, models):
+        """
+        Input: 
+            trainSet: nSAVs X n_feats
+            testSet: nSAVs X n_feats
+            models: model for inferencing
+            featSet: feature order
+
+        Output:
+            featImp: nSAVs X n_models X n_feats
+        """
+        np.random.seed(1)
+        n_clusters = 100
+        if len(trainSet) > n_clusters:
+            background = shap.kmeans(trainSet, n_clusters)
+            background = background.data
+        else:
+            background = trainSet
+        
+        if testSet.ndim == 1:
+            testSet = testSet[None, :] 
+
+        featImp = []
+        for model in models:
+            f = lambda X: model.predict(X, verbose=0)  
+            explainer = shap.KernelExplainer(f, background, link="logit")
+            shap_values = explainer.shap_values(testSet, nsamples=100, silent=True)
+            featImp.append(shap_values[1])
+        featImp = np.array(featImp) # n_models X nSAVs X n_feats
+        return np.transpose(featImp, (1, 0, 2)) # nSAVs X n_models X n_feats
+
+    ### --------- Visualization     ------- #####
+    def plotSHAP(self, folder='.'):
+        assert not np.ma.is_masked(self.data['tandem']['shap']), 'SHAP has not been calculated' 
+
+        SAVs = self.data['SAVs']
+        globalSHAP_title = 'Global feature contribution to model prediction'
+        individualSHAP_title = 'Feature contribution to model prediction on {}'
+
+        # Create folder(s) to store SHAP figure(s)
+        tandem_shap = os.path.join(folder, 'tandem_shap')
+        os.makedirs(tandem_shap, exist_ok=True)
+        # Plot global SHAP values in case more than 1 SAV being calculated
+        if self.nSAVs > 1:
+            _featImp = self.data['tandem']['shap']
+            plotSHAP_bar(_featImp, globalSHAP_title, tandem_shap, 'globalSHAP')
+            
+        # Plot SHAP values for individual SAVs
+        for i in range(self.nSAVs):
+            sav = str(SAVs[i])
+            _featImp = self.data['tandem']['shap'][i]
+            plotSHAP_bar(_featImp, individualSHAP_title.format(sav), 
+                         tandem_shap, sav)
+
+        if not np.ma.is_masked(self.data['tandem_dimple']['shap']):
+            tandem_dimple_shap = os.path.join(folder, 'tandem_dimple_shap')
+            os.makedirs(tandem_dimple_shap, exist_ok=True)
+            if self.nSAVs > 1:
+                _featImp = self.data['tandem_dimple']['shap']
+                plotSHAP_bar(_featImp, globalSHAP_title, tandem_dimple_shap, 'globalSHAP')
+
+            for i in range(self.nSAVs):
+                sav = str(SAVs[i])
+                _featImp = self.data['tandem_dimple']['shap'][i]
+                plotSHAP_bar(_featImp, individualSHAP_title.format(sav), 
+                            tandem_dimple_shap, sav)
+            
     #### -------- Transfer learning ------- #####
 
     def setConfig(self, config=None):
@@ -259,6 +375,7 @@ class Tandem(Features):
         assert self.featMatrix is not None, "Feature matrix not set."
         assert self._isColSet("labels"), "Labels not set."
         assert self.config is not None, "Config not set."
+        
         LOGGER.timeit('_train')
         job_dir = self.options['job_directory']
 
@@ -279,6 +396,10 @@ class Tandem(Features):
         )
         x_te, y_te, sav_te  = X[test_idx],  y[test_idx],  SAVs[test_idx]
 
+        # Save train data (train+val) for shap analysis
+        shap_background = X[train_idx]
+        np.save(f'{job_dir}/shap_background.npy', shap_background)
+        
         fd_models = self.models
         # ----- CV on training set -----
         skf = StratifiedKFold(n_splits=cfg.val_splits, shuffle=True, random_state=cfg.seed)
@@ -360,5 +481,6 @@ class Tandem(Features):
                 
         self.history_avg(history)
         self.history_to_csv(history, filename=filename)
+
         LOGGER.report('train in %.1fs.', '_train')
         return history

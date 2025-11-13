@@ -894,6 +894,12 @@ class UniprotMapping:
             maps[c] = m
         return
 
+def simpleConversion(SAV_coords):
+    # SAVs field: <UniProt ID> <mutation site>
+    SAVs = [s.split() for s in SAV_coords]
+    SAVs = [f"{s[0]} {s[2]}{s[1]}{s[3]}" for s in SAVs]
+    return SAVs
+
 def seqScanning(Uniprot_coord, sequence=None):
     '''Returns a list of SAVs. If the string 'Uniprot_coord' is just a
     Uniprot ID, the list will contain all possible amino acid substitutions
